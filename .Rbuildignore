@@ -6,3 +6,4 @@
 ^CONTRIBUTING\.md$
 ^data-raw$
 ^README\.Rmd$
+^replication_scripts$

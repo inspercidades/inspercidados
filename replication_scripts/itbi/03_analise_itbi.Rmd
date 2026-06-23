@@ -1,0 +1,896 @@
+---
+title: "3. Análise Exploratória de Dados do ITBI"
+author: "Bruno Mesquita dos Santos"
+date: "`r format(Sys.time(), '%d de %B de %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    theme: united
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, fig.width = 10, fig.height = 8 )
+options(encoding = "latin1")
+```
+
+# 1. Configuração do Ambiente
+
+```{r libs, include=FALSE}
+if (!require('dplyr'))install.packages("dplyr");library(dplyr)
+if (!require('stringr'))install.packages("stringr");library(stringr)
+if (!require('arrow'))install.packages("arrow");library(arrow)
+if (!require('lubridate'))install.packages("lubridate");library(lubridate)
+if (!require("plotly")) install.packages("plotly");library(plotly)
+if(!require('rbcb'))install.packages("rbcb");library(rbcb)
+if(!require('sf'))install.packages("sf");library(sf)
+if (!require("DT")) install.packages("DT"); library(DT)
+```
+
+```{r initial_definitions}
+root_dir <- "C:/Users/onurb/OneDrive - RBA Consultoria Econômica/AFFORDABILITY/"
+```
+
+## Visão geral da camada (silver -- geocoded_cleaned) — Contrato
+
+-   Objetivo: carregar os dados geocodificados, aplicar filtros de qualidade (por `score`), correção monetária e tratamento de outliers; produzir a camada limpa pronta para análise e visualização.
+-   Entrada: `silver/ITBI_geocoded/` (parquet) — saída da etapa de geocodificação.
+-   Saída: `silver/ITBI_geocoded_cleaned/` (parquet) com particionamento `descricao_do_padrao_iptu` / `ano` / `mes`.
+-   Regras principais:
+    -   Mantemos registros com `score >= 95` para análise espacial; registros com `score < 95` são armazenados temporariamente em `geo_itbi_re_georef` para revisão.
+    -   Remoção de outliers por modified z-score (threshold = 2.58) sobre log(valor), log(area) e log(preco_m2).
+    -   Correção monetária: IPCA via package `rbcb` para trazer valores a preços correntes.
+
+### Entregáveis e verificação
+
+-   Arquivo Parquet limpo em `silver/ITBI_geocoded_cleaned/`.
+-   Confirmar que colunas esperadas existem: `long`, `lat`, `valor_de_transacao_declarado_corrigido`, `preco_m2_corrigido`, `Nome` (bairro).
+
+# 1. Preparação dos Dados para Análise
+
+## 1.1. Carga e Filtragem por Qualidade
+
+Após o processamento inicial, carregamos o dataset final e aplicamos filtros de qualidade. Apenas registros com alta precisão de geocodificação são mantidos, garantindo confiabilidade nas análises espaciais e estatísticas.
+
+Carregamos o dataset final, já enriquecido com coordenadas geográficas, e aplicamos um filtro de qualidade. Para garantir precisão nas análises espaciais e descritivas, utilizamos apenas registros geocodificados com alto grau de confiança (`score >= 95`).
+
+```{r carregar-dados-processados}
+# Abrir o dataset geocodificado
+ds <- open_dataset(paste0(root_dir,"silver/ITBI_geocoded/"))
+geo_itbi <- ds %>% collect()
+
+# Selecionar colunas relevantes
+geo_itbi <- as.data.frame(geo_itbi[,c(1:32, ncol(geo_itbi)-2, ncol(geo_itbi)-1, ncol(geo_itbi))])
+
+geo_itbi <- geo_itbi %>% filter(descricao_do_uso_iptu %in% c("APARTAMENTO EM CONDOMÍNIO (EXIGE FRAÇÃO IDEAL)",
+                                                 "RESIDÊNCIA",
+                                                 "RESIDÊNCIA COLETIVA, EXCLUSIVE CORTIÇO (MAIS DE UMA RESIDÊNCIA NO LOTE)",
+                                                 "RESIDÊNCIA E OUTRO USO (PREDOMINÂNCIA RESIDENCIAL)",
+                                                 "FLAT RESIDENCIAL EM CONDOMÍNIO (EXIGE FRAÇÃO IDEAL)"))
+
+geo_itbi <- geo_itbi %>% filter(valor_de_transacao_declarado_pelo_contribuinte > 10000 & area_construida_m2 > 10)
+
+
+# Filtrar por qualidade da geocodificação
+geo_itbi_georef <- geo_itbi[geo_itbi$score >= 95,]
+geo_itbi_re_georef <- geo_itbi[geo_itbi$score < 95,]
+
+# Verificar a proporção de dados com baixa acurácia
+percent_baixa_acuracia <- nrow(geo_itbi_re_georef) / nrow(geo_itbi) * 100
+print(paste0("Porcentagem de registros com score < 95: ", round(percent_baixa_acuracia, 2), "%"))
+
+geo_itbi_georef <- geo_itbi_georef[!(
+                                   geo_itbi_georef$ano == max(geo_itbi_georef$ano) &
+                                   geo_itbi_georef$mes == max(geo_itbi_georef[geo_itbi_georef$ano == max(geo_itbi_georef$ano),]$mes) 
+                                   ),]
+
+geo_itbi_georef$preco_m2 = geo_itbi_georef$valor_de_transacao_declarado_pelo_contribuinte / geo_itbi_georef$area_construida_m2
+
+rm(geo_itbi, geo_itbi_re_georef, ds) # Limpar memória
+```
+
+## 1.2. Correção Monetária dos Valores
+
+Para comparar preços de imóveis ao longo de quase duas décadas, é fundamental corrigir os valores pela inflação. Usamos o Índice Nacional de Preços ao Consumidor Amplo (IPCA), obtido via API do Banco Central. Todos os valores de transação são trazidos para a data de referência mais recente, permitindo uma comparação justa em "dinheiro de hoje".
+
+```{r}
+max_date <- max(geo_itbi_georef$data_de_transacao, na.rm = T)
+min_date <- min(geo_itbi_georef$data_de_transacao, na.rm = T) - months(1)
+
+ipca <- get_series(c(ipca = 433), start_date = min_date, end_date = max_date, as = 'data.frame')
+# ipca <- ipca |> mutate(ano = as.numeric(format(date, format="%Y")))
+
+# MENSAL
+
+## Inflacao acumulada mensal
+ipca$indice <- 100
+for (l in 1:nrow(ipca)) {
+  ipca[l+1,"indice"] <- (ipca[l+1,"ipca"]/100+1)*ipca[l,"indice"]
+}
+
+
+ipca <- ipca[-nrow(ipca),]
+ipca$ano_mes = str_sub(ipca$date,1,7)
+
+
+ipca$preco_atual <- c(NA,rep(1,nrow(ipca)-1))
+for (i in 0:(nrow(ipca)-2)) {
+  ipca[nrow(ipca)-i,"preco_atual"] <- ipca[nrow(ipca),"indice"]/
+    ipca[nrow(ipca)-i-1,"indice"]
+}
+
+ipca = ipca[-1,]
+
+# mes e ano geo_itbi_georef$data_de_transacao
+geo_itbi_georef$ano_mes = str_sub(geo_itbi_georef$data_de_transacao,1,7)
+
+geo_itbi_georef <- merge(geo_itbi_georef, ipca, by.x = 'ano_mes', by.y = 'ano_mes')
+
+geo_itbi_georef$valor_de_transacao_declarado_corrigido <- geo_itbi_georef$valor_de_transacao_declarado_pelo_contribuinte * geo_itbi_georef$preco_atual
+
+geo_itbi_georef$preco_m2_corrigido = geo_itbi_georef$valor_de_transacao_declarado_corrigido / geo_itbi_georef$area_construida_m2
+```
+
+## 2.4. Associação de Transações aos Bairros
+
+Para possibilitar a análise geográfica, cruzamos as coordenadas de cada imóvel com um mapa oficial dos distritos (bairros) de São Paulo. Este processo de junção espacial (spatial join) atribui cada transação ao seu respectivo bairro.
+
+```{r}
+caminho_shp_zv <- paste0(root_dir,"shp/shp/")
+
+shape_sf <- sf::st_read(
+  dsn = caminho_shp_zv,
+  layer = "DISTRITO_MUNICIPAL_SP_SMDUPolygon",
+  quiet = TRUE # Suppress verbose output
+)
+
+df_clean <- geo_itbi_georef %>%
+  mutate(
+    long = as.numeric(long),
+    lat = as.numeric(lat)
+  ) %>%
+  filter(!is.na(long) & !is.na(lat))
+
+if (nrow(df_clean) == 0) {
+  warning("Input data contains no valid coordinate pairs.")
+  return(df[0, ]) # Return an empty df with original structure
+}
+
+points_sf <- sf::st_as_sf(
+  df_clean,
+  coords = c("long", "lat"),
+  crs = sf::st_crs(shape_sf),
+  remove = FALSE
+)
+
+
+df_joined <- sf::st_join(points_sf, shape_sf)
+
+geo_itbi_georef_bairro <- sf::st_drop_geometry(df_joined)
+
+```
+
+```{r}
+geo_itbi_georef_bairro = geo_itbi_georef_bairro[!is.na(geo_itbi_georef_bairro$Nome),]
+```
+
+## 1.3. Tratamento de Outliers
+
+Valores extremos (outliers) podem distorcer médias e visualizações. Para lidar com isso, utilizamos o método de quantis com 99% de confiança, agrupando por ano e tipo de imóvel para uma detecção mais precisa.
+
+**Método Utilizado:** \* **Quantis com 99% de Confiança:** Remove os 0.5% menores e 0.5% maiores valores (quantis 0.005 e 0.995), mantendo os 99% centrais da distribuição, aplicado separadamente para cada ano e tipo de imóvel (Residencial Vertical/Horizontal). Esta abordagem permite capturar as variações temporais e diferenças entre tipos de propriedade.
+
+Primeiro, visualizamos a distribuição dos dados para `valor_de_transacao_declarado_corrigido`, `area_construida_m2` e `preco_m2_corrigido`.
+
+```{r }
+## Gráfico boxplot para valor_de_transacao_declarado_corrigido
+plot_ly(sample_n(geo_itbi_georef_bairro, 50000), x = ~descricao_do_padrao_iptu, y = ~valor_de_transacao_declarado_corrigido,
+    type = 'box', color = ~descricao_do_padrao_iptu) %>%
+  layout(title = 'Distribuição de Preços por Tipo de Imóvel',
+     xaxis = list(title = 'Tipo de Imóvel'),
+     yaxis = list(title = 'Preço (R$)'))
+
+## Gráfico boxplot para area_construida_m2
+plot_ly(sample_n(geo_itbi_georef_bairro, 50000), x = ~descricao_do_padrao_iptu, y = ~area_construida_m2,
+    type = 'box', color = ~descricao_do_padrao_iptu) %>%
+  layout(title = 'Distribuição de Área Construída por Tipo de Imóvel',
+     xaxis = list(title = 'Tipo de Imóvel'),
+     yaxis = list(title = 'Área Construída (m²)'))
+
+## Gráfico boxplot para preco_m2
+plot_ly(sample_n(geo_itbi_georef_bairro, 50000), x = ~descricao_do_padrao_iptu, y = ~preco_m2_corrigido,
+    type = 'box', color = ~descricao_do_padrao_iptu) %>%
+  layout(title = 'Distribuição de Área Construída por Tipo de Imóvel',
+     xaxis = list(title = 'Tipo de Imóvel'),
+     yaxis = list(title = 'Área Construída (m²)'))
+```
+
+```{r }
+## Gráfico boxplot para valor_de_transacao_declarado_corrigido (log)
+plot_ly(sample_n(geo_itbi_georef_bairro %>% filter(!is.na(valor_de_transacao_declarado_corrigido) & valor_de_transacao_declarado_corrigido > 0), 50000), 
+        x = ~descricao_do_padrao_iptu, y = ~log(valor_de_transacao_declarado_corrigido),
+    type = 'box', color = ~descricao_do_padrao_iptu) %>%
+  layout(title = 'Distribuição de Preços (Escala Log)',
+     xaxis = list(title = 'Tipo de Imóvel'),
+     yaxis = list(title = 'Log do Preço (R$)'))
+
+## Gráfico boxplot para area_construida_m2 (log)
+plot_ly(sample_n(geo_itbi_georef_bairro %>% filter(!is.na(area_construida_m2) & area_construida_m2 > 0), 50000), 
+        x = ~descricao_do_padrao_iptu, y = ~log(area_construida_m2),
+    type = 'box', color = ~descricao_do_padrao_iptu) %>%
+  layout(title = 'Distribuição de Área Construída (Escala Log)',
+     xaxis = list(title = 'Tipo de Imóvel'),
+     yaxis = list(title = 'Log da Área Construída (m²)'))
+
+## Gráfico boxplot para apreco_m2 (log)
+plot_ly(sample_n(geo_itbi_georef_bairro %>% filter(!is.na
+(preco_m2_corrigido) & preco_m2_corrigido > 0), 50000), 
+        x = ~descricao_do_padrao_iptu, y = ~log(preco_m2_corrigido),
+    type = 'box', color = ~descricao_do_padrao_iptu) %>%
+  layout(title = 'Distribuição do Preço por m² (Escala Log)',
+     xaxis = list(title = 'Tipo de Imóvel'),
+     yaxis = list(title = 'Log do Preço por m² (R$)'))
+```
+
+### 1.3.1. Identificação de Outliers usando z_score (99% de Confiança)
+
+```{r}
+modified_z_score <- function(x) {
+  median_x <- median(x, na.rm = TRUE)
+  mad_x <- mad(x, na.rm = TRUE, constant = 1)
+  z_scores <- 0.6745 * (x - median_x) / mad_x
+  return(abs(z_scores))
+}
+
+geo_itbi_georef_bairro <- geo_itbi_georef_bairro %>%
+  group_by(ano, descricao_do_padrao_iptu) %>%
+  mutate(
+    is_outlier_zscore = modified_z_score(log(valor_de_transacao_declarado_corrigido)) > 2.58 |
+                        modified_z_score(log(area_construida_m2)) > 2.58 |
+                        modified_z_score(log(preco_m2_corrigido)) > 2.58
+  ) %>%
+  ungroup()
+
+verifica <- geo_itbi_georef_bairro %>%
+  group_by(ano, descricao_do_padrao_iptu) %>% filter(!is_outlier_zscore)%>%
+  summarise(
+    min_valor_de_transacao_declarado_corrigido = min(valor_de_transacao_declarado_corrigido, na.rm = TRUE),
+    med_valor_de_transacao_declarado_corrigido = median(valor_de_transacao_declarado_corrigido, na.rm = TRUE),
+    max_valor_de_transacao_declarado_corrigido = max(valor_de_transacao_declarado_corrigido, na.rm = TRUE),
+    min_area_construida_m2 = min(area_construida_m2, na.rm = TRUE),
+    max_area_construida_m2 = max(area_construida_m2, na.rm = TRUE),
+    med_area_construida_m2 = median(area_construida_m2, na.rm = TRUE),
+    min_preco_m2_corrigido = min(preco_m2_corrigido, na.rm = TRUE),
+    med_preco_m2_corrigido = median(preco_m2_corrigido, na.rm = TRUE),
+    max_preco_m2_corrigido = max(preco_m2_corrigido, na.rm = TRUE),
+    .groups = 'drop'
+  )
+
+
+caption <- "Resumo Estatístico após Remoção de Outliers via Z-Score"
+
+
+# Criar datatable com scroll e paginação
+dt <- DT::datatable(
+    verifica,
+    caption = caption,
+    rownames = FALSE,
+    options = list(
+        pageLength = 10,
+        lengthMenu = c(5, 10, 25, 50),
+        scrollX = TRUE,
+        scrollY = "400px",
+        autoWidth = TRUE
+    ),
+    class = "stripe hover compact"
+)
+
+# Formatar colunas numéricas como valores monetários (ajuste conforme necessário)
+num_cols <- which(sapply(verifica, is.numeric))
+if (length(num_cols) > 0) {
+    dt <- DT::formatCurrency(dt, columns = num_cols, currency = "", digits = 0, mark = ".", dec.mark = ",")
+}
+
+dt
+  
+```
+
+```{r}
+outliers_iqr <- sum(geo_itbi_georef$is_outlier_iqr, na.rm = TRUE)
+outliers_zscore <- sum(geo_itbi_georef$is_outlier_zscore, na.rm = TRUE)
+total_registros <- nrow(geo_itbi_georef)
+
+print(paste("Total de registros:", total_registros))
+```
+
+### 1.3.2. Remoção dos Outliers
+
+Aplicamos o filtro de quantis com 90% de confiança para remover os outliers identificados.
+
+```{r}
+geo_itbi_georef_bairro <- geo_itbi_georef_bairro %>% filter(!is_outlier_zscore)
+
+# Salvar dataset limpo
+write_dataset(geo_itbi_georef_bairro, paste0(root_dir,"silver/ITBI_geocoded_cleaned/"), format = "parquet", partitioning = c("descricao_do_padrao_iptu",'ano',"mes"), existing_data_behavior = "overwrite")
+```
+
+Após a remoção, o boxplot e o histograma mostram uma distribuição mais concentrada e representativa do mercado imobiliário típico de São Paulo.
+
+```{r grafico_boxplot_preco_tipo}
+## Gráfico boxplot comparando preços por tipo de imóvel (sem log)
+plot_ly(sample_n(geo_itbi_georef_bairro, 50000), x = ~descricao_do_padrao_iptu, y = ~valor_de_transacao_declarado_corrigido,
+    type = 'box', color = ~descricao_do_padrao_iptu) %>%
+  layout(title = 'Distribuição de Preços por Tipo de Imóvel',
+     xaxis = list(title = 'Tipo de Imóvel'),
+     yaxis = list(title = 'Valor de Transação (R$)'),
+     legend = list(title=list(text='<b>Tipo de Imóvel</b>')))
+```
+
+```{r}
+## Gráfico boxplot para preço por m² corrigido
+plot_ly(sample_n(geo_itbi_georef_bairro, 50000), x = ~descricao_do_padrao_iptu, y = ~preco_m2_corrigido,
+    type = 'box', color = ~descricao_do_padrao_iptu) %>%
+  layout(title = 'Distribuição do Preço por m² Corrigido',
+     xaxis = list(title = 'Tipo de Imóvel'),
+     yaxis = list(title = 'Preço por m² (R$)'),
+     legend = list(title=list(text='<b>Tipo de Imóvel</b>')))
+```
+
+```{r}
+## Histograma do preço por m² corrigido
+plot_ly(geo_itbi_georef_bairro, x = ~valor_de_transacao_declarado_corrigido,
+  color = ~descricao_do_padrao_iptu, type = 'histogram') %>%
+  layout(title = 'Distribuição de Preços por Tipo de Imóvel',
+   xaxis = list(title = 'Preço por m² Corrigido (R$)'),
+   yaxis = list(title = 'Frequência'),
+   barmode = 'stack',
+   legend = list(title=list(text='<b>Tipo de Imóvel</b>')))
+```
+
+```{r}
+## Histograma do preço por m² corrigido
+plot_ly(geo_itbi_georef_bairro, x = ~preco_m2_corrigido,
+  color = ~descricao_do_padrao_iptu, type = 'histogram') %>%
+  layout(title = 'Distribuição do Preço por m² Corrigido',
+   xaxis = list(title = 'Preço por m² Corrigido (R$)'),
+   yaxis = list(title = 'Frequência'),
+   barmode = 'stack',
+   legend = list(title=list(text='<b>Tipo de Imóvel</b>')))
+```
+
+# 2. Análise Exploratória dos Dados
+
+Com os dados tratados e enriquecidos, realizamos análises exploratórias para identificar tendências, padrões e características do mercado imobiliário de São Paulo. As visualizações a seguir ajudam a entender o comportamento das transações ao longo do tempo e entre diferentes tipos de imóveis.
+
+Nesta seção, exploramos os dados para extrair insights relevantes sobre o mercado imobiliário de São Paulo, identificando padrões, tendências e características dos imóveis transacionados.
+
+## 2.1. Contagem de Transações por Ano
+
+Analisamos o volume de transações de imóveis residenciais ao longo dos anos, identificando períodos de maior ou menor atividade no mercado.
+
+O gráfico de barras abaixo apresenta o volume total de transações de imóveis residenciais por ano, permitindo visualizar a dinâmica e o aquecimento do mercado ao longo do tempo.
+
+```{r grafico_contagem_ano}
+## Gráfico de barras empilhadas: número de transações por ano e tipo de imóvel
+# Agrupar e contar as ocorrências por ano e por padrão de IPTU
+ocorrencias_por_ano_padrão <- geo_itbi_georef_bairro %>%
+  group_by(ano, descricao_do_padrao_iptu) %>%
+  summarise(contagem = n(), .groups = 'drop')
+
+# Gráfico
+plot_ly(data = ocorrencias_por_ano_padrão, x = ~ano, y = ~contagem, type = 'bar',
+        color = ~descricao_do_padrao_iptu) %>%
+  layout(title = 'Número de Transações de Imóveis por Ano e Tipo de Imóvel',
+         xaxis = list(title = 'Ano'),
+         yaxis = list(title = 'Número de Transações'),
+         barmode = 'stack',
+         legend = list(title=list(text='<b>Tipo de Imóvel</b>')))
+```
+
+## 2.2. Evolução Mensal do Nº de Transações por Tipo de Imóvel
+
+Observamos a evolução mensal das vendas de apartamentos e casas, permitindo identificar sazonalidades, tendências e ciclos de mercado.
+
+O gráfico de linhas compara o volume de vendas de apartamentos ("Vertical") e casas ("Horizontal") ao longo do tempo, facilitando a identificação de tendências, ciclos de mercado e sazonalidades.
+
+```{r grafico_ts_contagem_tipo}
+## Gráfico de linhas: evolução mensal do número de transações por tipo de imóvel
+# Preparar os dados: agrupar por ano, mês e tipo de imóvel
+transacoes_mensais <- geo_itbi_georef_bairro %>%
+  mutate(data = as.Date(paste(ano, mes, "01", sep = "-"))) %>%
+  group_by(data, descricao_do_padrao_iptu) %>%
+  summarise(contagem = n(), .groups = 'drop')
+
+# Gráfico
+plot_ly(transacoes_mensais, x = ~data, y = ~contagem, color = ~descricao_do_padrao_iptu, type = 'scatter', mode = 'lines') %>%
+  layout(title = 'Evolução Mensal do Nº de Transações por Tipo de Imóvel',
+         xaxis = list(title = 'Data da Transação'),
+         yaxis = list(title = 'Número de Transações'),
+         legend = list(title=list(text='<b>Tipo de Imóvel</b>')))
+```
+
+## 2.3. Evolução do Preço Mediano por Tipo de Imóvel
+
+Acompanhamos a trajetória do preço mediano dos imóveis ao longo do tempo, utilizando a mediana para evitar distorções causadas por valores extremos. Isso revela como o valor típico dos imóveis evoluiu nos diferentes segmentos.
+
+Utilizamos a **mediana** para analisar a evolução do preço típico dos imóveis, pois essa métrica é menos sensível a valores extremos do que a média. O gráfico mostra a trajetória do preço mediano de casas e apartamentos ao longo dos anos.
+
+```{r}
+# Preparar os dados: agrupar e calcular o valor mediano
+preco_mediano_mensal <- geo_itbi_georef_bairro %>%
+  mutate(data = as.Date(paste(ano, mes, "01", sep = "-"))) %>%
+  group_by(data, descricao_do_padrao_iptu) %>%
+  summarise(preco_mediano = median(valor_de_transacao_declarado_pelo_contribuinte, na.rm = TRUE), .groups = 'drop')
+
+# Criar o gráfico de linhas
+## Gráfico de linhas: evolução do preço mediano por tipo de imóvel
+plot_ly(preco_mediano_mensal, x = ~data, y = ~preco_mediano, color = ~descricao_do_padrao_iptu, type = 'scatter', mode = 'lines') %>%
+  layout(title = 'Evolução do Preço Mediano de Transação por Tipo de Imóvel',
+         xaxis = list(title = 'Data da Transação'),
+         yaxis = list(title = 'Preço Mediano por Imóvel (R$)'),
+         legend = list(title=list(text='<b>Tipo de Imóvel</b>')))
+```
+
+```{r grafico_ts_preco_mediano}
+# Preparar os dados: agrupar e calcular o valor mediano
+preco_mediano_mensal <- geo_itbi_georef_bairro %>%
+  mutate(data = as.Date(paste(ano, mes, "01", sep = "-"))) %>%
+  group_by(data, descricao_do_padrao_iptu) %>%
+  summarise(preco_mediano = median(valor_de_transacao_declarado_corrigido, na.rm = TRUE), .groups = 'drop')
+
+# Criar o gráfico de linhas
+## Gráfico de linhas: evolução do preço mediano corrigido por tipo de imóvel
+plot_ly(preco_mediano_mensal, x = ~data, y = ~preco_mediano, color = ~descricao_do_padrao_iptu, type = 'scatter', mode = 'lines') %>%
+  layout(title = 'Evolução do Preço Mediano Corrigido de Transação por Tipo de Imóvel',
+         xaxis = list(title = 'Data da Transação'),
+         yaxis = list(title = 'Preço Mediano Corrigido por Imóvel (R$)'),
+         legend = list(title=list(text='<b>Tipo de Imóvel</b>')))
+```
+
+3.  Análise Geográfica por Bairro
+
+Agora vamos aprofundar a análise para o nível de bairro, identificando as áreas com maior atividade e valorização no mercado imobiliário de São Paulo. 3.1. Top 20 Bairros por Volume de Transações
+
+O gráfico de barras abaixo mostra os 20 bairros com o maior número de transações de imóveis em todo o período analisado. Isso indica as áreas de maior liquidez e dinamismo do mercado. Ao passar o mouse sobre uma barra, é possível ver também o preço mediano da transação naquele bairro.
+
+```{r}
+# 1. Agregação dos dados por bairro
+bairros_summary_volume <- geo_itbi_georef_bairro %>%
+  filter(!is.na(Nome) & Nome != "") %>%
+  group_by(Nome) %>%
+  summarise(
+    contagem = n(),
+    preco_mediano = median(valor_de_transacao_declarado_corrigido, na.rm = TRUE),
+    .groups = 'drop'
+  ) %>%
+  # 2. Ordenar por contagem e pegar o Top 20
+  arrange(desc(contagem)) %>%
+  slice_head(n = 20)
+
+# 3. Criar o gráfico interativo
+plot_ly(
+  data = bairros_summary_volume,
+  x = ~reorder(Nome, -contagem), 
+  y = ~contagem,
+  type = 'bar',
+  text = ~paste0("Preço Mediano (Corrigido): R$ ", format(preco_mediano, big.mark = ".", decimal.mark = ",", nsmall = 2)),
+  hoverinfo = 'x+y+text',
+  marker = list(color = 'rgba(219, 64, 82, 0.7)',
+                line = list(color = 'rgba(219, 64, 82, 1.0)', width = 1))
+) %>%
+layout(
+  title = 'Top 20 Bairros com Maior Número de Transações',
+  xaxis = list(title = ''),
+  yaxis = list(title = 'Número Total de Transações')
+)
+```
+
+3.2. Top 15 Bairros por Preço Mediano do Metro Quadrado
+
+O preço por metro quadrado é um indicador-chave para comparar o custo de vida e a valorização entre diferentes regiões, pois normaliza o valor pelo tamanho do imóvel. Os gráficos a seguir mostram os 15 bairros mais caros e os 15 mais baratos de São Paulo, considerando apenas bairros com um mínimo de 50 transações para garantir relevância estatística.
+
+```{r}
+# Passo 1: Filtrar dados inconsistentes e calcular preco_m2
+geo_itbi_com_preco_m2 <- geo_itbi_georef_bairro %>%
+  filter(area_construida_m2 > 20 & valor_de_transacao_declarado_corrigido > 10000)
+
+# Passo 2: Agregar por bairro e calcular o preco_m2 mediano
+bairros_preco_m2_summary <- geo_itbi_com_preco_m2 %>%
+  filter(!is.na(Nome) & Nome != "") %>%
+  group_by(Nome) %>%
+  summarise(
+    contagem = n(),
+    preco_m2_mediano = median(preco_m2_corrigido, na.rm = TRUE),
+    .groups = 'drop'
+  ) %>%
+  # Passo 3: Filtrar para bairros com volume mínimo de vendas
+  filter(contagem >= 50) %>%
+  arrange(desc(preco_m2_mediano)) %>%
+  # Passo 4: Selecionar o Top 15
+  slice_head(n = 15)
+
+# Passo 5: Criar o gráfico
+plot_ly(
+  data = bairros_preco_m2_summary,
+  x = ~reorder(Nome, -preco_m2_mediano),
+  y = ~preco_m2_mediano,
+  type = 'bar',
+  text = ~paste0("Nº de Imóveis na Amostra: ", contagem),
+  hoverinfo = 'x+y+text',
+  marker = list(color = ~preco_m2_mediano, colorscale = 'Reds')
+) %>%
+layout(
+  title = 'Top 15 Bairros com Maior Preço Mediano por m² (Corrigido)',
+  xaxis = list(title = ''),
+  yaxis = list(title = 'Preço Mediano por m² (R$)')
+)
+```
+
+```{r}
+# Reutilizar os dados agregados para encontrar os mais baratos
+bairros_preco_m2_baratos <- geo_itbi_com_preco_m2 %>%
+  filter(!is.na(Nome) & Nome != "") %>%
+  group_by(Nome) %>%
+  summarise(
+    contagem = n(),
+    preco_m2_mediano = median(preco_m2_corrigido, na.rm = TRUE),
+    .groups = 'drop'
+  ) %>%
+  filter(contagem >= 50) %>%
+  arrange(preco_m2_mediano) %>% # Ordenar em ordem crescente
+  slice_head(n = 15)
+
+# Criar o gráfico
+plot_ly(
+  data = bairros_preco_m2_baratos,
+  x = ~reorder(Nome, preco_m2_mediano),
+  y = ~preco_m2_mediano,
+  type = 'bar',
+  text = ~paste0("Nº de Imóveis na Amostra: ", contagem),
+  hoverinfo = 'x+y+text',
+  marker = list(color = ~preco_m2_mediano, colorscale = 'Blues')
+) %>%
+layout(
+  title = 'Top 15 Bairros com Menor Preço Mediano por m² (Corrigido)',
+  xaxis = list(title = ''),
+  yaxis = list(title = 'Preço Mediano por m² (R$)')
+)
+```
+
+3.3. Top 20 Bairros por Valor Total Transacionado
+
+Este gráfico mostra os bairros onde o volume financeiro total das transações foi maior. Essa métrica combina o número de vendas com o valor dos imóveis, destacando os bairros que não apenas têm muitas vendas, mas também envolvem altos valores, sendo cruciais para a economia do mercado imobiliário da cidade.
+
+```{r}
+# Agregar por bairro e calcular o valor total
+bairros_valor_total_summary <- geo_itbi_georef_bairro %>%
+  filter(!is.na(Nome) & Nome != "") %>%
+  group_by(Nome) %>%
+  summarise(
+    contagem = n(),
+    valor_total = sum(valor_de_transacao_declarado_corrigido, na.rm = TRUE),
+    .groups = 'drop'
+  ) %>%
+  arrange(desc(valor_total)) %>%
+  slice_head(n = 20)
+
+# Criar o gráfico
+plot_ly(
+  data = bairros_valor_total_summary,
+  x = ~reorder(Nome, -valor_total),
+  y = ~valor_total,
+  type = 'bar',
+  text = ~paste0("Nº de Imóveis: ", contagem),
+  hoverinfo = 'x+y+text',
+  marker = list(color = ~valor_total, colorscale = 'Reds')
+) %>%
+layout(
+  title = 'Top 20 Bairros por Valor Total Transacionado (Corrigido)',
+  xaxis = list(title = ''),
+  yaxis = list(title = 'Valor Total Transacionado (R$)')
+)
+```
+
+# 3. Análise Geográfica Detalhada por Tipo de Imóvel
+
+Nesta seção, aprofundamos a análise geográfica dividindo os dados entre imóveis do tipo "Residencial Vertical" (apartamentos) e "Residencial Horizontal" (casas). Isso nos permite observar as particularidades e dinâmicas de cada segmento do mercado imobiliário de São Paulo.
+
+## 3.1. Análise para Imóveis Residenciais Verticais (Apartamentos)
+
+Analisamos aqui apenas as transações envolvendo apartamentos.
+
+### 3.1.1. Top 20 Bairros por Volume de Transações (Vertical)
+
+O gráfico abaixo revela os bairros com maior liquidez para o mercado de apartamentos, ou seja, onde ocorre o maior número de vendas.
+
+```{r grafico_top_bairros_vertical, fig.width=12, fig.height=8}
+# 1. Agregação dos dados por bairro para imóveis verticais
+bairros_summary_volume_vertical <- geo_itbi_georef_bairro %>%
+  filter(descricao_do_padrao_iptu == "RESIDENCIAL VERTICAL") %>%
+  filter(!is.na(Nome) & Nome != "") %>%
+  group_by(Nome) %>%
+  summarise(
+    contagem = n(),
+    preco_mediano = median(valor_de_transacao_declarado_corrigido, na.rm = TRUE),
+    .groups = 'drop'
+  ) %>%
+  arrange(desc(contagem)) %>%
+  slice_head(n = 20)
+
+# 2. Criar o gráfico interativo
+plot_ly(
+  data = bairros_summary_volume_vertical,
+  x = ~reorder(Nome, -contagem), 
+  y = ~contagem,
+  type = 'bar',
+  text = ~paste0("Preço Mediano (Corrigido): R$ ", format(preco_mediano, big.mark = ".", decimal.mark = ",", nsmall = 2)),
+  hoverinfo = 'x+y+text',
+  marker = list(color = 'rgba(26, 118, 255, 0.7)',
+                line = list(color = 'rgba(26, 118, 255, 1.0)', width = 1))
+) %>%
+layout(
+  title = 'Top 20 Bairros por Volume de Transações (Residencial Vertical)',
+  xaxis = list(title = 'Bairro'),
+  yaxis = list(title = 'Número Total de Transações')
+)
+```
+
+### 3.1.2. Top 15 Bairros por Preço Mediano do m² (Vertical)
+
+Estes são os bairros com o metro quadrado mais valorizado para apartamentos na cidade de São Paulo, representando as áreas de maior custo para este tipo de imóvel. A análise considera apenas bairros com no mínimo 50 transações na amostra.
+
+```{r grafico_top_m2_caro_vertical, fig.width=12, fig.height=8}
+# 1. Agregar dados de m² para imóveis verticais (mais caros)
+bairros_preco_m2_caro_vertical <- geo_itbi_georef_bairro %>%
+  filter(descricao_do_padrao_iptu == "RESIDENCIAL VERTICAL") %>%
+  filter(area_construida_m2 > 20 & valor_de_transacao_declarado_corrigido > 10000) %>%
+  filter(!is.na(Nome) & Nome != "") %>%
+  group_by(Nome) %>%
+  summarise(
+    contagem = n(),
+    preco_m2_mediano = median(preco_m2_corrigido, na.rm = TRUE),
+    .groups = 'drop'
+  ) %>%
+  filter(contagem >= 50) %>%
+  arrange(desc(preco_m2_mediano)) %>%
+  slice_head(n = 15)
+
+# 2. Criar o gráfico
+plot_ly(
+  data = bairros_preco_m2_caro_vertical,
+  x = ~reorder(Nome, -preco_m2_mediano),
+  y = ~preco_m2_mediano,
+  type = 'bar',
+  text = ~paste0("Nº de Imóveis na Amostra: ", contagem),
+  hoverinfo = 'x+y+text',
+  marker = list(color = ~preco_m2_mediano, colorscale = 'Reds')
+) %>%
+layout(
+  title = 'Top 15 Bairros com Maior Preço Mediano por m² (Residencial Vertical)',
+  xaxis = list(title = 'Bairro'),
+  yaxis = list(title = 'Preço Mediano por m² (R$)')
+)
+```
+
+### 3.1.3. Top 15 Bairros com Menor Preço Mediano por m² (Vertical)
+
+Em contrapartida, o gráfico a seguir apresenta os bairros com o metro quadrado mais acessível para apartamentos, indicando áreas com potencial de valorização ou opções mais econômicas.
+
+```{r grafico_top_m2_barato_vertical, fig.width=12, fig.height=8}
+# 1. Agregar dados de m² para imóveis verticais (mais baratos)
+bairros_preco_m2_barato_vertical <- geo_itbi_georef_bairro %>%
+  filter(descricao_do_padrao_iptu == "RESIDENCIAL VERTICAL") %>%
+  filter(area_construida_m2 > 20 & valor_de_transacao_declarado_corrigido > 10000) %>%
+  filter(!is.na(Nome) & Nome != "") %>%
+  group_by(Nome) %>%
+  summarise(
+    contagem = n(),
+    preco_m2_mediano = median(preco_m2_corrigido, na.rm = TRUE),
+    .groups = 'drop'
+  ) %>%
+  filter(contagem >= 50) %>%
+  arrange(preco_m2_mediano) %>% # Ordenação crescente
+  slice_head(n = 15)
+
+# 2. Criar o gráfico
+plot_ly(
+  data = bairros_preco_m2_barato_vertical,
+  x = ~reorder(Nome, preco_m2_mediano),
+  y = ~preco_m2_mediano,
+  type = 'bar',
+  text = ~paste0("Nº de Imóveis na Amostra: ", contagem),
+  hoverinfo = 'x+y+text',
+  marker = list(color = ~preco_m2_mediano, colorscale = 'Blues')
+) %>%
+layout(
+  title = 'Top 15 Bairros com Menor Preço Mediano por m² (Residencial Vertical)',
+  xaxis = list(title = 'Bairro'),
+  yaxis = list(title = 'Preço Mediano por m² (R$)')
+)
+```
+
+### 3.1.4. Top 20 Bairros por Valor Total Transacionado (Vertical)
+
+Este gráfico combina volume de vendas e valor dos imóveis, mostrando os bairros que mais movimentaram capital no mercado de apartamentos.
+
+```{r grafico_valor_total_vertical, fig.width=12, fig.height=8}
+# 1. Agregar por bairro e calcular o valor total para imóveis verticais
+bairros_valor_total_vertical <- geo_itbi_georef_bairro %>%
+  filter(descricao_do_padrao_iptu == "RESIDENCIAL VERTICAL") %>%
+  filter(!is.na(Nome) & Nome != "") %>%
+  group_by(Nome) %>%
+  summarise(
+    contagem = n(),
+    valor_total = sum(valor_de_transacao_declarado_corrigido, na.rm = TRUE),
+    .groups = 'drop'
+  ) %>%
+  arrange(desc(valor_total)) %>%
+  slice_head(n = 20)
+
+# 2. Criar o gráfico
+plot_ly(
+  data = bairros_valor_total_vertical,
+  x = ~reorder(Nome, -valor_total),
+  y = ~valor_total,
+  type = 'bar',
+  text = ~paste0("Nº de Imóveis: ", contagem),
+  hoverinfo = 'x+y+text',
+  marker = list(color = ~valor_total, colorscale = 'Purples')
+) %>%
+layout(
+  title = 'Top 20 Bairros por Valor Total Transacionado (Residencial Vertical)',
+  xaxis = list(title = 'Bairro'),
+  yaxis = list(title = 'Valor Total Transacionado (R$)')
+)
+```
+
+------------------------------------------------------------------------
+
+## 3.2. Análise para Imóveis Residenciais Horizontais (Casas)
+
+Aqui, o foco da análise se volta para as transações envolvendo casas.
+
+### 3.2.1. Top 20 Bairros por Volume de Transações (Horizontal)
+
+O gráfico revela os bairros com maior número de transações de casas, indicando as áreas onde este segmento é mais forte.
+
+```{r grafico_top_bairros_horizontal, fig.width=12, fig.height=8}
+# 1. Agregação dos dados por bairro para imóveis horizontais
+bairros_summary_volume_horizontal <- geo_itbi_georef_bairro %>%
+  filter(descricao_do_padrao_iptu == "RESIDENCIAL HORIZONTAL") %>%
+  filter(!is.na(Nome) & Nome != "") %>%
+  group_by(Nome) %>%
+  summarise(
+    contagem = n(),
+    preco_mediano = median(valor_de_transacao_declarado_corrigido, na.rm = TRUE),
+    .groups = 'drop'
+  ) %>%
+  arrange(desc(contagem)) %>%
+  slice_head(n = 20)
+
+# 2. Criar o gráfico interativo
+plot_ly(
+  data = bairros_summary_volume_horizontal,
+  x = ~reorder(Nome, -contagem), 
+  y = ~contagem,
+  type = 'bar',
+  text = ~paste0("Preço Mediano (Corrigido): R$ ", format(preco_mediano, big.mark = ".", decimal.mark = ",", nsmall = 2)),
+  hoverinfo = 'x+y+text',
+  marker = list(color = 'rgba(44, 160, 44, 0.7)',
+                line = list(color = 'rgba(44, 160, 44, 1.0)', width = 1))
+) %>%
+layout(
+  title = 'Top 20 Bairros por Volume de Transações (Residencial Horizontal)',
+  xaxis = list(title = 'Bairro'),
+  yaxis = list(title = 'Número Total de Transações')
+)
+```
+
+### 3.2.2. Top 15 Bairros por Preço Mediano do m² (Horizontal)
+
+Os bairros com o metro quadrado mais caro para casas, muitas vezes associados a condomínios de alto padrão ou áreas nobres da cidade.
+
+```{r grafico_top_m2_caro_horizontal, fig.width=12, fig.height=8}
+# 1. Agregar dados de m² para imóveis horizontais (mais caros)
+bairros_preco_m2_caro_horizontal <- geo_itbi_georef_bairro %>%
+  filter(descricao_do_padrao_iptu == "RESIDENCIAL HORIZONTAL") %>%
+  filter(area_construida_m2 > 20 & valor_de_transacao_declarado_corrigido > 10000) %>%
+  filter(!is.na(Nome) & Nome != "") %>%
+  group_by(Nome) %>%
+  summarise(
+    contagem = n(),
+    preco_m2_mediano = median(preco_m2_corrigido, na.rm = TRUE),
+    .groups = 'drop'
+  ) %>%
+  filter(contagem >= 50) %>%
+  arrange(desc(preco_m2_mediano)) %>%
+  slice_head(n = 15)
+
+# 2. Criar o gráfico
+plot_ly(
+  data = bairros_preco_m2_caro_horizontal,
+  x = ~reorder(Nome, -preco_m2_mediano),
+  y = ~preco_m2_mediano,
+  type = 'bar',
+  text = ~paste0("Nº de Imóveis na Amostra: ", contagem),
+  hoverinfo = 'x+y+text',
+  marker = list(color = ~preco_m2_mediano, colorscale = 'Greens')
+) %>%
+layout(
+  title = 'Top 15 Bairros com Maior Preço Mediano por m² (Residencial Horizontal)',
+  xaxis = list(title = 'Bairro'),
+  yaxis = list(title = 'Preço Mediano por m² (R$)')
+)
+```
+
+### 3.2.3. Top 15 Bairros com Menor Preço Mediano por m² (Horizontal)
+
+O gráfico a seguir aponta os bairros onde o metro quadrado para casas é mais em conta, oferecendo um panorama das áreas mais acessíveis para este tipo de moradia.
+
+```{r grafico_top_m2_barato_horizontal, fig.width=12, fig.height=8}
+# 1. Agregar dados de m² para imóveis horizontais (mais baratos)
+bairros_preco_m2_barato_horizontal <- geo_itbi_georef_bairro %>%
+  filter(descricao_do_padrao_iptu == "RESIDENCIAL HORIZONTAL") %>%
+  filter(area_construida_m2 > 20 & valor_de_transacao_declarado_corrigido > 10000) %>%
+  filter(!is.na(Nome) & Nome != "") %>%
+  group_by(Nome) %>%
+  summarise(
+    contagem = n(),
+    preco_m2_mediano = median(preco_m2_corrigido, na.rm = TRUE),
+    .groups = 'drop'
+  ) %>%
+  filter(contagem >= 50) %>%
+  arrange(preco_m2_mediano) %>% # Ordenação crescente
+  slice_head(n = 15)
+
+# 2. Criar o gráfico
+plot_ly(
+  data = bairros_preco_m2_barato_horizontal,
+  x = ~reorder(Nome, preco_m2_mediano),
+  y = ~preco_m2_mediano,
+  type = 'bar',
+  text = ~paste0("Nº de Imóveis na Amostra: ", contagem),
+  hoverinfo = 'x+y+text',
+  marker = list(color = ~preco_m2_mediano, colorscale = 'Oranges')
+) %>%
+layout(
+  title = 'Top 15 Bairros com Menor Preço Mediano por m² (Residencial Horizontal)',
+  xaxis = list(title = 'Bairro'),
+  yaxis = list(title = 'Preço Mediano por m² (R$)')
+)
+```
+
+### 3.2.4. Top 20 Bairros por Valor Total Transacionado (Horizontal)
+
+Finalmente, identificamos os bairros que representam a maior movimentação financeira no mercado de casas, consolidando tanto a quantidade de vendas quanto o valor elevado dos imóveis.
+
+```{r grafico_valor_total_horizontal, fig.width=12, fig.height=8}
+# 1. Agregar por bairro e calcular o valor total para imóveis horizontais
+bairros_valor_total_horizontal <- geo_itbi_georef_bairro %>%
+  filter(descricao_do_padrao_iptu == "RESIDENCIAL HORIZONTAL") %>%
+  filter(!is.na(Nome) & Nome != "") %>%
+  group_by(Nome) %>%
+  summarise(
+    contagem = n(),
+    valor_total = sum(valor_de_transacao_declarado_corrigido, na.rm = TRUE),
+    .groups = 'drop'
+  ) %>%
+  arrange(desc(valor_total)) %>%
+  slice_head(n = 20)
+
+# 2. Criar o gráfico
+plot_ly(
+  data = bairros_valor_total_horizontal,
+  x = ~reorder(Nome, -valor_total),
+  y = ~valor_total,
+  type = 'bar',
+  text = ~paste0("Nº de Imóveis: ", contagem),
+  hoverinfo = 'x+y+text',
+  marker = list(color = ~valor_total, colorscale = 'YlGnBu')
+) %>%
+layout(
+  title = 'Top 20 Bairros por Valor Total Transacionado (Residencial Horizontal)',
+  xaxis = list(title = 'Bairro'),
+  yaxis = list(title = 'Valor Total Transacionado (R$)')
+)
+```

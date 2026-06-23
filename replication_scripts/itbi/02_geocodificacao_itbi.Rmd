@@ -1,0 +1,83 @@
+---
+title: "2. Geocodificação dos Dados de ITBI"
+author: "Bruno Mesquita dos Santos"
+date: "`r format(Sys.time(), '%d de %B de %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    theme: united
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, fig.width = 10, fig.height = 8 )
+options(encoding = "latin1")
+```
+
+# 1. Configuração do Ambiente
+
+```{r libs, include=FALSE}
+if (!require('dplyr'))install.packages("dplyr");library(dplyr)
+if (!require('stringr'))install.packages("stringr");library(stringr)
+if (!require('arrow'))install.packages("arrow");library(arrow)
+if (!require('lubridate'))install.packages("lubridate");library(lubridate)
+if (!require("tidygeocoder")) install.packages("tidygeocoder");library(tidygeocoder)
+```
+
+```{r initial_definitions}
+root_dir <- "C:/Users/onurb/OneDrive - RBA Consultoria Econômica/AFFORDABILITY/"
+```
+
+## Visão geral da camada (silver -- geocoded) — Contrato
+
+- Objetivo: enriquecer os registros filtrados com coordenadas geográficas (latitude/longitude) usando API `arcgis` via `tidygeocoder`.
+- Entrada: parquet em `copper/ITBI_filtrado/` gerado pela etapa de carga.
+- Saída: Parquet em `silver/ITBI_geocoded/` (partitioning: `descricao_do_padrao_iptu`, `ano`, `mes`).
+- Observações importantes:
+  - O CEP é formatado e padronizado antes da geocodificação.
+  - O script utiliza o método `arcgis` por padrão; se necessário, trocar método ou adicionar backoff/retry para bloquear limites de API.
+  - É recomendável executar geocodificação em lotes pequenos para evitar timeouts e throttling.
+
+### Contrato de saída
+- Campos novos esperados: `long`, `lat`, `score` e demais campos retornados pelo `full_results = TRUE` do `tidygeocoder`.
+
+
+# 2. Geocodificação dos Endereços
+
+Após a etapa de limpeza, enriquecemos os dados com coordenadas geográficas. O código lê os dados do Parquet em lotes, formata o CEP, constrói o endereço completo e utiliza o serviço `arcgis` para obter latitude e longitude de cada imóvel. O resultado é salvo em Parquet na pasta `silver/ITBI_geocoded/`, permitindo análises espaciais precisas.
+
+```{r geocodificacao-itbi, eval=FALSE, echo=TRUE}
+
+ds <- open_dataset(paste0(root_dir,"copper/ITBI_filtrado/"))
+
+for (j in c("RESIDENCIAL VERTICAL", "RESIDENCIAL HORIZONTAL")) {
+  print(j)
+  for(i in 2006:2025){
+    print(i)
+    temp <- ds %>% 
+      filter(descricao_do_padrao_iptu == j,
+             ano == i) %>%
+      collect()
+    
+    temp$cep = ifelse(nchar(temp$cep) == 7, 
+                        paste0("0", temp$cep), 
+                        temp$cep)
+    #add - to cep
+    temp$cep = gsub("(\\d{5})(\\d{3})", "\\1-\\2", temp$cep)
+    
+    temp$full_endereco = paste0((temp$nome_do_logradouro),", ", temp$numero, ", CEP ",
+                                  (temp$cep),", São Paulo, SP - Brasil")   
+    
+    out <- as.data.frame(temp) |>
+      geocode(address = full_endereco, method = "arcgis", full_results = TRUE)
+    
+    print(nrow(temp))
+    
+    # Escreve a camada 'silver' geocodificada para uso em análise espacial
+    # Caminho de saída: silver/ITBI_geocoded/
+    # Particionamento: descricao_do_padrao_iptu / ano / mes
+    write_dataset(out, paste0(root_dir,"silver/ITBI_geocoded/"), format = "parquet", partitioning = c("descricao_do_padrao_iptu",'ano',"mes"), existing_data_behavior = "overwrite")
+  }
+}
+
+```

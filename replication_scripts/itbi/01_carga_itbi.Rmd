@@ -1,0 +1,98 @@
+---
+title: "1. Carga e Limpeza de Dados do ITBI"
+author: "Bruno Mesquita dos Santos"
+date: "`r format(Sys.time(), '%d de %B de %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    theme: united
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, fig.width = 10, fig.height = 8 )
+options(encoding = "latin1")
+```
+
+# 1. Configuração do Ambiente
+
+```{r libs, include=FALSE}
+if (!require('dplyr'))install.packages("dplyr");library(dplyr)
+if (!require('stringr'))install.packages("stringr");library(stringr)
+if (!require('readxl'))install.packages("readxl");library(readxl)
+if (!require('readr'))install.packages("readr");library(readr)
+if (!require('arrow'))install.packages("arrow");library(arrow)
+if (!require('lubridate'))install.packages("lubridate");library(lubridate)
+```
+
+```{r initial_definitions}
+root_dir <- "C:/Users/onurb/OneDrive - RBA Consultoria Econômica/AFFORDABILITY/"
+rm_accent <- function(x) iconv(x, from="UTF-8", to = "ASCII//TRANSLIT")
+```
+
+## Visão geral da camada (copper) — Contrato
+
+- Objetivo: carregar e filtrar os arquivos brutos de ITBI, padronizar colunas e gerar a camada "copper" filtrada pronta para geocodificação.
+- Entrada: arquivos Excel na pasta `copper/ITBI/` (várias planilhas por arquivo).
+- Saída: Parquet em `copper/ITBI_filtrado/` (partitioning: `descricao_do_padrao_iptu`, `ano`, `mes`).
+- Formato: parquet (arrow::write_dataset) — otimizado para leitura por `open_dataset`.
+- Regras principais/assunções:
+  - Considera transações com `data_de_transacao` entre 2006-01-01 e 2025-08-01.
+  - Seleciona `proporcao_transmitida_porc == 100` e `natureza_de_transacao == "1.Compra e venda"`.
+  - Filtra apenas `descricao_do_padrao_iptu` em `RESIDENCIAL VERTICAL` ou `RESIDENCIAL HORIZONTAL`.
+- Erros/limitações esperadas: arquivos com colunas inconsistentes são tratadas (remoção de colunas vazias) mas linhas com tipos inesperados podem precisar de revisão manual.
+
+### Observação sobre performance
+- O processo faz rbind progressivo em memória; para conjuntos maiores que a RAM, é recomendável reescrever usando leitura em blocos e escrita incremental com `write_dataset(..., existing_data_behavior = "append")`.
+
+# 2. Carga, Limpeza e Filtragem dos Dados Brutos de ITBI
+
+Este processo lê diversos arquivos Excel da pasta `copper/ITBI/`, padroniza os nomes das colunas, formata o número de cadastro e aplica filtros para selecionar apenas transações de compra e venda de imóveis residenciais (verticais e horizontais) desde 2006. O resultado é salvo em formato Parquet, otimizado e particionado por tipo, ano e mês, garantindo eficiência e organização dos dados.
+
+```{r carga-itbi, eval=FALSE, echo=TRUE}
+ITBIs <- list.files(path = paste0(root_dir,"copper/ITBI/"))
+
+df = data.frame()
+for (i in ITBIs) {
+  
+  path <- paste0(root_dir,"copper/ITBI/",i)
+  itbi_sheet <- lapply(excel_sheets(path)[(1:(length(excel_sheets(path))-4))], read_excel, path = path)
+  df_final <- data.frame()
+  
+  for (n in seq_along(itbi_sheet)) {
+    temp <- itbi_sheet[[n]]
+    
+    if(length(temp)==29){
+      if (names(temp)[29]=="...29") {
+        temp["...29"]=NULL
+      }
+    }
+    
+    names(temp) <- paste0(tolower(gsub("\\%","porc",gsub("\\?","",gsub("\\)","", gsub("\\(","", gsub(" ","_",rm_accent(names(temp)))))))))
+    
+    temp$n_do_cadastro_sql = as.character(temp$n_do_cadastro_sql)
+    
+    temp$n_do_cadastro_sql = str_pad(temp$n_do_cadastro_sql, 11, pad = "0")
+    
+    temp$n_do_cadastro_sql = substring(temp$n_do_cadastro_sql, 1, nchar(temp$n_do_cadastro_sql)-1)
+    
+    temp <- temp %>% filter(data_de_transacao >= "2006-01-01" & data_de_transacao < "2025-08-01" & proporcao_transmitida_porc==100 & matricula_do_imovel > 0 &
+                            natureza_de_transacao == "1.Compra e venda" & descricao_do_padrao_iptu %in% c("RESIDENCIAL VERTICAL", "RESIDENCIAL HORIZONTAL"))
+    
+    df_final = rbind(df_final, temp)
+    
+  }
+  
+  df = rbind(df, df_final)
+  
+}
+
+df$ano = year(df$data_de_transacao)
+df$mes = month(df$data_de_transacao)
+
+# Escreve a camada filtrada (copper) em parquet.
+# Caminho de saída: copper/ITBI_filtrado/
+# Particionamento: descricao_do_padrao_iptu / ano / mes
+write_dataset(df, paste0(root_dir,"copper/ITBI_filtrado/"), format = "parquet", partitioning = c("descricao_do_padrao_iptu",'ano',"mes"), existing_data_behavior = "overwrite")
+
+```
