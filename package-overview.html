@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>inspercidados — Package Overview</title>
+  <style>
+    :root {
+      --insper-blue: #003366;
+      --insper-light: #1a6bbf;
+      --accent: #e8711a;
+      --bg: #f8f9fa;
+      --surface: #ffffff;
+      --border: #dee2e6;
+      --text: #212529;
+      --muted: #6c757d;
+      --code-bg: #1e1e2e;
+      --code-fg: #cdd6f4;
+      --tag-blue: #dbeafe;
+      --tag-blue-text: #1e40af;
+      --tag-green: #dcfce7;
+      --tag-green-text: #166534;
+      --tag-orange: #fff7ed;
+      --tag-orange-text: #9a3412;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    /* ── Header ── */
+    header {
+      background: linear-gradient(135deg, var(--insper-blue) 0%, #00224d 100%);
+      color: #fff;
+      padding: 3.5rem 2rem 3rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    header::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 70% 50%, rgba(26,107,191,0.3) 0%, transparent 70%);
+    }
+    header > * { position: relative; }
+    .pkg-badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 2rem;
+      padding: 0.25rem 1rem;
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+    header h1 {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.75rem;
+    }
+    header h1 span { color: #93c5fd; }
+    header p {
+      font-size: 1.15rem;
+      color: rgba(255,255,255,0.8);
+      max-width: 52ch;
+      margin: 0 auto 1.5rem;
+    }
+    .header-tags { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; }
+    .header-tag {
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 0.4rem;
+      padding: 0.2rem 0.75rem;
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.85);
+    }
+
+    /* ── Layout ── */
+    .container { max-width: 960px; margin: 0 auto; padding: 0 1.5rem; }
+
+    section { padding: 3.5rem 0; }
+    section + section { border-top: 1px solid var(--border); }
+
+    h2 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--insper-blue);
+      margin-bottom: 0.4rem;
+    }
+    .section-lead {
+      color: var(--muted);
+      font-size: 1rem;
+      margin-bottom: 2rem;
+    }
+    h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: var(--text);
+    }
+
+    /* ── Install block ── */
+    .install-block {
+      background: var(--code-bg);
+      color: var(--code-fg);
+      border-radius: 0.75rem;
+      padding: 1.25rem 1.5rem;
+      font-family: "Fira Code", "Cascadia Code", monospace;
+      font-size: 0.92rem;
+      line-height: 1.7;
+    }
+    .install-block .comment { color: #6c7086; }
+    .install-block .fn { color: #89b4fa; }
+    .install-block .str { color: #a6e3a1; }
+
+    /* ── Function cards ── */
+    .fn-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2.5rem;
+    }
+    .fn-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1.4rem 1.25rem;
+      border-top: 3px solid var(--insper-light);
+      transition: box-shadow 0.15s;
+    }
+    .fn-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+    .fn-card .fn-name {
+      font-family: "Fira Code", monospace;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--insper-light);
+      margin-bottom: 0.5rem;
+    }
+    .fn-card p { font-size: 0.9rem; color: var(--muted); }
+
+    /* ── Code examples ── */
+    .example-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+    .example-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      overflow: hidden;
+    }
+    .example-header {
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      padding: 0.6rem 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .example-header .fn-label {
+      font-family: "Fira Code", monospace;
+      font-size: 0.82rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    .badge {
+      font-size: 0.72rem;
+      padding: 0.15rem 0.55rem;
+      border-radius: 0.3rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .badge-blue { background: var(--tag-blue); color: var(--tag-blue-text); }
+    .badge-green { background: var(--tag-green); color: var(--tag-green-text); }
+    .badge-orange { background: var(--tag-orange); color: var(--tag-orange-text); }
+
+    pre {
+      background: var(--code-bg);
+      color: var(--code-fg);
+      padding: 1.25rem 1.5rem;
+      font-family: "Fira Code", "Cascadia Code", monospace;
+      font-size: 0.88rem;
+      line-height: 1.75;
+      overflow-x: auto;
+    }
+    .c { color: #6c7086; }          /* comment */
+    .fn { color: #89b4fa; }         /* function */
+    .kw { color: #cba6f7; }         /* keyword */
+    .st { color: #a6e3a1; }         /* string */
+    .nm { color: #fab387; }         /* number/name */
+    .op { color: #89dceb; }         /* operator */
+
+    /* ── Architecture ── */
+    .arch-diagram {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 2rem;
+      font-family: "Fira Code", monospace;
+      font-size: 0.85rem;
+      line-height: 1.9;
+      overflow-x: auto;
+    }
+    .arch-diagram .label { color: var(--muted); }
+    .arch-diagram .node { color: var(--insper-light); font-weight: 700; }
+    .arch-diagram .arrow { color: var(--accent); }
+    .arch-diagram .note { color: #6c7086; font-size: 0.78rem; }
+
+    /* ── Identifier flow ── */
+    .id-flow {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .id-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 1rem 1.25rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-bottom: none;
+    }
+    .id-step:first-child { border-radius: 0.75rem 0.75rem 0 0; }
+    .id-step:last-child { border-bottom: 1px solid var(--border); border-radius: 0 0 0.75rem 0.75rem; }
+    .id-num {
+      background: var(--insper-blue);
+      color: #fff;
+      border-radius: 50%;
+      width: 1.6rem;
+      height: 1.6rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+    .id-step code {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 0.3rem;
+      padding: 0.05rem 0.45rem;
+      font-family: "Fira Code", monospace;
+      font-size: 0.85rem;
+    }
+
+    /* ── Script feature ── */
+    .script-card {
+      background: linear-gradient(135deg, #fff7ed 0%, #fffbf5 100%);
+      border: 1px solid #fed7aa;
+      border-radius: 0.75rem;
+      padding: 1.75rem;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 1.25rem;
+      align-items: start;
+    }
+    .script-icon {
+      font-size: 2rem;
+      line-height: 1;
+    }
+    .script-card h3 { color: #9a3412; margin-bottom: 0.4rem; }
+    .script-card p { font-size: 0.92rem; color: #7c2d12; margin-bottom: 1rem; }
+
+    /* ── pkgdown ── */
+    .pkgdown-card {
+      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+      border: 1px solid #bae6fd;
+      border-radius: 0.75rem;
+      padding: 1.75rem;
+    }
+    .pkgdown-card h3 { color: #0369a1; margin-bottom: 0.4rem; }
+    .pkgdown-card p { font-size: 0.92rem; color: #0c4a6e; margin-bottom: 0.75rem; }
+    .pkgdown-card ul { padding-left: 1.25rem; color: #0c4a6e; font-size: 0.9rem; }
+    .pkgdown-card li { margin-bottom: 0.3rem; }
+
+    /* ── Registry ── */
+    .registry-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    .registry-table th {
+      background: var(--insper-blue);
+      color: #fff;
+      padding: 0.6rem 1rem;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .registry-table th:first-child { border-radius: 0.5rem 0 0 0; }
+    .registry-table th:last-child { border-radius: 0 0.5rem 0 0; }
+    .registry-table td {
+      padding: 0.65rem 1rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    .registry-table tr:last-child td { border-bottom: none; }
+    .registry-table tr:nth-child(even) td { background: var(--bg); }
+    .registry-table td code {
+      font-family: "Fira Code", monospace;
+      font-size: 0.82rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 0.3rem;
+      padding: 0.1rem 0.4rem;
+      color: var(--insper-light);
+    }
+    .tbl-wrap {
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      overflow: hidden;
+    }
+
+    /* ── Footer ── */
+    footer {
+      background: var(--insper-blue);
+      color: rgba(255,255,255,0.7);
+      text-align: center;
+      padding: 2rem;
+      font-size: 0.85rem;
+    }
+    footer a { color: #93c5fd; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 600px) {
+      .fn-grid { grid-template-columns: 1fr; }
+      .script-card { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════ HEADER ══════════════════════ -->
+<header>
+  <div class="pkg-badge">R Package</div>
+  <h1><span>{</span>inspercidados<span>}</span></h1>
+  <p>Simple, reproducible access to curated Brazilian urban research datasets — directly in R.</p>
+  <div class="header-tags">
+    <span class="header-tag">Insper Cidades</span>
+    <span class="header-tag">Dataverse</span>
+    <span class="header-tag">CRAN-ready</span>
+    <span class="header-tag">pkgdown</span>
+    <span class="header-tag">Urban Research</span>
+  </div>
+</header>
+
+<!-- ══════════════════════ WHAT IS IT ══════════════════════ -->
+<section id="overview">
+  <div class="container">
+    <h2>What is inspercidados?</h2>
+    <p class="section-lead">A thin, opinionated wrapper around the <code>dataverse</code> package.</p>
+
+    <p style="max-width:70ch; margin-bottom:1.5rem; font-size:1rem;">
+      Insper Cidades produces clean, curated datasets on Brazilian cities — IPTU records, transit
+      flows, real-estate transactions, and more. These datasets live on Insper's Dataverse instance.
+      <strong>inspercidados</strong> gives researchers a single, consistent way to discover, load,
+      and cite these datasets without knowing anything about Dataverse's API.
+    </p>
+
+    <div class="install-block">
+      <span class="comment"># Install from GitHub (development version)</span><br/>
+      <span class="fn">remotes</span>::<span class="fn">install_github</span>(<span class="str">"insper-cidades/inspercidados"</span>)<br/>
+      <br/>
+      <span class="comment"># Install from CRAN (once published)</span><br/>
+      <span class="fn">install.packages</span>(<span class="str">"inspercidados"</span>)
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════ CORE FUNCTIONS ══════════════════════ -->
+<section id="functions">
+  <div class="container">
+    <h2>Core Functions</h2>
+    <p class="section-lead">Three functions cover everything a researcher needs.</p>
+
+    <div class="fn-grid">
+      <div class="fn-card">
+        <div class="fn-name">list_datasets()</div>
+        <p>Browse all available datasets. Filter by keyword. No internet call — reads the local registry instantly.</p>
+      </div>
+      <div class="fn-card">
+        <div class="fn-name">get_dataset()</div>
+        <p>Download a dataset into R. Returns a <code>tibble</code> or <code>sf</code> object ready to use. Accepts alias, DOI, or URL.</p>
+      </div>
+      <div class="fn-card">
+        <div class="fn-name">cite_dataset()</div>
+        <p>Generate a properly formatted citation. Supports plain text, BibTeX, and RIS. Metadata fetched live from Dataverse.</p>
+      </div>
+      <div class="fn-card" style="border-top-color: var(--accent);">
+        <div class="fn-name" style="color:var(--accent);">get_script()</div>
+        <p>Open the reproducible R script for a dataset in your editor. Scripts hosted on GitHub, downloaded on demand.</p>
+      </div>
+    </div>
+
+    <!-- Examples -->
+    <div class="example-grid">
+
+      <!-- list_datasets -->
+      <div class="example-block">
+        <div class="example-header">
+          <span class="fn-label">list_datasets()</span>
+          <span class="badge badge-blue">Discovery</span>
+        </div>
+        <pre><span class="fn">library</span>(inspercidados)
+
+<span class="c"># List everything available</span>
+<span class="fn">list_datasets</span>()
+<span class="c">#&gt; # A tibble: 4 × 4</span>
+<span class="c">#&gt;   alias          title                     description                doi</span>
+<span class="c">#&gt;   &lt;chr&gt;          &lt;chr&gt;                     &lt;chr&gt;                     &lt;chr&gt;</span>
+<span class="c">#&gt; 1 iptu_sp        IPTU São Paulo            Annual property tax re…   10.60873/…</span>
+<span class="c">#&gt; 2 itbi_sp        ITBI São Paulo            Real-estate transfer t…   10.60873/…</span>
+<span class="c">#&gt; 3 pemob          PeMob                     Pedestrian mobility su…   10.60873/…</span>
+<span class="c">#&gt; 4 embarques_metro Metro Boardings           Daily boardings per st…   10.60873/…</span>
+
+<span class="c"># Search by keyword</span>
+<span class="fn">list_datasets</span>(<span class="nm">search</span> = <span class="st">"metro"</span>)</pre>
+      </div>
+
+      <!-- get_dataset -->
+      <div class="example-block">
+        <div class="example-header">
+          <span class="fn-label">get_dataset()</span>
+          <span class="badge badge-green">Download</span>
+        </div>
+        <pre><span class="c"># By alias (easiest)</span>
+iptu <span class="op">&lt;-</span> <span class="fn">get_dataset</span>(<span class="st">"iptu_sp"</span>)
+
+<span class="c"># By DOI</span>
+iptu <span class="op">&lt;-</span> <span class="fn">get_dataset</span>(<span class="st">"10.60873/FK2/7IXFPX"</span>)
+
+<span class="c"># By DOI URL</span>
+iptu <span class="op">&lt;-</span> <span class="fn">get_dataset</span>(<span class="st">"https://doi.org/10.60873/FK2/7IXFPX"</span>)
+
+<span class="c"># Filter to a specific year</span>
+iptu_2023 <span class="op">&lt;-</span> <span class="fn">get_dataset</span>(<span class="st">"iptu_sp"</span>, <span class="nm">year</span> = <span class="nm">2023</span>)
+
+<span class="c"># Request a specific file by name</span>
+iptu_geo <span class="op">&lt;-</span> <span class="fn">get_dataset</span>(<span class="st">"iptu_sp"</span>, <span class="nm">filename</span> = <span class="st">"iptu_2023.gpkg"</span>)
+
+<span class="c"># Match files with a regex pattern</span>
+trips <span class="op">&lt;-</span> <span class="fn">get_dataset</span>(<span class="st">"pemob"</span>, <span class="nm">file_pattern</span> = <span class="st">"trips\\.csv$"</span>)</pre>
+      </div>
+
+      <!-- cite_dataset -->
+      <div class="example-block">
+        <div class="example-header">
+          <span class="fn-label">cite_dataset()</span>
+          <span class="badge badge-blue">Citation</span>
+        </div>
+        <pre><span class="c"># Print a text citation</span>
+<span class="fn">cite_dataset</span>(<span class="st">"iptu_sp"</span>)
+<span class="c">#&gt; Insper Cidades (2024). IPTU São Paulo. Insper Dataverse.</span>
+<span class="c">#&gt; https://doi.org/10.60873/FK2/7IXFPX</span>
+
+<span class="c"># BibTeX</span>
+<span class="fn">cite_dataset</span>(<span class="st">"iptu_sp"</span>, <span class="nm">format</span> = <span class="st">"bibtex"</span>)
+
+<span class="c"># RIS (Zotero, Mendeley, etc.)</span>
+<span class="fn">cite_dataset</span>(<span class="st">"iptu_sp"</span>, <span class="nm">format</span> = <span class="st">"ris"</span>)</pre>
+      </div>
+
+      <!-- get_script -->
+      <div class="example-block">
+        <div class="example-header">
+          <span class="fn-label">get_script()</span>
+          <span class="badge badge-orange">Scripts</span>
+        </div>
+        <pre><span class="c"># Downloads the script and opens it in your editor</span>
+<span class="fn">get_script</span>(<span class="st">"iptu_sp"</span>)
+
+<span class="c"># Download only, don't open</span>
+path <span class="op">&lt;-</span> <span class="fn">get_script</span>(<span class="st">"iptu_sp"</span>, <span class="nm">open</span> = <span class="kw">FALSE</span>)
+<span class="fn">source</span>(path)</pre>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════ IDENTIFIER RESOLUTION ══════════════════════ -->
+<section id="identifiers">
+  <div class="container">
+    <h2>Flexible Identifiers</h2>
+    <p class="section-lead">
+      Every function that takes a dataset argument resolves the identifier automatically.
+    </p>
+    <div class="id-flow">
+      <div class="id-step">
+        <div class="id-num">1</div>
+        <div>
+          <h3>Alias</h3>
+          <p>A short, memorable name like <code>"iptu_sp"</code> — looks up the DOI in the local registry (<code>inst/datasets.json</code>). No network call.</p>
+        </div>
+      </div>
+      <div class="id-step">
+        <div class="id-num">2</div>
+        <div>
+          <h3>DOI</h3>
+          <p>A bare DOI like <code>"10.60873/FK2/7IXFPX"</code> — used directly with Dataverse. Works for any Insper dataset even if it has no alias yet.</p>
+        </div>
+      </div>
+      <div class="id-step">
+        <div class="id-num">3</div>
+        <div>
+          <h3>DOI URL</h3>
+          <p>A full URL like <code>"https://doi.org/10.60873/FK2/7IXFPX"</code> — the DOI is extracted and resolved as above.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════ ARCHITECTURE ══════════════════════ -->
+<section id="architecture">
+  <div class="container">
+    <h2>Architecture</h2>
+    <p class="section-lead">A thin wrapper. Dataverse is the source of truth.</p>
+
+    <div class="arch-diagram">
+      <span class="label">User code</span><br/>
+      &nbsp;&nbsp;<span class="node">get_dataset("iptu_sp")</span><br/>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="arrow">↓</span><br/>
+      &nbsp;&nbsp;<span class="label">resolve_dataset("iptu_sp")</span><br/>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="arrow">↓</span>&nbsp;&nbsp;<span class="note">reads inst/datasets.json</span><br/>
+      &nbsp;&nbsp;<span class="label">DOI: 10.60873/FK2/7IXFPX</span><br/>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="arrow">↓</span><br/>
+      &nbsp;&nbsp;<span class="node">dataverse::dataset_files()</span>&nbsp;&nbsp;<span class="note">↔ Insper Dataverse</span><br/>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="arrow">↓</span>&nbsp;&nbsp;<span class="note">select file by year / filename / pattern</span><br/>
+      &nbsp;&nbsp;<span class="node">dataverse::get_dataframe_by_name()</span><br/>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="arrow">↓</span>&nbsp;&nbsp;<span class="note">auto-detect format: CSV, Parquet, GPKG, XLSX</span><br/>
+      &nbsp;&nbsp;<span class="node">tibble / sf object</span>&nbsp;&nbsp;<span class="note">with doi attribute attached</span>
+    </div>
+
+    <div style="margin-top:1.5rem; display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:1rem;">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:0.75rem;padding:1.25rem;">
+        <h3 style="font-size:0.95rem;margin-bottom:0.4rem;">inst/datasets.json</h3>
+        <p style="font-size:0.87rem;color:var(--muted);">Local registry mapping aliases to DOIs and script URLs. Updated when new datasets are added. No duplication of Dataverse metadata.</p>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:0.75rem;padding:1.25rem;">
+        <h3 style="font-size:0.95rem;margin-bottom:0.4rem;">Insper Dataverse</h3>
+        <p style="font-size:0.87rem;color:var(--muted);">Single source of truth for file listings, metadata, and downloads. The package hits the API at runtime — data is always current.</p>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:0.75rem;padding:1.25rem;">
+        <h3 style="font-size:0.95rem;margin-bottom:0.4rem;">GitHub (scripts)</h3>
+        <p style="font-size:0.87rem;color:var(--muted);">R scripts live in the package repository under <code>inst/scripts/</code>. <code>get_script()</code> downloads from the raw GitHub URL on demand.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════ DATASET REGISTRY ══════════════════════ -->
+<section id="datasets">
+  <div class="container">
+    <h2>Dataset Registry</h2>
+    <p class="section-lead">Datasets registered in <code>inst/datasets.json</code>. More added as Insper Cidades produces them.</p>
+
+    <div class="tbl-wrap">
+      <table class="registry-table">
+        <thead>
+          <tr>
+            <th>Alias</th>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Script</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>iptu_sp</code></td>
+            <td>IPTU São Paulo</td>
+            <td>Annual property tax records for the municipality of São Paulo.</td>
+            <td><span class="badge badge-green">Yes</span></td>
+          </tr>
+          <tr>
+            <td><code>itbi_sp</code></td>
+            <td>ITBI São Paulo</td>
+            <td>Real-estate transfer tax records; useful for housing market analysis.</td>
+            <td><span class="badge badge-green">Yes</span></td>
+          </tr>
+          <tr>
+            <td><code>pemob</code></td>
+            <td>PeMob</td>
+            <td>Pedestrian mobility survey for São Paulo metropolitan region.</td>
+            <td><span class="badge badge-green">Yes</span></td>
+          </tr>
+          <tr>
+            <td><code>embarques_metro</code></td>
+            <td>Metro Boardings</td>
+            <td>Daily boardings per station for São Paulo Metro.</td>
+            <td><span class="badge badge-orange">Planned</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════ R SCRIPTS ══════════════════════ -->
+<section id="scripts">
+  <div class="container">
+    <h2>R Scripts</h2>
+    <p class="section-lead">Every dataset comes with a ready-to-run analysis script.</p>
+
+    <div class="script-card">
+      <div class="script-icon">📄</div>
+      <div>
+        <h3>What are dataset scripts?</h3>
+        <p>
+          Each dataset has a companion R script that shows a researcher how to load, explore,
+          and work with the data. Scripts are hosted on GitHub and downloaded on demand with
+          <code>get_script()</code>. They open directly in your editor — just run them.
+        </p>
+        <div style="background:var(--code-bg);border-radius:0.5rem;padding:1rem 1.25rem;font-family:monospace;font-size:0.85rem;line-height:1.8;color:var(--code-fg);">
+          <span style="color:#6c7086;"># Opens inst/scripts/iptu_sp.R in your editor</span><br/>
+          <span style="color:#89b4fa;">get_script</span>(<span style="color:#a6e3a1;">"iptu_sp"</span>)
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:1.25rem; background:var(--surface);border:1px solid var(--border);border-radius:0.75rem;padding:1.5rem;">
+      <h3 style="margin-bottom:0.75rem;">What a script typically contains</h3>
+      <ul style="padding-left:1.25rem;font-size:0.9rem;line-height:2;color:var(--muted);">
+        <li>Load the dataset with <code>get_dataset()</code></li>
+        <li>Print a summary of key variables</li>
+        <li>A few basic exploratory plots</li>
+        <li>Common transformations and joins relevant to the dataset</li>
+        <li>Links to the original data source and academic papers that used the data</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════ PKGDOWN ══════════════════════ -->
+<section id="website">
+  <div class="container">
+    <h2>Package Website</h2>
+    <p class="section-lead">Built with pkgdown. Hosted on GitHub Pages.</p>
+
+    <div class="pkgdown-card">
+      <h3>What the site will include</h3>
+      <p>A full reference site generated automatically from roxygen2 documentation.</p>
+      <ul>
+        <li><strong>Reference</strong> — all four functions with examples</li>
+        <li><strong>Get Started</strong> vignette — install, list, get, cite, scripts</li>
+        <li><strong>Dataset catalogue</strong> — rich pages per dataset with variable descriptions</li>
+        <li><strong>Changelog</strong> — NEWS.md rendered as a release history</li>
+        <li>Insper Cidades branding (logo, colors, footer)</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════ DESIGN PRINCIPLES ══════════════════════ -->
+<section id="principles">
+  <div class="container">
+    <h2>Design Principles</h2>
+    <p class="section-lead">Decisions made to keep the package simple and maintainable.</p>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem;">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:0.75rem;padding:1.25rem;">
+        <h3 style="font-size:0.95rem;margin-bottom:0.4rem;">Thin wrapper</h3>
+        <p style="font-size:0.87rem;color:var(--muted);">The package does not re-implement anything the <code>dataverse</code> package already does. Minimal surface area, minimal maintenance.</p>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:0.75rem;padding:1.25rem;">
+        <h3 style="font-size:0.95rem;margin-bottom:0.4rem;">No local metadata duplication</h3>
+        <p style="font-size:0.87rem;color:var(--muted);">Only the alias→DOI mapping is stored locally. Everything else (titles, authors, files) comes from Dataverse at runtime and is always current.</p>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:0.75rem;padding:1.25rem;">
+        <h3 style="font-size:0.95rem;margin-bottom:0.4rem;">Heavy deps in Suggests</h3>
+        <p style="font-size:0.87rem;color:var(--muted);"><code>arrow</code>, <code>sf</code>, and <code>readxl</code> are large. They are optional — loaded only when the user needs a non-CSV format, with a friendly install prompt.</p>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:0.75rem;padding:1.25rem;">
+        <h3 style="font-size:0.95rem;margin-bottom:0.4rem;">cli for all messages</h3>
+        <p style="font-size:0.87rem;color:var(--muted);">No bare <code>message()</code> or <code>stop()</code>. The <code>cli</code> package gives consistent, coloured, suppressible output that integrates with modern R tooling.</p>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:0.75rem;padding:1.25rem;">
+        <h3 style="font-size:0.95rem;margin-bottom:0.4rem;">CRAN from day one</h3>
+        <p style="font-size:0.87rem;color:var(--muted);">All examples run offline or skip gracefully. <code>R CMD check --as-cran</code> passes with zero notes. Proper <code>Authors@R</code>, SPDX license identifier, URL validation.</p>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:0.75rem;padding:1.25rem;">
+        <h3 style="font-size:0.95rem;margin-bottom:0.4rem;">One server, hardcoded</h3>
+        <p style="font-size:0.87rem;color:var(--muted);">The Insper Dataverse server is always <code>dataverse.datascience.insper.edu.br</code>. Users never configure it — fewer moving parts, less confusion.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════ FOOTER ══════════════════════ -->
+<footer>
+  <p>
+    <strong style="color:#fff;">inspercidados</strong> &mdash; developed by
+    <a href="https://www.insper.edu.br">Insper Cidades</a>.
+    MIT License.
+  </p>
+  <p style="margin-top:0.5rem; font-size:0.8rem;">
+    This document is a design specification for the package overhaul &mdash; 2026-05-14.
+  </p>
+</footer>
+
+</body>
+</html>
