@@ -3,9 +3,15 @@
 #' Downloads a dataset into R as a tibble or `sf` object. The dataset can be
 #' identified by its short alias, bare DOI, or full DOI URL.
 #'
-#' When a dataset contains multiple files, the function selects one
-#' automatically using this priority order: RDS > CSV/TSV > other formats.
-#' Use `year`, `filename`, or `file_pattern` to override the default selection.
+#' When a deposit contains multiple files, the function picks one by format.
+#' Spatial datasets resolve to GeoPackage so the result is an `sf` object;
+#' other datasets favour RDS, then Parquet, then delimited text, then Excel.
+#' Formats needing a suggested package are skipped when it is not installed.
+#' Use `year`, `filename`, or `file_pattern` to override the choice.
+#'
+#' Some aliases share a single Dataverse deposit. `"pemob_anual"` and
+#' `"pemob_harmonizada"` both point at the PEMOB deposit and are separated by a
+#' file pattern stored in the registry.
 #'
 #' @param dataset A dataset identifier. One of:
 #'   - A short alias, e.g. `"iptu_sp"` (see [list_datasets()] for all aliases).
@@ -48,7 +54,7 @@
 #' geo <- get_dataset("iptu_sp", filename = "iptu_2024.gpkg")
 #'
 #' # Match files with a regex pattern
-#' trips <- get_dataset("pemob_anual", file_pattern = "trips\\.csv$")
+#' pemob_2023 <- get_dataset("pemob_anual", year = 2023)
 #'
 #' # Return data together with Dataverse metadata
 #' result <- get_dataset("iptu_sp", docs = TRUE)
@@ -63,27 +69,43 @@ get_dataset <- function(dataset,
   doi     <- resolve_dataset(dataset)
   doi_url <- doi_to_url(doi)
   server  <- insper_server()
+  entry   <- registry_entry(dataset)
 
-  # Warn early if the dataset is flagged as spatial and sf is not installed.
-  reg <- read_registry()
-  if (dataset %in% names(reg) && isTRUE(reg[[dataset]][["is_spatial"]])) {
-    if (!rlang::is_installed("sf")) {
-      cli::cli_warn(c(
-        "Dataset {.val {dataset}} contains spatial data.",
-        "i" = "Load {.pkg sf} for full functionality: {.run library(sf)}"
-      ))
-    }
+  spatial <- isTRUE(entry[["is_spatial"]])
+  if (spatial && !rlang::is_installed("sf")) {
+    cli::cli_warn(c(
+      "Dataset {.val {dataset}} contains spatial data.",
+      "i" = "Install {.pkg sf} to read it as an {.cls sf} object.",
+      "i" = "Falling back to a non-spatial format."
+    ))
   }
 
   cli::cli_inform(c("i" = "Fetching file list for {.val {doi}}"))
   files      <- dataverse::dataset_files(doi_url, server = server)
   file_names <- vapply(files, function(f) f[["label"]], character(1))
 
+  # Several aliases can share one deposit (PEMOB, Maré). The registry pattern
+  # narrows the deposit to the files that belong to this alias before any
+  # user-supplied selector is applied.
+  own_pattern <- entry[["file_pattern"]]
+  if (!is.null(own_pattern) && is.null(filename)) {
+    keep <- grepl(own_pattern, file_names, perl = TRUE)
+    if (!any(keep)) {
+      cli::cli_abort(c(
+        "No files in {.val {doi}} matched the registry pattern for {.val {dataset}}.",
+        "i" = "The deposit may have been restructured; please report this.",
+        "i" = "Files present: {.val {file_names}}"
+      ))
+    }
+    file_names <- file_names[keep]
+  }
+
   target <- select_dv_file(
     file_names,
     year         = year,
     filename     = filename,
-    file_pattern = file_pattern
+    file_pattern = file_pattern,
+    prefer       = format_priority(spatial)
   )
   ftype <- detect_file_type(target)
 
@@ -94,9 +116,10 @@ get_dataset <- function(dataset,
   if (!docs) return(data)
 
   # Prefer a "documentacao*.xlsx" file in the dataset over Dataverse metadata.
-  doc_file <- file_names[
-    grepl("^documentacao", file_names, ignore.case = TRUE) &
-      tools::file_ext(tolower(file_names)) %in% c("xlsx", "xls")
+  all_names <- vapply(files, function(f) f[["label"]], character(1))
+  doc_file <- all_names[
+    grepl("^documenta", all_names, ignore.case = TRUE) &
+      tools::file_ext(tolower(all_names)) %in% c("xlsx", "xls")
   ]
 
   if (length(doc_file) > 0) {

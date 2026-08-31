@@ -4,36 +4,57 @@
 \alias{list_datasets}
 \title{List available datasets}
 \usage{
-list_datasets(search = NULL)
+list_datasets(
+  search = NULL,
+  theme = NULL,
+  region = NULL,
+  project = NULL,
+  spatial = NULL,
+  include = c("active", "catalogued", "all")
+)
 }
 \arguments{
 \item{search}{A character string to filter results. Matched case-insensitively
 against alias, title, description, keywords, theme, and region. Pass \code{NULL}
 (default) to return all datasets.}
+
+\item{theme, region, project}{Optional filters, matched case-insensitively as
+regular expressions against the corresponding column.}
+
+\item{spatial}{Logical. If \code{TRUE}, keep only datasets that ship a GeoPackage
+or GeoJSON. If \code{FALSE}, drop them. \code{NULL} (default) keeps both.}
+
+\item{include}{Which registry entries to return. \code{"active"} (default) lists
+datasets you can download. \code{"catalogued"} adds entries held in Insper's
+secure data room, which appear with \code{access = "secure_room"} and cannot be
+downloaded. \code{"all"} also includes retired aliases.}
 }
 \value{
-A \link[tibble:tibble]{tibble} with columns:
-\describe{
-\item{alias}{Short name used with \code{\link[=get_dataset]{get_dataset()}}, \code{\link[=cite_dataset]{cite_dataset()}}, etc.}
-\item{title}{Full dataset title (in Portuguese).}
-\item{description}{Brief description of the dataset.}
-\item{theme}{Thematic category (e.g. \code{"Habitação"}, \code{"Mobilidade"}).}
-\item{region}{Geographic scope (e.g. \code{"São Paulo"}, \code{"Rio de Janeiro"}).}
-\item{keywords}{Semicolon-separated keywords.}
-\item{doi}{Bare DOI, e.g. \code{"10.60873/FK2/TOXCRF"}.}
-}
+A \link[tibble:tibble]{tibble} with one row per dataset and columns
+\code{alias}, \code{title}, \code{description}, \code{theme}, \code{region}, \code{project}, \code{access},
+\code{is_spatial}, \code{formats}, \code{keywords}, and \code{doi}.
 }
 \description{
-Returns a tibble of all datasets available in the \code{inspercidados} registry.
-Data comes from the local registry (\code{inst/datasets.json}) — no network call
-is made.
+Returns a tibble of datasets in the \code{inspercidados} registry. Data comes
+from the local registry (\code{inst/datasets.json}), so no network call is made.
 }
 \examples{
-# List all datasets
+# List all downloadable datasets
 list_datasets()
 
 # Search by keyword or theme
 list_datasets("metro")
 list_datasets("IPTU")
-list_datasets("Mobilidade")
+
+# Only spatial datasets
+list_datasets(spatial = TRUE)
+
+# Datasets from one study
+list_datasets(project = "faixa_azul")
+
+# Include datasets that are catalogued but not downloadable
+list_datasets(include = "catalogued")
+}
+\seealso{
+\code{\link[=list_projects]{list_projects()}} for the studies these datasets come from.
 }

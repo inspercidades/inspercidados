@@ -1,0 +1,10 @@
+project,title,repo_url,visibility
+itbi,Imposto sobre Transmissão de Bens Imóveis (ITBI),,
+densidade,Densidade Populacional e Verticalização,https://github.com/inspercidades/ic-densidade,public
+alvaras,Alvarás de licenciamento de novas edificações,,
+geoses,Índice GeoSES,https://github.com/inspercidades/geoses,public
+mortalidade,Mortalidade prematura por distrito,,
+mare,Ilhas de calor e qualidade do ar na Favela da Maré,,
+pemob,Pesquisa Nacional de Mobilidade Urbana (PEMOB),https://github.com/inspercidades/data-pemob,public
+motiva,Embarques nas estações operadas pela Motiva,https://github.com/inspercidades/pipeline-motiva,private
+faixa_azul,Faixa Azul e sinistros de trânsito,https://github.com/inspercidades/faixa-azul,public

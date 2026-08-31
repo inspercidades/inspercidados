@@ -1,0 +1,56 @@
+{
+  "itbi": {
+    "title": "Imposto sobre Transmissão de Bens Imóveis (ITBI)",
+    "repo_url": null,
+    "visibility": null,
+    "datasets": "itbi_sp"
+  },
+  "densidade": {
+    "title": "Densidade Populacional e Verticalização",
+    "repo_url": "https://github.com/inspercidades/ic-densidade",
+    "visibility": "public",
+    "datasets": ["iptu_sp", "censo_setores_sp", "iptu_verticalizacao_sp", "densidade_imoveis_sp"]
+  },
+  "alvaras": {
+    "title": "Alvarás de licenciamento de novas edificações",
+    "repo_url": null,
+    "visibility": null,
+    "datasets": "alvaras_sp"
+  },
+  "geoses": {
+    "title": "Índice GeoSES",
+    "repo_url": "https://github.com/inspercidades/geoses",
+    "visibility": "public",
+    "datasets": "geoses_sp"
+  },
+  "mortalidade": {
+    "title": "Mortalidade prematura por distrito",
+    "repo_url": null,
+    "visibility": null,
+    "datasets": "mortalidade_sp"
+  },
+  "mare": {
+    "title": "Ilhas de calor e qualidade do ar na Favela da Maré",
+    "repo_url": null,
+    "visibility": null,
+    "datasets": ["ilhas_calor_mare", "qualidade_ar_mare", "areas_coleta_mare"]
+  },
+  "pemob": {
+    "title": "Pesquisa Nacional de Mobilidade Urbana (PEMOB)",
+    "repo_url": "https://github.com/inspercidades/data-pemob",
+    "visibility": "public",
+    "datasets": ["pemob_anual", "pemob_harmonizada"]
+  },
+  "motiva": {
+    "title": "Embarques nas estações operadas pela Motiva",
+    "repo_url": "https://github.com/inspercidades/pipeline-motiva",
+    "visibility": "private",
+    "datasets": ["embarques_hora", "embarques_diarios", "embarques_mensais", "embarques_integracao", "estacoes_motiva"]
+  },
+  "faixa_azul": {
+    "title": "Faixa Azul e sinistros de trânsito",
+    "repo_url": "https://github.com/inspercidades/faixa-azul",
+    "visibility": "public",
+    "datasets": ["faixa_azul_sp", "sinistros_sp", "sinistros_via_sp"]
+  }
+}

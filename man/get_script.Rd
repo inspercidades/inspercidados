@@ -4,47 +4,28 @@
 \alias{get_script}
 \title{Open or download the R script for a dataset}
 \usage{
-get_script(dataset, type = c("analysis", "replication"), open = TRUE)
+get_script(dataset, type = NULL, open = TRUE)
 }
 \arguments{
-\item{dataset}{An alias registered in the package registry
-(see \code{\link[=list_datasets]{list_datasets()}}). Full DOIs are not supported here because scripts
-are stored by alias.}
+\item{dataset}{A dataset alias.}
 
-\item{type}{One of \code{"analysis"} (default) or \code{"replication"}. See Details.}
+\item{type}{Ignored.}
 
-\item{open}{Logical. If \code{TRUE} (default), open the script in your editor
-after downloading. In RStudio the file opens in a proper editor tab; in
-other environments \code{utils::file.edit()} is used.}
+\item{open}{Passed to \code{\link[=browse_project]{browse_project()}}.}
 }
 \value{
-The local path to the downloaded script file (invisible). You can
-\code{source()} it directly if you prefer not to open it in an editor.
+The repository URL, invisibly.
 }
 \description{
-Downloads a companion R script for a dataset from GitHub and optionally
-opens it in your editor. Two script types are available:
-}
-\details{
-\itemize{
-\item \code{"analysis"} (default): a getting-started script demonstrating how to
-load, explore, and work with the dataset.
-\item \code{"replication"}: the production pipeline that generated the dataset.
-These scripts document the full data-processing workflow for
-reproducibility; they typically require internal resources (private
-databases, dimension tables) and \strong{cannot be run by external users}.
-}
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+
+\code{get_script()} assumed one R script per dataset. Most datasets come from a
+study whose pipeline spans many files, and several studies publish more than
+one dataset, so scripts are now published as repositories.
+Use \code{\link[=browse_project]{browse_project()}} instead.
 }
 \examples{
-\dontrun{
-# Open an analysis script in editor
-get_script("embarques_mensais")
-
-# Open the replication script (documents how the data was produced)
-get_script("embarques_mensais", type = "replication")
-
-# Download only and source it
-path <- get_script("embarques_mensais", open = FALSE)
-source(path)
+# Deprecated; use browse_project() instead.
+browse_project("sinistros_sp", open = FALSE)
 }
-}
+\keyword{internal}

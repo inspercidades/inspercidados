@@ -1,0 +1,22 @@
+doi,alias,file_pattern,project,notes
+10.60873/FK2/AOLEOI,itbi_sp,,itbi,
+10.60873/FK2/TOXCRF,iptu_sp,,densidade,Cadastro IPTU; Dataverse title overlaps with 4QNTOT
+10.60873/FK2/FPCIDI,alvaras_sp,,alvaras,
+10.60873/FK2/GTO7DD,censo_setores_sp,,densidade,
+10.60873/FK2/4QNTOT,iptu_verticalizacao_sp,,densidade,
+10.60873/FK2/90SSHM,densidade_imoveis_sp,,densidade,
+10.60873/FK2/7IXFPX,geoses_sp,,geoses,
+10.60873/FK2/CDXI9B,mortalidade_sp,,mortalidade,New DOI; supersedes JJ8JIN
+10.60873/FK2/TONMVQ,ilhas_calor_mare,^ilhas_de_calor,mare,
+10.60873/FK2/TONMVQ,qualidade_ar_mare,^qualidade_do_ar,mare,
+10.60873/FK2/TONMVQ,areas_coleta_mare,^areas_coleta,mare,
+10.60873/FK2/5XUNNW,pemob_anual,^pemob_[0-9]{4},pemob,
+10.60873/FK2/5XUNNW,pemob_harmonizada,^pemob_harmonizada,pemob,
+10.60873/FK2/9MZGJL,embarques_hora,,motiva,
+10.60873/FK2/UTGQ0I,embarques_diarios,,motiva,
+10.60873/FK2/BPYHFB,embarques_mensais,,motiva,
+10.60873/FK2/UOKFMF,embarques_integracao,,motiva,
+10.60873/FK2/YWXLQS,estacoes_motiva,,motiva,
+10.60873/FK2/A4AC1I,faixa_azul_sp,,faixa_azul,
+10.60873/FK2/IRGJPX,sinistros_sp,,faixa_azul,
+10.60873/FK2/XA5PFG,sinistros_via_sp,,faixa_azul,

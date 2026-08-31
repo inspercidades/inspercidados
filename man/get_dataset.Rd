@@ -47,9 +47,15 @@ Downloads a dataset into R as a tibble or \code{sf} object. The dataset can be
 identified by its short alias, bare DOI, or full DOI URL.
 }
 \details{
-When a dataset contains multiple files, the function selects one
-automatically using this priority order: RDS > CSV/TSV > other formats.
-Use \code{year}, \code{filename}, or \code{file_pattern} to override the default selection.
+When a deposit contains multiple files, the function picks one by format.
+Spatial datasets resolve to GeoPackage so the result is an \code{sf} object;
+other datasets favour RDS, then Parquet, then delimited text, then Excel.
+Formats needing a suggested package are skipped when it is not installed.
+Use \code{year}, \code{filename}, or \code{file_pattern} to override the choice.
+
+Some aliases share a single Dataverse deposit. \code{"pemob_anual"} and
+\code{"pemob_harmonizada"} both point at the PEMOB deposit and are separated by a
+file pattern stored in the registry.
 }
 \examples{
 \dontrun{
@@ -69,7 +75,7 @@ iptu_2023 <- get_dataset("iptu_sp", year = 2023)
 geo <- get_dataset("iptu_sp", filename = "iptu_2024.gpkg")
 
 # Match files with a regex pattern
-trips <- get_dataset("pemob_anual", file_pattern = "trips\\\\.csv$")
+pemob_2023 <- get_dataset("pemob_anual", year = 2023)
 
 # Return data together with Dataverse metadata
 result <- get_dataset("iptu_sp", docs = TRUE)
