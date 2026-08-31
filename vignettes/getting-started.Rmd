@@ -9,148 +9,165 @@ vignette: >
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
-  collapse  = TRUE,
-  comment   = "#>",
-  eval      = FALSE
+  collapse = TRUE,
+  comment  = "#>",
+  eval     = FALSE,
+  purl     = FALSE
 )
 ```
 
-`inspercidados` provides access to curated Brazilian urban datasets produced by
-[Insper Cidades](https://www.insper.edu.br) and hosted on Insper's Dataverse.
-The package is a thin wrapper around the
-[`dataverse`](https://CRAN.R-project.org/package=dataverse) package.
+`inspercidados` gives you the curated Brazilian urban datasets published by
+[Insper Cidades](https://www.insper.edu.br) on Insper's Dataverse. The package
+wraps the [`dataverse`](https://CRAN.R-project.org/package=dataverse) package
+and adds a registry that maps short names to deposits.
 
 ## Installation
 
 ```{r install}
-# Install from GitHub (development version)
-remotes::install_github("portalcidados/inspercidados")
+remotes::install_github("inspercidades/inspercidados")
 ```
 
-## Discovering datasets
+## Finding a dataset
 
-`list_datasets()` returns a tibble of all available datasets.
-The search is local — no network call is made.
+`list_datasets()` reads the local registry, so it answers instantly and works
+offline.
 
 ```{r list}
 library(inspercidados)
 
-# All datasets
-ds <- list_datasets()
-ds
+# Everything you can download
+list_datasets()
 
-# Search by keyword, theme, or region
-ds <- list_datasets("Mobilidade")
-ds
+# Search titles, descriptions, keywords, themes and regions
+list_datasets("Mobilidade")
 
-# Use dplyr or base R to filter further
-subset(ds, grepl("Mobilidade", theme, ignore.case = TRUE))
+# Narrow by column
+list_datasets(theme = "Habitação")
+list_datasets(spatial = TRUE)
+list_datasets(project = "faixa_azul")
 ```
 
-The tibble has columns `alias`, `title`, `description`, `theme`, `region`,
-`keywords`, and `doi`.
-Use the `alias` column as the identifier in all other functions.
+Each row carries an `alias`, which every other function accepts. The `formats`
+column reports the file types deposited, and `is_spatial` marks the datasets
+that return an `sf` object.
+
+Some datasets appear in the catalog but are not published for download, because
+they are held in Insper's secure data room. `include = "catalogued"` shows them
+with `access = "secure_room"`.
+
+```{r list-secure}
+list_datasets(include = "catalogued", search = "iFood")
+```
 
 ## Downloading a dataset
 
-`get_dataset()` downloads data directly into R.
-It accepts an **alias**, a bare **DOI**, or a full **DOI URL**.
+`get_dataset()` accepts an alias, a bare DOI, or a DOI URL.
 
-```{r download-alias}
-# Easiest: use the alias
+```{r download}
 embarques <- get_dataset("embarques_mensais")
-embarques
-```
 
-```{r download-doi}
-# Equivalent: use the DOI
+# The same deposit, by DOI
 embarques <- get_dataset("10.60873/FK2/BPYHFB")
-```
 
-```{r download-url}
-# Or the full DOI URL
+# Or by URL
 embarques <- get_dataset("https://doi.org/10.60873/FK2/BPYHFB")
 ```
 
-When a dataset contains multiple files you can narrow down the selection:
+Deposits usually hold the same data in several formats. `get_dataset()` picks
+one for you, favouring GeoPackage for spatial datasets and otherwise RDS,
+Parquet, delimited text, and Excel in that order. Formats that need a suggested
+package are skipped when it is not installed.
+
+Three arguments override the choice.
 
 ```{r download-filters}
-# Filter by year (matches year anywhere in the filename)
-iptu_2024 <- get_dataset("iptu_sp", year = 2024)
+# Pick by year, matched against the filename
+pemob_2023 <- get_dataset("pemob_anual", year = 2023)
 
-# Request a specific file by exact name
-iptu_geo <- get_dataset("iptu_sp", filename = "iptu_2024.gpkg")
+# Pick an exact file
+iptu_geo <- get_dataset("iptu_sp", filename = "iptu_residencial.gpkg")
 
-# Use a regex pattern
+# Pick by pattern
 iptu_geo <- get_dataset("iptu_sp", file_pattern = "\\.gpkg$")
 ```
 
-## Downloading with documentation
+### Aliases that share a deposit
 
-By default `get_dataset()` returns only the data.
-Set `docs = TRUE` to also retrieve the variable documentation.
-When an Excel documentation file (`documentacao_*.xlsx`) is present in the
-dataset, it is downloaded automatically; otherwise Dataverse metadata is
-returned instead.
+One Dataverse deposit can hold several datasets. The PEMOB deposit carries both
+the annual series and the harmonised panel, so `"pemob_anual"` and
+`"pemob_harmonizada"` resolve to the same DOI and differ by a file pattern the
+registry stores for you.
 
-```{r download-docs}
+```{r shared}
+anual <- get_dataset("pemob_anual", year = 2024)
+painel <- get_dataset("pemob_harmonizada")
+```
+
+## Documentation alongside the data
+
+`docs = TRUE` returns a list with the data and its documentation. A
+documentation workbook deposited with the data takes precedence; otherwise the
+function falls back to the Dataverse metadata record.
+
+```{r docs}
 result <- get_dataset("embarques_mensais", docs = TRUE)
-
-# The dataset
 result$data
-
-# The documentation (tibble from xlsx, or list of metadata fields)
 result$docs
 ```
 
 ## Spatial datasets
 
-Datasets that contain spatial data (geometries) require the `sf` package.
-The package will warn you if `sf` is not loaded when you request a spatial
-dataset.
+Datasets flagged `is_spatial` resolve to a GeoPackage and come back as `sf`
+objects. Without `sf` installed, `get_dataset()` warns and falls back to a
+tabular format.
 
 ```{r spatial}
 library(sf)
 
-alvaras <- get_dataset("alvaras_sp", file_pattern = "\\.gpkg$")
-plot(sf::st_geometry(alvaras))
+faixa <- get_dataset("faixa_azul_sp")
+plot(st_geometry(faixa))
 ```
+
+## Finding the code behind a dataset
+
+Each dataset comes from a research study, and a study normally produces several
+datasets from one pipeline. Pipelines are therefore published as repositories
+rather than as a script per dataset.
+
+```{r projects}
+# Every study, its repository, and the datasets it produced
+list_projects()
+
+# The study behind one dataset
+browse_project("sinistros_sp")
+```
+
+`browse_project()` prints the study, its sibling datasets, and its repository,
+then opens the repository in your browser. Repositories marked `private` in
+`list_projects()` need an Insper Cidades GitHub account, and some studies have
+not published their code yet.
+
+## Datasets outside the registry
+
+`get_dataverse()` downloads any Insper Dataverse deposit, including those with
+no alias. Paste a DOI or a landing-page URL straight from the browser.
+
+```{r dataverse}
+# Inspect a deposit before downloading
+get_dataverse("10.60873/FK2/AOLEOI", files = TRUE)
+
+# Then download it
+d <- get_dataverse("10.60873/FK2/AOLEOI")
+```
+
+Without registry knowledge, this function guesses which file you want from the
+format preference alone. Deposits with an unusual layout may need `filename` or
+`file_pattern`, and it serves only DOIs under the `10.60873` prefix.
 
 ## Citing a dataset
 
-`cite_dataset()` fetches author and publication metadata from Dataverse and
-formats a citation. Three formats are supported.
-
 ```{r cite}
-# Plain text (default)
 cite_dataset("embarques_mensais")
-
-# BibTeX — paste into your .bib file
 cite_dataset("embarques_mensais", format = "bibtex")
-
-# RIS — import into Zotero, Mendeley, or EndNote
 cite_dataset("embarques_mensais", format = "ris")
-```
-
-## Getting the companion R script
-
-Some datasets come with companion R scripts. `get_script()` downloads a script
-and opens it in your editor. Two types are available:
-
-- **`"analysis"`** (default): a getting-started script demonstrating common
-  analyses with the dataset.
-- **`"replication"`**: the production pipeline that generated the dataset.
-  Provided for transparency and reproducibility; requires internal resources
-  and cannot be run by external users.
-
-```{r script}
-# Opens the analysis script in your editor (default)
-get_script("embarques_mensais")
-
-# Opens the replication script (how the data was produced)
-get_script("embarques_mensais", type = "replication")
-
-# Download only (do not open)
-path <- get_script("embarques_mensais", open = FALSE)
-source(path)
 ```
