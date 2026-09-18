@@ -25,14 +25,14 @@
 #' }
 cite_dataset <- function(dataset, format = c("text", "bibtex", "ris")) {
   format <- match.arg(format)
-  doi    <- resolve_dataset(dataset)
+  doi <- resolve_dataset(dataset)
 
   cli::cli_inform(c("i" = "Fetching metadata for {.val {doi}}"))
   meta <- dataverse::get_dataset(doi_to_url(doi), server = insper_server())
 
-  fields  <- meta$data$latestVersion$metadataBlocks$citation$fields
-  title   <- extract_field(fields, "title")
-  year    <- extract_year(meta)
+  fields <- meta$data$latestVersion$metadataBlocks$citation$fields
+  title <- extract_field(fields, "title")
+  year <- extract_year(meta)
   authors <- extract_authors(fields)
   doi_url <- paste0("https://doi.org/", doi)
 
@@ -96,9 +96,13 @@ extract_field <- function(fields, type_name) {
 
 extract_year <- function(meta) {
   pub_date <- meta$data$publicationDate
-  if (!is.null(pub_date) && nzchar(pub_date)) return(substr(pub_date, 1, 4))
+  if (!is.null(pub_date) && nzchar(pub_date)) {
+    return(substr(pub_date, 1, 4))
+  }
   release <- meta$data$latestVersion$releaseTime
-  if (!is.null(release) && nzchar(release)) return(substr(release, 1, 4))
+  if (!is.null(release) && nzchar(release)) {
+    return(substr(release, 1, 4))
+  }
   format(Sys.Date(), "%Y")
 }
 

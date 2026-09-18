@@ -21,10 +21,6 @@
 # RStudio files
 .Rproj.user/
 
-# produced vignettes
-vignettes/*.html
-vignettes/*.pdf
-
 # OAuth2 token, see https://github.com/hadley/httr/releases/tag/v0.3
 .httr-oauth
 
@@ -47,12 +43,16 @@ po/*~
 
 # RStudio Connect folder
 rsconnect/
-.Rproj.user
-inst/doc
 
 # User-specific configuration
 .Rprofile
 CLAUDE.md
 
+# Planning notes and local artifacts
+PLAN.md
+package-overview.html
+
 # System files
 .DS_Store
+/doc/
+/Meta/
