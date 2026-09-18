@@ -1,0 +1,33 @@
+# Runs the tests that hit Insper Dataverse on a schedule, so registry drift
+# (withdrawn deposits, renamed files, new formats) surfaces without a commit.
+on:
+  schedule:
+    - cron: "0 9 * * 1"
+  workflow_dispatch:
+
+name: live-tests.yaml
+
+permissions: read-all
+
+jobs:
+  live-tests:
+    runs-on: ubuntu-latest
+
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: any::pkgload, any::testthat
+          needs: check
+
+      - name: Run live tests
+        run: testthat::test_local(filter = "live", reporter = "check")
+        shell: Rscript {0}
