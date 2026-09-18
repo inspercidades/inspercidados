@@ -22,12 +22,24 @@ list_projects <- function(project = NULL) {
   proj <- read_projects()
 
   out <- tibble::tibble(
-    project    = names(proj),
-    title      = vapply(proj, function(x) x[["title"]] %||% NA_character_, character(1)),
-    repo_url   = vapply(proj, function(x) x[["repo_url"]] %||% NA_character_, character(1)),
-    visibility = vapply(proj, function(x) x[["visibility"]] %||% NA_character_, character(1)),
+    project = names(proj),
+    title = vapply(
+      proj,
+      function(x) x[["title"]] %||% NA_character_,
+      character(1)
+    ),
+    repo_url = vapply(
+      proj,
+      function(x) x[["repo_url"]] %||% NA_character_,
+      character(1)
+    ),
+    visibility = vapply(
+      proj,
+      function(x) x[["visibility"]] %||% NA_character_,
+      character(1)
+    ),
     n_datasets = vapply(proj, function(x) length(x[["datasets"]]), integer(1)),
-    datasets   = vapply(
+    datasets = vapply(
       proj,
       function(x) paste(unlist(x[["datasets"]]), collapse = ", "),
       character(1)
