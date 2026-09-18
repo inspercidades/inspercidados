@@ -1,173 +1,82 @@
 ---
-title: "Getting Started"
+title: "Getting started with inspercidados"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Getting Started}
+  %\VignetteIndexEntry{Getting started with inspercidados}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r setup, include = FALSE}
+```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment  = "#>",
-  eval     = FALSE,
-  purl     = FALSE
+  comment = "#>"
 )
 ```
 
-`inspercidados` gives you the curated Brazilian urban datasets published by
-[Insper Cidades](https://www.insper.edu.br) on Insper's Dataverse. The package
-wraps the [`dataverse`](https://CRAN.R-project.org/package=dataverse) package
-and adds a registry that maps short names to deposits.
+```{r setup}
+library(inspercidados)
+```
+
+inspercidados gives R users direct access to curated Brazilian urban research
+datasets hosted on [Insper's Dataverse](https://dataverse.datascience.insper.edu.br).
+It is a thin wrapper around the [`dataverse`](https://github.com/IQSS/dataverse-client-r)
+package.
+
+## Open science
+
+The package supports open and reproducible research in three ways:
+
+- **Findable and accessible data.** Urban research data for Brazil is scattered
+  across portals and formats. The package registers each dataset with a stable
+  alias and a DOI, so anyone can find and download the same data with one call.
+- **Proper attribution.** Published research often overlooks the datasets
+  behind its results. `cite_dataset()` makes citing the data as easy as citing
+  a paper.
+- **Transparency of methods.** Datasets come from research projects whose
+  pipelines are published as repositories. `browse_project()` takes you from a
+  dataset to the code that produced it.
 
 ## Installation
 
-```{r install}
-remotes::install_github("inspercidades/inspercidados")
+``` r
+# install.packages("pak")
+pak::pak("inspercidades/inspercidados")
 ```
 
-## Finding a dataset
+## List datasets
 
-`list_datasets()` reads the local registry, so it answers instantly and works
-offline.
+`list_datasets()` reads the registry that ships with the package; it makes no
+network calls:
 
 ```{r list}
-library(inspercidados)
-
-# Everything you can download
 list_datasets()
+```
 
-# Search titles, descriptions, keywords, themes and regions
+Search by title, theme, region, or keywords:
+
+```{r search}
 list_datasets("Mobilidade")
-
-# Narrow by column
-list_datasets(theme = "Habitação")
-list_datasets(spatial = TRUE)
-list_datasets(project = "faixa_azul")
 ```
 
-Each row carries an `alias`, which every other function accepts. The `formats`
-column reports the file types deposited, and `is_spatial` marks the datasets
-that return an `sf` object.
+## Download a dataset
 
-Some datasets appear in the catalog but are not published for download, because
-they are held in Insper's secure data room. `include = "catalogued"` shows them
-with `access = "secure_room"`.
+Identify a dataset by its short alias, a bare DOI, or a full DOI URL:
 
-```{r list-secure}
-list_datasets(include = "catalogued", search = "iFood")
-```
-
-## Downloading a dataset
-
-`get_dataset()` accepts an alias, a bare DOI, or a DOI URL.
-
-```{r download}
+```{r download, eval = FALSE}
+# By alias
 embarques <- get_dataset("embarques_mensais")
 
-# The same deposit, by DOI
-embarques <- get_dataset("10.60873/FK2/BPYHFB")
-
-# Or by URL
-embarques <- get_dataset("https://doi.org/10.60873/FK2/BPYHFB")
-```
-
-Deposits usually hold the same data in several formats. `get_dataset()` picks
-one for you, favouring GeoPackage for spatial datasets and otherwise RDS,
-Parquet, delimited text, and Excel in that order. Formats that need a suggested
-package are skipped when it is not installed.
-
-Three arguments override the choice.
-
-```{r download-filters}
-# Pick by year, matched against the filename
+# Filter by year in multi-year datasets
 pemob_2023 <- get_dataset("pemob_anual", year = 2023)
-
-# Pick an exact file
-iptu_geo <- get_dataset("iptu_sp", filename = "iptu_residencial.gpkg")
-
-# Pick by pattern
-iptu_geo <- get_dataset("iptu_sp", file_pattern = "\\.gpkg$")
 ```
 
-### Aliases that share a deposit
+## Cite a dataset
 
-One Dataverse deposit can hold several datasets. The PEMOB deposit carries both
-the annual series and the harmonised panel, so `"pemob_anual"` and
-`"pemob_harmonizada"` resolve to the same DOI and differ by a file pattern the
-registry stores for you.
-
-```{r shared}
-anual <- get_dataset("pemob_anual", year = 2024)
-painel <- get_dataset("pemob_harmonizada")
-```
-
-## Documentation alongside the data
-
-`docs = TRUE` returns a list with the data and its documentation. A
-documentation workbook deposited with the data takes precedence; otherwise the
-function falls back to the Dataverse metadata record.
-
-```{r docs}
-result <- get_dataset("embarques_mensais", docs = TRUE)
-result$data
-result$docs
-```
-
-## Spatial datasets
-
-Datasets flagged `is_spatial` resolve to a GeoPackage and come back as `sf`
-objects. Without `sf` installed, `get_dataset()` warns and falls back to a
-tabular format.
-
-```{r spatial}
-library(sf)
-
-faixa <- get_dataset("faixa_azul_sp")
-plot(st_geometry(faixa))
-```
-
-## Finding the code behind a dataset
-
-Each dataset comes from a research study, and a study normally produces several
-datasets from one pipeline. Pipelines are therefore published as repositories
-rather than as a script per dataset.
-
-```{r projects}
-# Every study, its repository, and the datasets it produced
-list_projects()
-
-# The study behind one dataset
-browse_project("sinistros_sp")
-```
-
-`browse_project()` prints the study, its sibling datasets, and its repository,
-then opens the repository in your browser. Repositories marked `private` in
-`list_projects()` need an Insper Cidades GitHub account, and some studies have
-not published their code yet.
-
-## Datasets outside the registry
-
-`get_dataverse()` downloads any Insper Dataverse deposit, including those with
-no alias. Paste a DOI or a landing-page URL straight from the browser.
-
-```{r dataverse}
-# Inspect a deposit before downloading
-get_dataverse("10.60873/FK2/AOLEOI", files = TRUE)
-
-# Then download it
-d <- get_dataverse("10.60873/FK2/AOLEOI")
-```
-
-Without registry knowledge, this function guesses which file you want from the
-format preference alone. Deposits with an unusual layout may need `filename` or
-`file_pattern`, and it serves only DOIs under the `10.60873` prefix.
-
-## Citing a dataset
-
-```{r cite}
+```{r cite, eval = FALSE}
 cite_dataset("embarques_mensais")
-cite_dataset("embarques_mensais", format = "bibtex")
-cite_dataset("embarques_mensais", format = "ris")
 ```
+
+## Next steps
+
+The full reference is at <https://inspercidades.github.io/inspercidados>.

@@ -10,37 +10,35 @@
 coverage](https://codecov.io/gh/inspercidades/inspercidados/graph/badge.svg)](https://app.codecov.io/gh/inspercidades/inspercidados)
 <!-- badges: end -->
 
-**inspercidados** provides simple, reproducible access to curated
-Brazilian urban research datasets hosted on [Insper’s
-Dataverse](https://dataverse.datascience.insper.edu.br). It is a
-lightweight wrapper around the
-[`dataverse`](https://github.com/IQSS/dataverse-client-r) package that
-lets researchers discover, download, and cite datasets with a few short
-commands.
+**inspercidados** gives R users direct access to curated Brazilian urban
+research datasets hosted on [Insper’s
+Dataverse](https://dataverse.datascience.insper.edu.br). The package
+wraps [`dataverse`](https://github.com/IQSS/dataverse-client-r), so you
+can find, download, and cite datasets with a few short commands.
 
 ## Installation
 
-You can install the development version of inspercidados from
-[GitHub](https://github.com/portalcidados/inspercidados) with:
+Install the development version from
+[GitHub](https://github.com/inspercidades/inspercidados):
 
 ``` r
 # install.packages("pak")
-pak::pak("portalcidados/inspercidados")
+pak::pak("inspercidades/inspercidados")
 ```
 
 ## Core functions
 
-| Function          | Purpose                                         |
-|-------------------|-------------------------------------------------|
-| `list_datasets()` | List or search available datasets               |
-| `get_dataset()`   | Download a dataset into R                       |
-| `cite_dataset()`  | Generate a citation for a dataset               |
-| `get_script()`    | Open a companion analysis or replication script |
+| Function           | Purpose                                           |
+|--------------------|---------------------------------------------------|
+| `list_datasets()`  | List or search available datasets                 |
+| `get_dataset()`    | Download a dataset into R                         |
+| `cite_dataset()`   | Generate a citation for a dataset                 |
+| `browse_project()` | Open the repository of the study behind a dataset |
 
 ## Browse available datasets
 
-`list_datasets()` returns a tibble of all datasets in the package
-registry. No network call is made.
+`list_datasets()` returns a tibble of every dataset in the registry. The
+registry ships with the package, so no network call is needed.
 
 ``` r
 library(inspercidados)
@@ -63,7 +61,7 @@ list_datasets()
 #> # ℹ 2 more variables: keywords <chr>, doi <chr>
 ```
 
-You can filter by alias, title, theme, region, or keywords:
+Filter by alias, title, theme, region, or keywords:
 
 ``` r
 list_datasets("Mobilidade")
@@ -86,8 +84,7 @@ list_datasets("Mobilidade")
 
 ## Download a dataset
 
-Datasets can be identified by their short alias, a bare DOI, or a full
-DOI URL:
+Identify a dataset by its short alias, a bare DOI, or a full DOI URL:
 
 ``` r
 # By alias
@@ -96,14 +93,14 @@ embarques <- get_dataset("embarques_mensais")
 # By DOI
 embarques <- get_dataset("10.60873/FK2/BPYHFB")
 
-# Filter by year for multi-year datasets
+# Filter by year in multi-year datasets
 pemob_2023 <- get_dataset("pemob_anual", year = 2023)
 
 # Request a specific file or pattern
 geo <- get_dataset("iptu_sp", filename = "iptu_2024.gpkg")
 ```
 
-Pass `docs = TRUE` to return the dataset together with its
+With `docs = TRUE`, the function returns the data together with its
 documentation:
 
 ``` r
@@ -115,7 +112,7 @@ result$docs
 ## Cite a dataset
 
 `cite_dataset()` fetches metadata from Dataverse and returns a citation
-in plain text (default), BibTeX, or RIS:
+as plain text, BibTeX, or RIS:
 
 ``` r
 cite_dataset("embarques_mensais")
@@ -123,22 +120,17 @@ cite_dataset("embarques_mensais", format = "bibtex")
 cite_dataset("embarques_mensais", format = "ris")
 ```
 
-## Companion R scripts
+## Explore the study behind a dataset
 
-Some datasets ship with a companion script that demonstrates how to load
-and explore the data, or documents the production pipeline that
-generated it:
+Most datasets come from a research study whose pipeline lives in its own
+repository. `browse_project()` prints the study, lists its datasets, and
+opens the repository:
 
 ``` r
-# Open the analysis script in your editor
-get_script("embarques_mensais")
-
-# Open the replication pipeline (typically not runnable by external users)
-get_script("embarques_mensais", type = "replication")
+browse_project("embarques_mensais")
 ```
 
 ## Learn more
 
-- `vignette("getting-started", package = "inspercidados")`
-- Full reference: <https://portalcidados.github.io/inspercidados>
+- Full reference: <https://inspercidades.github.io/inspercidados>
 - Data source: <https://dataverse.datascience.insper.edu.br>

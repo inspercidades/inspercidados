@@ -45,7 +45,7 @@
     "title": "Embarques nas estações operadas pela Motiva",
     "repo_url": "https://github.com/inspercidades/pipeline-motiva",
     "visibility": "private",
-    "datasets": ["embarques_hora", "embarques_diarios", "embarques_mensais", "embarques_integracao", "estacoes_motiva"]
+    "datasets": ["embarques_hora", "embarques_diarios", "embarques_mensais", "embarques_integracao", "linhas_motiva", "estacoes_motiva"]
   },
   "faixa_azul": {
     "title": "Faixa Azul e sinistros de trânsito",

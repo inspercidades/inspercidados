@@ -1,6 +1,6 @@
 Package: inspercidados
 Title: Access to Brazilian Urban Datasets from Insper Cidades
-Version: 0.2.0
+Version: 0.3.0
 Authors@R: c(
     person("Vinicius", "Oike", , "viniciusor@insper.edu.br", role = c("aut", "cre"),
            comment = c(ORCID = "0009-0005-8015-9189")),
