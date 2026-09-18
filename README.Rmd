@@ -16,6 +16,8 @@ knitr::opts_chunk$set(
 # inspercidados
 
 <!-- badges: start -->
+[![R-CMD-check](https://github.com/inspercidades/inspercidados/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/inspercidades/inspercidados/actions/workflows/R-CMD-check.yaml)
+[![Codecov test coverage](https://codecov.io/gh/inspercidades/inspercidados/graph/badge.svg)](https://app.codecov.io/gh/inspercidades/inspercidados)
 <!-- badges: end -->
 
 **inspercidados** provides simple, reproducible access to curated Brazilian
