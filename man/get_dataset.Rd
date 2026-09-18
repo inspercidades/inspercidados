@@ -58,28 +58,27 @@ Some aliases share a single Dataverse deposit. \code{"pemob_anual"} and
 file pattern stored in the registry.
 }
 \examples{
-\dontrun{
+\dontshow{if (live_examples()) withAutoprint(\{ # examplesIf}
 # By alias
-iptu <- get_dataset("iptu_sp")
+embarques <- get_dataset("embarques_mensais")
 
-# By DOI
-iptu <- get_dataset("10.60873/FK2/TOXCRF")
+# By DOI, or by the DOI URL
+embarques <- get_dataset("10.60873/FK2/BPYHFB")
+embarques <- get_dataset("https://doi.org/10.60873/FK2/BPYHFB")
 
-# By DOI URL
-iptu <- get_dataset("https://doi.org/10.60873/FK2/TOXCRF")
-
-# Filter to a specific year (for multi-year datasets)
-iptu_2023 <- get_dataset("iptu_sp", year = 2023)
-
-# Request a specific file by name
-geo <- get_dataset("iptu_sp", filename = "iptu_2024.gpkg")
-
-# Match files with a regex pattern
+# Pick one year from a multi-year dataset
 pemob_2023 <- get_dataset("pemob_anual", year = 2023)
 
-# Return data together with Dataverse metadata
-result <- get_dataset("iptu_sp", docs = TRUE)
-result$data
+# Request a file by exact name, or by regex
+linhas <- get_dataset("estacoes_motiva", filename = "dim_line.rds")
+estacoes <- get_dataset("estacoes_motiva", file_pattern = "^dim_station")
+
+# Return the data with its documentation
+result <- get_dataset("embarques_mensais", docs = TRUE)
 result$docs
-}
+\dontshow{\}) # examplesIf}
+\dontshow{if (live_examples() && requireNamespace("sf", quietly = TRUE)) withAutoprint(\{ # examplesIf}
+# Spatial datasets return an sf object
+faixa_azul <- get_dataset("faixa_azul_sp")
+\dontshow{\}) # examplesIf}
 }

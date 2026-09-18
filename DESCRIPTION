@@ -31,6 +31,7 @@ Imports:
     tools
 Suggests:
     arrow (>= 8.0.0),
+    curl,
     sf,
     readxl,
     rstudioapi,
@@ -42,3 +43,4 @@ Suggests:
     janitor,
     lifecycle
 VignetteBuilder: knitr
+Config/testthat/edition: 3

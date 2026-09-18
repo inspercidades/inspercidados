@@ -22,14 +22,14 @@ The citation is printed to the console and returned invisibly as a character
 string.
 }
 \examples{
-\dontrun{
+\dontshow{if (live_examples()) withAutoprint(\{ # examplesIf}
 # Plain-text citation
-cite_dataset("iptu_sp")
+cite_dataset("pemob_anual")
 
 # BibTeX
-cite_dataset("iptu_sp", format = "bibtex")
+cite_dataset("pemob_anual", format = "bibtex")
 
 # RIS (Zotero, Mendeley, EndNote)
-cite_dataset("iptu_sp", format = "ris")
-}
+cite_dataset("pemob_anual", format = "ris")
+\dontshow{\}) # examplesIf}
 }

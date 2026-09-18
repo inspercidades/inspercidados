@@ -42,18 +42,19 @@ Only DOIs under the \code{10.60873} prefix are served, since the package always
 talks to Insper's Dataverse.
 }
 \examples{
-\dontrun{
+\dontshow{if (live_examples()) withAutoprint(\{ # examplesIf}
+# Inspect a deposit before downloading
+get_dataverse("10.60873/FK2/YWXLQS", files = TRUE)
+
 # Paste a DOI straight from the Dataverse page
-d <- get_dataverse("10.60873/FK2/AOLEOI")
+linhas <- get_dataverse("10.60873/FK2/YWXLQS", filename = "dim_line.rds")
 
 # Or the landing-page URL
-d <- get_dataverse(
-  "https://dataverse.datascience.insper.edu.br/dataset.xhtml?persistentId=doi:10.60873/FK2/AOLEOI"
+linhas <- get_dataverse(
+  "https://dataverse.datascience.insper.edu.br/dataset.xhtml?persistentId=doi:10.60873/FK2/YWXLQS",
+  filename = "dim_line.rds"
 )
-
-# Inspect the deposit before downloading
-get_dataverse("10.60873/FK2/AOLEOI", files = TRUE)
-}
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 \code{\link[=get_dataset]{get_dataset()}} for registered datasets.
