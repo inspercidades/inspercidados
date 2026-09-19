@@ -18,9 +18,9 @@ The package website is built with **pkgdown**.
 | `list_projects()`  | List the studies behind the datasets, with their repos                                                                                                     |
 | `get_dataset()`    | Download a registered dataset into R                                                                                                                       |
 | `get_dataverse()`  | Download any Insper Dataverse deposit from a pasted DOI/URL                                                                                                |
-| `browse_project()` | Print a study, its datasets, and open its repository                                                                                                       |
+| `open_project()` | Print a study, its datasets, and open its repository                                                                                                       |
 | `cite_dataset()`   | Generate a citation for a dataset                                                                                                                          |
-| `get_script()`     | Deprecated shim (lifecycle badge + `cli_warn`) that forwards to `browse_project()`                                                                         |
+| `get_script()`     | Deprecated shim (lifecycle badge + `cli_warn`) that forwards to `open_project()`                                                                         |
 
 ## Package Architecture
 
@@ -38,7 +38,7 @@ R/list_datasets.R           <- list_datasets()
 R/list_projects.R           <- list_projects()
 R/get_dataset.R             <- get_dataset()
 R/get_dataverse.R           <- get_dataverse()
-R/browse_project.R          <- browse_project()
+R/open_project.R          <- open_project()
 R/cite_dataset.R            <- cite_dataset()
 R/get_script.R              <- deprecated shim
 R/utils.R                   <- internal helpers (server, resolve ID, readers)
@@ -132,7 +132,7 @@ Pipelines are published as whole repositories, not as one script per dataset,
 because a study normally produces several datasets across many files. The
 mapping lives in `inst/projects.json` and is many-to-many: `faixa-azul`
 produces three datasets, and some studies have no repository yet.
-`browse_project()` prints the study and opens its repo; repos marked `private`
+`open_project()` prints the study and opens its repo; repos marked `private`
 are flagged before opening.
 
 `replication_scripts/` is a stale local copy of code that now lives in the org
@@ -196,7 +196,7 @@ pkgdown::build_site()     # build website
 - `readr` — delimited text readers
 - `rlang` — `check_installed()` for Suggests, `%||%` helper
 - `tibble` — `list_datasets()` / `list_projects()` output
-- `utils` — `browseURL` in `browse_project()`
+- `utils` — `browseURL` in `open_project()`
 - `tools` — file-extension helpers
 
 **Suggests** (loaded conditionally with `rlang::check_installed()`):

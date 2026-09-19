@@ -33,7 +33,7 @@ pak::pak("inspercidades/inspercidados")
 | `list_datasets()`  | List or search available datasets                 |
 | `get_dataset()`    | Download a dataset into R                         |
 | `cite_dataset()`   | Generate a citation for a dataset                 |
-| `browse_project()` | Open the repository of the study behind a dataset |
+| `open_project()` | Open the repository of the study behind a dataset |
 
 ## Browse available datasets
 
@@ -44,7 +44,7 @@ registry ships with the package, so no network call is needed.
 library(inspercidados)
 
 list_datasets()
-#> # A tibble: 21 × 11
+#> # A tibble: 22 × 11
 #>    alias        title description theme region project access is_spatial formats
 #>    <chr>        <chr> <chr>       <chr> <chr>  <chr>   <chr>  <lgl>      <chr>  
 #>  1 itbi_sp      Impo… "Registros… Habi… São P… itbi    downl… FALSE      csv, p…
@@ -54,10 +54,10 @@ list_datasets()
 #>  5 iptu_vertic… IPTU… "Dados dem… Habi… São P… densid… downl… TRUE       geojso…
 #>  6 densidade_i… Dens… "Cruzament… Habi… São P… densid… downl… TRUE       geojso…
 #>  7 geoses_sp    Índi… "Índice so… Mult… São P… geoses  downl… TRUE       geojso…
-#>  8 mortalidade… Mort… "Medidas d… Saúde São P… mortal… downl… FALSE      tab    
+#>  8 mortalidade… Mort… "Medidas d… Saúde São P… mortal… downl… TRUE       geojso…
 #>  9 ilhas_calor… Medi… "Estatísti… Clim… Rio d… mare    downl… TRUE       geojso…
 #> 10 qualidade_a… Medi… "Estatísti… Clim… Rio d… mare    downl… TRUE       geojso…
-#> # ℹ 11 more rows
+#> # ℹ 12 more rows
 #> # ℹ 2 more variables: keywords <chr>, doi <chr>
 ```
 
@@ -65,7 +65,7 @@ Filter by alias, title, theme, region, or keywords:
 
 ``` r
 list_datasets("Mobilidade")
-#> # A tibble: 11 × 11
+#> # A tibble: 12 × 11
 #>    alias        title description theme region project access is_spatial formats
 #>    <chr>        <chr> <chr>       <chr> <chr>  <chr>   <chr>  <lgl>      <chr>  
 #>  1 geoses_sp    Índi… Índice soc… Mult… São P… geoses  downl… TRUE       geojso…
@@ -75,10 +75,11 @@ list_datasets("Mobilidade")
 #>  5 embarques_d… Emba… Total de e… Mobi… Brasil motiva  downl… FALSE      parque…
 #>  6 embarques_m… Médi… Média de e… Mobi… Brasil motiva  downl… FALSE      rds, t…
 #>  7 embarques_i… Emba… Embarques … Mobi… Brasil motiva  downl… FALSE      parque…
-#>  8 estacoes_mo… Linh… Tabela de … Mobi… Brasil motiva  downl… FALSE      rds, t…
-#>  9 faixa_azul_… Trec… Localizaçã… Mobi… São P… faixa_… downl… TRUE       geojso…
-#> 10 sinistros_sp Sini… Sinistros … Mobi… São P… faixa_… downl… FALSE      parque…
-#> 11 sinistros_v… Sini… Localizaçã… Mobi… São P… faixa_… downl… TRUE       geojso…
+#>  8 linhas_moti… Linh… Tabela de … Mobi… Brasil motiva  downl… FALSE      rds, t…
+#>  9 estacoes_mo… Linh… Tabela de … Mobi… Brasil motiva  downl… FALSE      rds, t…
+#> 10 faixa_azul_… Trec… Localizaçã… Mobi… São P… faixa_… downl… TRUE       geojso…
+#> 11 sinistros_sp Sini… Sinistros … Mobi… São P… faixa_… downl… FALSE      parque…
+#> 12 sinistros_v… Sini… Localizaçã… Mobi… São P… faixa_… downl… TRUE       geojso…
 #> # ℹ 2 more variables: keywords <chr>, doi <chr>
 ```
 
@@ -123,11 +124,11 @@ cite_dataset("embarques_mensais", format = "ris")
 ## Explore the study behind a dataset
 
 Most datasets come from a research study whose pipeline lives in its own
-repository. `browse_project()` prints the study, lists its datasets, and
+repository. `open_project()` prints the study, lists its datasets, and
 opens the repository:
 
 ``` r
-browse_project("embarques_mensais")
+open_project("embarques_mensais")
 ```
 
 ## Learn more

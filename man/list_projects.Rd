@@ -25,6 +25,6 @@ list_projects()
 list_projects("motiva")
 }
 \seealso{
-\code{\link[=browse_project]{browse_project()}} to open a repository, \code{\link[=list_datasets]{list_datasets()}} for the
+\code{\link[=open_project]{open_project()}} to open a repository, \code{\link[=list_datasets]{list_datasets()}} for the
 datasets themselves.
 }

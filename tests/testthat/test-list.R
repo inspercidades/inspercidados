@@ -46,20 +46,20 @@ test_that("list_projects() returns one row per project", {
   expect_true(all(out$n_datasets >= 1))
 })
 
-test_that("browse_project() resolves an alias to its project without opening", {
+test_that("open_project() resolves an alias to its project without opening", {
   proj <- read_projects()
   with_repo <- Filter(function(x) !is.null(x[["repo_url"]]), proj)
   skip_if(length(with_repo) == 0)
   alias <- unlist(with_repo[[1]][["datasets"]])[[1]]
 
   expect_equal(
-    suppressMessages(browse_project(alias, open = FALSE)),
+    suppressMessages(open_project(alias, open = FALSE)),
     with_repo[[1]][["repo_url"]]
   )
-  expect_error(browse_project("zzz_no_match", open = FALSE), "neither")
+  expect_error(open_project("zzz_no_match", open = FALSE), "neither")
 })
 
-test_that("get_script() is deprecated in favour of browse_project()", {
+test_that("get_script() is deprecated in favour of open_project()", {
   expect_warning(
     suppressMessages(get_script("iptu_sp", open = FALSE)),
     "deprecated"

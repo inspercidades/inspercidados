@@ -20,11 +20,11 @@
 #' @export
 #' @examples
 #' # By dataset alias
-#' browse_project("sinistros_sp", open = FALSE)
+#' open_project("sinistros_sp", open = FALSE)
 #'
 #' # By project slug
-#' browse_project("motiva", open = FALSE)
-browse_project <- function(x, open = TRUE) {
+#' open_project("motiva", open = FALSE)
+open_project <- function(x, open = TRUE) {
   proj <- read_projects()
   reg <- read_registry()
 

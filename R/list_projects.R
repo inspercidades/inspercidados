@@ -11,7 +11,7 @@
 #'   for projects whose code has not been published yet, and `visibility` is
 #'   `"private"` for repositories that only Insper Cidades members can open.
 #'
-#' @seealso [browse_project()] to open a repository, [list_datasets()] for the
+#' @seealso [open_project()] to open a repository, [list_datasets()] for the
 #'   datasets themselves.
 #'
 #' @export

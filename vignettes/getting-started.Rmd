@@ -10,7 +10,8 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  eval = FALSE
 )
 ```
 
@@ -18,50 +19,49 @@ knitr::opts_chunk$set(
 library(inspercidados)
 ```
 
-inspercidados gives R users direct access to curated Brazilian urban research
-datasets hosted on [Insper's Dataverse](https://dataverse.datascience.insper.edu.br).
-It is a thin wrapper around the [`dataverse`](https://github.com/IQSS/dataverse-client-r)
-package.
+`inspercidados` gives users direct access to curated datasets hosted on [Insper's Dataverse](https://dataverse.datascience.insper.edu.br). These datasets come from research publications made by authors related to [Insper Cidades](https://www.insper.edu.br/pt/pesquisa/centro-de-estudos-das-cidades), and that are featured as data visualization narratives on the [Cidados website](https://cidados.insper.edu.br).
 
 ## Open science
 
-The package supports open and reproducible research in three ways:
+This package is a core element in a suite of open science initiatives from Insper. It supports open and reproducible research in two ways:
 
-- **Findable and accessible data.** Urban research data for Brazil is scattered
-  across portals and formats. The package registers each dataset with a stable
+- **Findable and accessible open data.** The package registers each dataset with a stable
   alias and a DOI, so anyone can find and download the same data with one call.
-- **Proper attribution.** Published research often overlooks the datasets
-  behind its results. `cite_dataset()` makes citing the data as easy as citing
-  a paper.
-- **Transparency of methods.** Datasets come from research projects whose
-  pipelines are published as repositories. `browse_project()` takes you from a
+- **Transparency and replication.** Datasets come from research projects whose
+  pipelines are published as repositories. `open_project()` takes you from a
   dataset to the code that produced it.
 
 ## Installation
+
+The package is currently available on R-universe and be downloaded with the code below.
+
+```r
+
+```
+
+The development version is available on GitHub.
 
 ``` r
 # install.packages("pak")
 pak::pak("inspercidades/inspercidados")
 ```
 
-## List datasets
+## Using the package
 
 `list_datasets()` reads the registry that ships with the package; it makes no
-network calls:
+network calls.
 
 ```{r list}
 list_datasets()
 ```
 
-Search by title, theme, region, or keywords:
+To search by title, theme, region, or keywords use the `search` argument in `list_dataset()`
 
 ```{r search}
-list_datasets("Mobilidade")
+list_datasets(search = "Mobilidade")
 ```
 
-## Download a dataset
-
-Identify a dataset by its short alias, a bare DOI, or a full DOI URL:
+Each dataset is identified by DOI and anlso by a short alias. To download a dataset use ` get_dataset`.
 
 ```{r download, eval = FALSE}
 # By alias

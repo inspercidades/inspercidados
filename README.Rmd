@@ -43,7 +43,7 @@ pak::pak("inspercidades/inspercidados")
 | `list_datasets()` | List or search available datasets |
 | `get_dataset()`   | Download a dataset into R |
 | `cite_dataset()`  | Generate a citation for a dataset |
-| `browse_project()` | Open the repository of the study behind a dataset |
+| `open_project()` | Open the repository of the study behind a dataset |
 
 ## Browse available datasets
 
@@ -103,11 +103,11 @@ cite_dataset("embarques_mensais", format = "ris")
 ## Explore the study behind a dataset
 
 Most datasets come from a research study whose pipeline lives in its own
-repository. `browse_project()` prints the study, lists its datasets, and opens
+repository. `open_project()` prints the study, lists its datasets, and opens
 the repository:
 
 ```{r project, eval = FALSE}
-browse_project("embarques_mensais")
+open_project("embarques_mensais")
 ```
 
 ## Learn more
