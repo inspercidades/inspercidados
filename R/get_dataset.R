@@ -91,7 +91,10 @@ get_dataset <- function(
     keep <- grepl(own_pattern, file_names, perl = TRUE)
     if (!any(keep)) {
       cli::cli_abort(c(
-        "No files in {.val {doi}} matched the registry pattern for {.val {dataset}}.",
+        paste0(
+          "No files in {.val {doi}} matched the registry pattern for ",
+          "{.val {dataset}}."
+        ),
         "i" = "The deposit may have been restructured; please report this.",
         "i" = "Files present: {.val {file_names}}"
       ))

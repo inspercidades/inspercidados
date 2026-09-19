@@ -1,73 +1,41 @@
 # Build inst/datasets.json and inst/projects.json from the live Google Sheet.
-#
-# Sources of truth:
-#   Google Sheet "Site Cidados" / "Catalogo de dados"  -> dataset metadata
-#   data-raw/aliases.csv                               -> DOI + file_pattern -> alias
-#   data-raw/projects.csv                              -> project -> repo
-#   data-raw/retired.csv                               -> aliases that no longer resolve
-#   Dataverse API                                      -> file formats, is_spatial
-#
-# Run with: Rscript data-raw/build_registry.R
+# The catalog is validated before Dataverse is queried or files are written.
+# Validate: Rscript data-raw/build_registry.R --validate-only
+# Build:    Rscript data-raw/build_registry.R
 
+library(cli)
 library(googlesheets4)
 library(jsonlite)
+library(stringr)
 
-tryCatch(Sys.setlocale("LC_ALL", "en_US.UTF-8"), error = function(e) NULL)
+tryCatch(Sys.setlocale("LC_ALL", "en_US.UTF-8"), error = \(e) NULL)
 
-SHEET_ID <- "1pg85pVZ76XW9P9N8RyoK56nKND7u8304sy2z7QfwYM8"
-SHEET_TAB <- "Catálogo de dados"
-SERVER <- "https://dataverse.datascience.insper.edu.br"
+sheet_id <- "1pg85pVZ76XW9P9N8RyoK56nKND7u8304sy2z7QfwYM8"
+sheet_tab <- "Catálogo de dados"
+server <- "https://dataverse.datascience.insper.edu.br"
 
-`%||%` <- function(x, y) {
-  if (is.null(x) || length(x) == 0 || all(is.na(x))) y else x
-}
-
-# Helpers ----------------------------------------------------------------
-
-clean_text <- function(x) {
-  x <- as.character(x)
-  x[x == "NULL"] <- NA_character_
-  x <- enc2utf8(x)
-  x <- gsub("\r\n|\n|\r", " ", x)
-  x <- gsub("\\s{2,}", " ", x)
-  x <- trimws(x)
-  x[!nzchar(x)] <- NA_character_
-  x
-}
-
-# Dataverse marks an identifier as permanent but drops the released version when
-# a deposit is withdrawn. A missing :latest version is how that shows up.
-dv_files <- function(doi) {
-  url <- sprintf(
-    "%s/api/datasets/:persistentId/versions/:latest/files?persistentId=doi:%s",
-    SERVER,
-    utils::URLencode(doi, reserved = TRUE)
-  )
-  res <- tryCatch(fromJSON(url, simplifyVector = FALSE), error = function(e) {
-    NULL
-  })
-  if (is.null(res) || !identical(res$status, "OK")) {
-    return(NULL)
-  }
-  vapply(res$data, function(f) f$dataFile$filename, character(1))
-}
-
-# Effective extension per file: .csv.gz reports "csv", so a gzipped table is
-# not mistaken for an opaque archive.
-file_ext_each <- function(files) {
-  if (length(files) == 0) {
-    return(character(0))
-  }
-  ext <- tolower(tools::file_ext(files))
-  ifelse(ext == "gz", tolower(tools::file_ext(sub("\\.gz$", "", files))), ext)
-}
-
-file_exts <- function(files) {
-  ext <- file_ext_each(files)
-  sort(unique(ext[nzchar(ext)]))
-}
-
-DATA_EXTS <- c(
+allowed_themes <- c(
+  "Clima e Meio Ambiente",
+  "Educação",
+  "Habitação e Mercado Imobiliário",
+  "Mobilidade",
+  "Multidisciplinar e transversal",
+  "Saúde",
+  "Trabalho e renda"
+)
+allowed_access <- c("Disponível para download", "Sala segura do Insper")
+required_keyword_columns <- paste0("palavra_chave_", 1:5)
+required_catalog_columns <- c(
+  "titulo_da_colecao",
+  "filtro_tema",
+  "filtro_regiao",
+  "filtro_acesso",
+  required_keyword_columns,
+  "titulo_da_base_de_dados",
+  "descricao_da_base_de_dados",
+  "link_da_base_de_dados_data_verse"
+)
+data_exts <- c(
   "rds",
   "csv",
   "tab",
@@ -79,276 +47,496 @@ DATA_EXTS <- c(
   "xls",
   "zip"
 )
-SPATIAL_EXTS <- c("gpkg", "geojson", "shp")
+spatial_exts <- c("gpkg", "geojson", "shp")
 
-# Read the catalog -------------------------------------------------------
+`%||%` <- function(x, y) {
+  if (is.null(x) || length(x) == 0 || all(is.na(x))) {
+    return(y)
+  }
+  return(x)
+}
 
-gs4_auth(email = Sys.getenv("CIDADOS_GS4_EMAIL", unset = NA))
+# Helpers ---------------------------------------------------------------------
 
-catalogo <- read_sheet(
-  SHEET_ID,
-  sheet = SHEET_TAB,
-  skip = 1,
-  .name_repair = janitor::make_clean_names
-)
+clean_text <- function(x) {
+  x <- as.character(x)
+  x[x == "NULL"] <- NA_character_
+  x <- stringr::str_squish(enc2utf8(x))
+  x[!is.na(x) & !nzchar(x)] <- NA_character_
+  return(x)
+}
 
-cat("Read", nrow(catalogo), "rows from the catalog sheet.\n")
+extract_doi <- function(x) {
+  match <- stringr::str_match(
+    clean_text(x),
+    "doi:(10[.]60873/[^&#[:space:]]+)"
+  )
+  return(match[, 2])
+}
 
-link <- as.character(catalogo$link_da_base_de_dados_data_verse)
+catalog_keyword_columns <- function(catalog) {
+  columns <- grep("^palavra_chave_[0-9]+$", names(catalog), value = TRUE)
+  return(columns)
+}
 
-catalogo$doi <- ifelse(
-  grepl("doi:10[.]60873", link),
-  sub(".*doi:(10[.]60873/[^&#]+).*", "\\1", link),
-  NA_character_
-)
+file_ext_each <- function(files) {
+  if (length(files) == 0) {
+    return(character())
+  }
+  ext <- stringr::str_to_lower(tools::file_ext(files))
+  compressed <- ext == "gz"
+  ext[compressed] <- files[compressed] |>
+    stringr::str_remove("[.]gz$") |>
+    tools::file_ext() |>
+    stringr::str_to_lower()
+  return(ext)
+}
 
-# Access status. Rows without a DOI are still catalog entries; users should be
-# able to discover them and learn why they cannot be downloaded.
-acesso <- clean_text(catalogo$filtro_acesso)
-catalogo$access <- ifelse(
-  grepl("^Sala segura", acesso %||% ""),
-  "secure_room",
-  ifelse(is.na(catalogo$doi), "unpublished", "download")
-)
+file_exts <- function(files) {
+  ext <- file_ext_each(files)
+  return(sort(unique(ext[nzchar(ext)])))
+}
 
-# Alias assignment -------------------------------------------------------
+read_csv_input <- function(path) {
+  dat <- utils::read.csv(path, stringsAsFactors = FALSE, na.strings = "")
+  return(dat)
+}
 
-aliases <- utils::read.csv(
-  "data-raw/aliases.csv",
-  stringsAsFactors = FALSE,
-  na.strings = ""
-)
-projects <- utils::read.csv(
-  "data-raw/projects.csv",
-  stringsAsFactors = FALSE,
-  na.strings = ""
-)
-retired <- utils::read.csv(
-  "data-raw/retired.csv",
-  stringsAsFactors = FALSE,
-  na.strings = ""
-)
+# Catalog validation ----------------------------------------------------------
 
-# Once the sheet gains an "alias" column it becomes the primary alias for each
-# catalog row. aliases.csv still supplies sub-aliases, because one deposit can
-# hold several datasets (PEMOB, Mare) and a single sheet column cannot say that.
-if ("alias" %in% names(catalogo)) {
-  sheet_alias <- clean_text(catalogo$alias)
-  has_sheet <- !is.na(sheet_alias) & !is.na(catalogo$doi)
-  cat("Sheet supplies", sum(has_sheet), "aliases.\n")
-  for (i in which(has_sheet)) {
-    hit <- aliases$doi == catalogo$doi[i] & is.na(aliases$file_pattern)
+read_catalog <- function() {
+  googlesheets4::gs4_auth(email = Sys.getenv("CIDADOS_GS4_EMAIL", unset = NA))
+  catalog <- googlesheets4::read_sheet(
+    sheet_id,
+    sheet = sheet_tab,
+    skip = 1,
+    .name_repair = janitor::make_clean_names
+  )
+  cli::cli_inform("Read {nrow(catalog)} row{?s} from the catalog sheet.")
+  return(catalog)
+}
+
+drop_blank_catalog_rows <- function(catalog) {
+  catalog[] <- lapply(catalog, clean_text)
+  blank <- apply(catalog, 1, \(x) all(is.na(x)))
+  if (any(blank)) {
+    cli::cli_inform("Ignoring {sum(blank)} completely blank catalog row{?s}.")
+  }
+  catalog <- catalog[!blank, , drop = FALSE]
+  catalog$.sheet_row <- which(!blank) + 2L
+  return(catalog)
+}
+
+validate_catalog_schema <- function(catalog) {
+  missing <- setdiff(required_catalog_columns, names(catalog))
+  if (length(missing) > 0) {
+    cli::cli_abort(c(
+      "The catalog schema is invalid.",
+      "x" = "Missing {length(missing)} column{?s}: {.field {missing}}",
+      "i" = paste0(
+        "Restore the missing column",
+        if (length(missing) == 1) "" else "s",
+        " in the Google Sheet and run the script again."
+      )
+    ))
+  }
+  return(invisible(catalog))
+}
+
+new_issue <- function(row, field, problem) {
+  return(data.frame(row, field, problem, stringsAsFactors = FALSE))
+}
+
+catalog_validation_issues <- function(catalog) {
+  sheet_rows <- if (".sheet_row" %in% names(catalog)) {
+    catalog$.sheet_row
+  } else {
+    seq_len(nrow(catalog)) + 2L
+  }
+  issues <- list()
+  keyword_columns <- catalog_keyword_columns(catalog)
+  add_issue <- function(index, field, problem) {
+    issues[[length(issues) + 1L]] <<- new_issue(
+      sheet_rows[index],
+      field,
+      problem
+    )
+    return(invisible(NULL))
+  }
+
+  required <- c(
+    titulo_da_colecao = "collection title",
+    titulo_da_base_de_dados = "dataset title",
+    descricao_da_base_de_dados = "dataset description",
+    filtro_tema = "theme",
+    filtro_regiao = "region",
+    filtro_acesso = "access"
+  )
+  for (field in names(required)) {
+    for (index in which(is.na(catalog[[field]]))) {
+      add_issue(index, field, paste(required[[field]], "is required"))
+    }
+  }
+
+  invalid_theme <- which(
+    !is.na(catalog$filtro_tema) &
+      !catalog$filtro_tema %in% allowed_themes
+  )
+  for (index in invalid_theme) {
+    add_issue(
+      index,
+      "filtro_tema",
+      paste0(
+        "unknown theme '",
+        catalog$filtro_tema[index],
+        "'; use one of: ",
+        paste(allowed_themes, collapse = ", ")
+      )
+    )
+  }
+
+  invalid_access <- which(
+    !is.na(catalog$filtro_acesso) &
+      !catalog$filtro_acesso %in% allowed_access
+  )
+  for (index in invalid_access) {
+    add_issue(
+      index,
+      "filtro_acesso",
+      paste0(
+        "unknown access value '",
+        catalog$filtro_acesso[index],
+        "'; use one of: ",
+        paste(allowed_access, collapse = ", ")
+      )
+    )
+  }
+
+  for (index in seq_len(nrow(catalog))) {
+    keywords <- unlist(catalog[index, keyword_columns], use.names = FALSE)
+    keywords <- keywords[!is.na(keywords)]
+    if (length(keywords) < 3 || length(keywords) > 5) {
+      add_issue(
+        index,
+        "keywords",
+        paste0(
+          "expected 3 to 5 keywords, found ",
+          length(keywords)
+        )
+      )
+    }
+    duplicate <- unique(keywords[duplicated(stringr::str_to_lower(keywords))])
+    if (length(duplicate) > 0) {
+      add_issue(
+        index,
+        "keywords",
+        paste0(
+          "duplicated keyword(s): ",
+          paste(duplicate, collapse = ", ")
+        )
+      )
+    }
+  }
+
+  doi <- extract_doi(catalog$link_da_base_de_dados_data_verse)
+  link <- clean_text(catalog$link_da_base_de_dados_data_verse)
+  invalid_doi <- !is.na(link) & is.na(doi)
+  for (index in which(invalid_doi)) {
+    add_issue(
+      index,
+      "link_da_base_de_dados_data_verse",
+      "links must contain a valid 10.60873 Dataverse DOI"
+    )
+  }
+
+  if (length(issues) == 0) {
+    return(data.frame(
+      row = integer(),
+      field = character(),
+      problem = character()
+    ))
+  }
+  return(do.call(rbind, issues))
+}
+
+validate_catalog <- function(catalog) {
+  validate_catalog_schema(catalog)
+  issues <- catalog_validation_issues(catalog)
+  if (nrow(issues) > 0) {
+    details <- paste0(
+      "Google Sheet row ",
+      issues$row,
+      " [",
+      issues$field,
+      "]: ",
+      issues$problem
+    )
+    cli::cli_abort(c(
+      "Catalog validation failed with {nrow(issues)} issue{?s}.",
+      stats::setNames(details, rep("x", length(details))),
+      "i" = paste0(
+        "Fix these values in the Google Sheet and run ",
+        "`Rscript data-raw/build_registry.R` again. No registry files were written."
+      )
+    ))
+  }
+  cli::cli_alert_success("Catalog validation passed.")
+  return(invisible(catalog))
+}
+
+prepare_catalog <- function(catalog) {
+  validate_catalog_schema(catalog)
+  catalog <- drop_blank_catalog_rows(catalog)
+  validate_catalog(catalog)
+  catalog$doi <- extract_doi(catalog$link_da_base_de_dados_data_verse)
+  catalog$access <- ifelse(
+    catalog$filtro_acesso == "Sala segura do Insper",
+    "secure_room",
+    ifelse(is.na(catalog$doi), "unpublished", "download")
+  )
+  return(catalog)
+}
+
+# Manual registry inputs ------------------------------------------------------
+
+reconcile_aliases <- function(catalog, aliases) {
+  if (!"alias" %in% names(catalog)) {
+    cli::cli_inform(
+      "No {.field alias} column in the sheet; using {.file data-raw/aliases.csv}."
+    )
+    return(aliases)
+  }
+  sheet_alias <- clean_text(catalog$alias)
+  supplied <- !is.na(sheet_alias) & !is.na(catalog$doi)
+  cli::cli_inform("The sheet supplies {sum(supplied)} alias{?es}.")
+
+  for (index in which(supplied)) {
+    hit <- aliases$doi == catalog$doi[index] & is.na(aliases$file_pattern)
     if (any(hit)) {
-      if (!identical(aliases$alias[which(hit)[1]], sheet_alias[i])) {
-        cat(sprintf(
-          "  ! sheet alias '%s' overrides csv alias '%s' for %s\n",
-          sheet_alias[i],
-          aliases$alias[which(hit)[1]],
-          catalogo$doi[i]
-        ))
+      first <- which(hit)[1]
+      if (!identical(aliases$alias[first], sheet_alias[index])) {
+        cli::cli_warn(
+          "Sheet alias {.val {sheet_alias[index]}} overrides {.val {aliases$alias[first]}} for {.val {catalog$doi[index]}}."
+        )
       }
-      aliases$alias[which(hit)[1]] <- sheet_alias[i]
+      aliases$alias[first] <- sheet_alias[index]
     } else {
       aliases <- rbind(
         aliases,
         data.frame(
-          doi = catalogo$doi[i],
-          alias = sheet_alias[i],
-          file_pattern = NA,
-          project = NA,
-          notes = NA,
+          doi = catalog$doi[index],
+          alias = sheet_alias[index],
+          file_pattern = NA_character_,
+          project = NA_character_,
+          notes = NA_character_,
           stringsAsFactors = FALSE
         )
       )
     }
   }
-} else {
-  cat("No 'alias' column in the sheet yet; using data-raw/aliases.csv alone.\n")
+  return(aliases)
 }
 
-stopifnot(!anyDuplicated(aliases$alias))
-
-# Warn about drift in both directions rather than failing the build.
-missing_alias <- setdiff(stats::na.omit(catalogo$doi), aliases$doi)
-if (length(missing_alias)) {
-  cat("! DOIs in the catalog with no alias:\n")
-  for (d in missing_alias) {
-    cat(sprintf(
-      "    %s  %s\n",
-      d,
-      catalogo$titulo_da_base_de_dados[match(d, catalogo$doi)]
-    ))
+validate_manual_inputs <- function(catalog, aliases, projects) {
+  duplicate <- unique(aliases$alias[duplicated(aliases$alias)])
+  unknown_project <- setdiff(stats::na.omit(aliases$project), projects$project)
+  problems <- character()
+  if (length(duplicate) > 0) {
+    problems <- c(
+      problems,
+      paste("Duplicated alias(es):", paste(duplicate, collapse = ", "))
+    )
   }
-}
-stale_alias <- setdiff(aliases$doi, stats::na.omit(catalogo$doi))
-
-if (length(stale_alias)) {
-  cat(
-    "! aliases pointing at DOIs no longer in the catalog:",
-    paste(unique(stale_alias), collapse = ", "),
-    "\n"
-  )
-}
-
-# Build the dataset registry ---------------------------------------------
-
-kw_cols <- grep("^palavra_chave_", names(catalogo), value = TRUE)
-
-registry <- list()
-files_cache <- list()
-
-for (i in seq_len(nrow(aliases))) {
-  alias <- aliases$alias[i]
-  doi <- aliases$doi[i]
-  row <- match(doi, catalogo$doi)
-  if (is.na(row)) {
-    cat(sprintf("  skipping %s: DOI %s not in the catalog\n", alias, doi))
-    next
+  if (length(unknown_project) > 0) {
+    problems <- c(
+      problems,
+      paste("Unknown project(s):", paste(unknown_project, collapse = ", "))
+    )
   }
-
-  if (is.null(files_cache[[doi]])) {
-    files_cache[[doi]] <- dv_files(doi) %||% character(0)
-  }
-  files <- files_cache[[doi]]
-
-  pattern <- aliases$file_pattern[i]
-  own <- if (is.na(pattern)) {
-    files
-  } else {
-    grep(pattern, files, value = TRUE, perl = TRUE)
-  }
-  own <- own[file_ext_each(own) %in% DATA_EXTS]
-
-  if (length(files) == 0) {
-    cat(sprintf("  ! %s (%s): no released version on Dataverse\n", alias, doi))
-  } else if (!is.na(pattern) && length(own) == 0) {
-    cat(sprintf(
-      "  ! %s: pattern '%s' matched no files in %s\n",
-      alias,
-      pattern,
-      doi
+  if (length(problems) > 0) {
+    cli::cli_abort(c(
+      "Manual registry inputs are invalid.",
+      stats::setNames(problems, rep("x", length(problems)))
     ))
   }
 
-  kws <- unlist(lapply(kw_cols, function(k) clean_text(catalogo[[k]][row])))
-  kws <- kws[!is.na(kws)]
-
-  registry[[alias]] <- list(
-    doi = doi,
-    title = clean_text(catalogo$titulo_da_base_de_dados[row]),
-    description = clean_text(catalogo$descricao_da_base_de_dados[row]),
-    theme = clean_text(catalogo$filtro_tema[row]),
-    region = clean_text(catalogo$filtro_regiao[row]),
-    keywords = if (length(kws)) paste(kws, collapse = "; ") else NULL,
-    collection = clean_text(catalogo$titulo_da_colecao[row]),
-    project = aliases$project[i],
-    access = catalogo$access[row],
-    file_pattern = if (is.na(pattern)) NULL else pattern,
-    formats = file_exts(own),
-    is_spatial = any(file_exts(own) %in% SPATIAL_EXTS),
-    status = "active"
-  )
-}
-
-# Catalog rows with no DOI are listed so users can find them and learn that
-# access runs through Insper's secure room rather than a download.
-for (row in which(is.na(catalogo$doi))) {
-  title <- clean_text(catalogo$titulo_da_base_de_dados[row])
-  if (is.na(title)) {
-    next
+  missing_alias <- setdiff(stats::na.omit(catalog$doi), aliases$doi)
+  if (length(missing_alias) > 0) {
+    cli::cli_warn("Catalog DOI{?s} without an alias: {.val {missing_alias}}")
   }
-  alias <- paste0("_unpublished_", row)
-  registry[[alias]] <- list(
-    doi = NULL,
-    title = title,
-    description = clean_text(catalogo$descricao_da_base_de_dados[row]),
-    theme = clean_text(catalogo$filtro_tema[row]),
-    region = clean_text(catalogo$filtro_regiao[row]),
-    collection = clean_text(catalogo$titulo_da_colecao[row]),
-    access = catalogo$access[row],
-    formats = character(0),
-    is_spatial = FALSE,
-    status = "unpublished"
-  )
+  stale_alias <- unique(setdiff(aliases$doi, stats::na.omit(catalog$doi)))
+  if (length(stale_alias) > 0) {
+    cli::cli_warn("Alias DOI{?s} absent from the catalog: {.val {stale_alias}}")
+  }
+  return(invisible(aliases))
 }
 
-# Retired aliases keep a tombstone so users who copied an old script get told
-# what happened instead of a bare "dataset not found".
-for (i in seq_len(nrow(retired))) {
-  registry[[retired$alias[i]]] <- list(
-    doi = retired$doi[i],
-    superseded_by = if (is.na(retired$superseded_by[i])) {
-      NULL
+# Dataverse and builders ------------------------------------------------------
+
+dataverse_files <- function(doi) {
+  url <- sprintf(
+    "%s/api/datasets/:persistentId/versions/:latest/files?persistentId=doi:%s",
+    server,
+    utils::URLencode(doi, reserved = TRUE)
+  )
+  response <- tryCatch(
+    jsonlite::fromJSON(url, simplifyVector = FALSE),
+    error = \(e) NULL
+  )
+  if (is.null(response) || !identical(response$status, "OK")) {
+    return(NULL)
+  }
+  files <- vapply(response$data, \(x) x$dataFile$filename, character(1))
+  return(files)
+}
+
+build_dataset_registry <- function(catalog, aliases, retired) {
+  registry <- list()
+  files_cache <- list()
+  keyword_columns <- catalog_keyword_columns(catalog)
+  for (index in seq_len(nrow(aliases))) {
+    alias <- aliases$alias[index]
+    doi <- aliases$doi[index]
+    row <- match(doi, catalog$doi)
+    if (is.na(row)) {
+      cli::cli_inform(
+        "Skipping {.val {alias}}: DOI {.val {doi}} is absent from the catalog."
+      )
+      next
+    }
+    if (is.null(files_cache[[doi]])) {
+      files_cache[[doi]] <- dataverse_files(doi) %||% character()
+    }
+    files <- files_cache[[doi]]
+    pattern <- aliases$file_pattern[index]
+    own <- if (is.na(pattern)) {
+      files
     } else {
-      retired$superseded_by[i]
-    },
-    reason = retired$reason[i],
-    status = "retired"
-  )
+      grep(pattern, files, value = TRUE, perl = TRUE)
+    }
+    own <- own[file_ext_each(own) %in% data_exts]
+    if (length(files) == 0) {
+      cli::cli_warn(
+        "{.val {alias}} ({.val {doi}}) has no released Dataverse version."
+      )
+    } else if (!is.na(pattern) && length(own) == 0) {
+      cli::cli_warn(
+        "Pattern {.val {pattern}} for {.val {alias}} matched no files in {.val {doi}}."
+      )
+    }
+    keywords <- unlist(catalog[row, keyword_columns], use.names = FALSE)
+    keywords <- keywords[!is.na(keywords)]
+    formats <- file_exts(own)
+    registry[[alias]] <- list(
+      doi = doi,
+      title = catalog$titulo_da_base_de_dados[row],
+      description = catalog$descricao_da_base_de_dados[row],
+      theme = catalog$filtro_tema[row],
+      region = catalog$filtro_regiao[row],
+      keywords = paste(keywords, collapse = "; "),
+      collection = catalog$titulo_da_colecao[row],
+      project = aliases$project[index],
+      access = catalog$access[row],
+      file_pattern = if (is.na(pattern)) NULL else pattern,
+      formats = formats,
+      is_spatial = any(formats %in% spatial_exts),
+      status = "active"
+    )
+  }
+
+  for (row in which(is.na(catalog$doi))) {
+    alias <- paste0("_unpublished_", row)
+    registry[[alias]] <- list(
+      doi = NULL,
+      title = catalog$titulo_da_base_de_dados[row],
+      description = catalog$descricao_da_base_de_dados[row],
+      theme = catalog$filtro_tema[row],
+      region = catalog$filtro_regiao[row],
+      collection = catalog$titulo_da_colecao[row],
+      access = catalog$access[row],
+      formats = character(),
+      is_spatial = FALSE,
+      status = "unpublished"
+    )
+  }
+  for (index in seq_len(nrow(retired))) {
+    registry[[retired$alias[index]]] <- list(
+      doi = retired$doi[index],
+      superseded_by = retired$superseded_by[index] %||% NULL,
+      reason = retired$reason[index],
+      status = "retired"
+    )
+  }
+  return(registry)
 }
 
-# Build the project registry ---------------------------------------------
-
-proj <- list()
-for (i in seq_len(nrow(projects))) {
-  slug <- projects$project[i]
-  members <- aliases$alias[!is.na(aliases$project) & aliases$project == slug]
-  members <- members[members %in% names(registry)]
-  proj[[slug]] <- list(
-    title = clean_text(projects$title[i]),
-    repo_url = if (is.na(projects$repo_url[i])) NULL else projects$repo_url[i],
-    visibility = if (is.na(projects$visibility[i])) {
-      NULL
-    } else {
-      projects$visibility[i]
-    },
-    datasets = members
-  )
+build_project_registry <- function(projects, aliases, registry) {
+  result <- list()
+  for (index in seq_len(nrow(projects))) {
+    slug <- projects$project[index]
+    members <- aliases$alias[!is.na(aliases$project) & aliases$project == slug]
+    members <- members[members %in% names(registry)]
+    result[[slug]] <- list(
+      title = clean_text(projects$title[index]),
+      repo_url = projects$repo_url[index] %||% NULL,
+      visibility = projects$visibility[index] %||% NULL,
+      datasets = members
+    )
+  }
+  return(result)
 }
 
-orphan <- setdiff(stats::na.omit(aliases$project), projects$project)
-if (length(orphan)) {
-  cat(
-    "! aliases reference unknown projects:",
-    paste(orphan, collapse = ", "),
-    "\n"
+# Output and entry point ------------------------------------------------------
+
+write_registry <- function(registry, projects) {
+  writeLines(
+    jsonlite::toJSON(registry, pretty = TRUE, auto_unbox = TRUE, null = "null"),
+    "inst/datasets.json"
   )
+  writeLines(
+    jsonlite::toJSON(projects, pretty = TRUE, auto_unbox = TRUE, null = "null"),
+    "inst/projects.json"
+  )
+  return(invisible(NULL))
 }
 
-# Write ------------------------------------------------------------------
-
-writeLines(
-  toJSON(registry, pretty = TRUE, auto_unbox = TRUE, null = "null"),
-  "inst/datasets.json"
-)
-writeLines(
-  toJSON(proj, pretty = TRUE, auto_unbox = TRUE, null = "null"),
-  "inst/projects.json"
-)
-
-active <- Filter(function(x) identical(x$status, "active"), registry)
-
-cat(sprintf(
-  "\nWrote inst/datasets.json: %d active, %d retired, %d unpublished\n",
-  length(active),
-  sum(vapply(registry, function(x) identical(x$status, "retired"), logical(1))),
-  sum(vapply(
-    registry,
-    function(x) identical(x$status, "unpublished"),
-    logical(1)
+report_registry <- function(registry, projects) {
+  status <- vapply(registry, \(x) x$status, character(1))
+  cli::cli_alert_success(paste0(
+    "Wrote {.file inst/datasets.json}: {sum(status == 'active')} active, ",
+    "{sum(status == 'retired')} retired, and ",
+    "{sum(status == 'unpublished')} unpublished."
   ))
-))
+  cli::cli_alert_success(
+    "Wrote {.file inst/projects.json}: {length(projects)} projects."
+  )
+  return(invisible(NULL))
+}
 
-cat(sprintf("Wrote inst/projects.json: %d projects\n\n", length(proj)))
+main <- function(validate_only = FALSE) {
+  catalog <- prepare_catalog(read_catalog())
 
-for (a in names(active)) {
-  e <- active[[a]]
-  cat(sprintf(
-    "  %-24s %-20s %-11s %s%s\n",
-    a,
-    e$doi,
-    e$project %||% "-",
-    paste(e$formats, collapse = ","),
-    if (isTRUE(e$is_spatial)) "  [spatial]" else ""
-  ))
+  if (validate_only) {
+    cli::cli_alert_success(
+      "Validation complete. No registry files were written."
+    )
+    return(invisible(NULL))
+  }
+
+  aliases <- read_csv_input("data-raw/aliases.csv")
+  projects <- read_csv_input("data-raw/projects.csv")
+  retired <- read_csv_input("data-raw/retired.csv")
+  aliases <- reconcile_aliases(catalog, aliases)
+  validate_manual_inputs(catalog, aliases, projects)
+
+  cli::cli_h1("Building registries")
+  registry <- build_dataset_registry(catalog, aliases, retired)
+  project_registry <- build_project_registry(projects, aliases, registry)
+  write_registry(registry, project_registry)
+  report_registry(registry, project_registry)
+  return(invisible(NULL))
+}
+
+if (sys.nframe() == 0) {
+  main(validate_only = "--validate-only" %in% commandArgs(trailingOnly = TRUE))
 }

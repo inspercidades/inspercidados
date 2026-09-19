@@ -31,13 +31,14 @@ read_json_asset <- function(file) {
   }
   path <- system.file(file, package = "inspercidados")
   if (!nzchar(path)) {
-    cli::cli_abort(
-      "Package data registry {.file {file}} not found. Try reinstalling the package."
-    )
+    cli::cli_abort(paste0(
+      "Package data registry {.file {file}} not found. ",
+      "Try reinstalling the package."
+    ))
   }
   reg <- jsonlite::read_json(path)
   # jsonlite decodes \uXXXX escapes but leaves strings marked "unknown".
-  # Explicitly tag each string as UTF-8 so R displays them correctly in any locale.
+  # Tag each string as UTF-8 so R displays it correctly in any locale.
   out <- lapply(reg, function(entry) {
     lapply(entry, function(v) {
       if (is.character(v)) {
@@ -126,7 +127,10 @@ resolve_dataset <- function(x) {
   if (!x %in% names(reg)) {
     cli::cli_abort(c(
       "Dataset {.val {x}} not found.",
-      "i" = "Run {.run inspercidados::list_datasets()} to see available datasets.",
+      "i" = paste0(
+        "Run {.run inspercidados::list_datasets()} to see available ",
+        "datasets."
+      ),
       "i" = "You can also pass a DOI directly, e.g. {.val 10.60873/FK2/TOXCRF}."
     ))
   }
@@ -139,7 +143,10 @@ resolve_dataset <- function(x) {
     cli::cli_abort(c(
       "Dataset {.val {x}} is catalogued but not published for download.",
       "i" = "Access runs through Insper's secure data room.",
-      "i" = "See {.url https://www.insper.edu.br/cidades} for how to request it."
+      "i" = paste0(
+        "See {.url https://www.insper.edu.br/cidades} for how to ",
+        "request it."
+      )
     ))
   }
   entry[["doi"]]
@@ -302,7 +309,10 @@ select_dv_file <- function(
     if (length(hit) > 1) {
       cli::cli_warn(c(
         "Multiple {.val {ext}} files found; using {.val {hit[[1]]}}.",
-        "i" = "Use {.arg filename}, {.arg year}, or {.arg file_pattern} to be specific.",
+        "i" = paste0(
+          "Use {.arg filename}, {.arg year}, or {.arg file_pattern} to be ",
+          "specific."
+        ),
         "i" = "Matched files: {.val {hit}}"
       ))
     }

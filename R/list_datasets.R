@@ -3,9 +3,9 @@
 #' Returns a tibble of datasets in the `inspercidados` registry. Data comes
 #' from the local registry (`inst/datasets.json`), so no network call is made.
 #'
-#' @param search A character string to filter results. Matched case-insensitively
-#'   against alias, title, description, keywords, theme, and region. Pass `NULL`
-#'   (default) to return all datasets.
+#' @param search A character string to filter results. Matched
+#'   case-insensitively against alias, title, description, keywords, theme, and
+#'   region. Pass `NULL` (default) to return all datasets.
 #' @param theme,region,project Optional filters, matched case-insensitively as
 #'   regular expressions against the corresponding column.
 #' @param spatial Logical. If `TRUE`, keep only datasets that ship a GeoPackage

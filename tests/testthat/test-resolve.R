@@ -9,8 +9,14 @@ test_that("resolve_dataset() passes a bare Insper DOI through", {
 test_that("resolve_dataset() extracts the DOI from URLs and doi: prefixes", {
   inputs <- c(
     "https://doi.org/10.60873/FK2/TOXCRF",
-    "https://dataverse.datascience.insper.edu.br/dataset.xhtml?persistentId=doi:10.60873/FK2/TOXCRF",
-    "https://dataverse.datascience.insper.edu.br/dataset.xhtml?persistentId=doi:10.60873/FK2/TOXCRF&version=1.0",
+    paste0(
+      "https://dataverse.datascience.insper.edu.br/dataset.xhtml?",
+      "persistentId=doi:10.60873/FK2/TOXCRF"
+    ),
+    paste0(
+      "https://dataverse.datascience.insper.edu.br/dataset.xhtml?",
+      "persistentId=doi:10.60873/FK2/TOXCRF&version=1.0"
+    ),
     "doi:10.60873/FK2/TOXCRF"
   )
 

@@ -35,14 +35,20 @@ browse_project <- function(x, open = TRUE) {
   } else {
     cli::cli_abort(c(
       "{.val {x}} is neither a dataset alias nor a project slug.",
-      "i" = "Run {.run inspercidados::list_datasets()} or {.run inspercidados::list_projects()}."
+      "i" = paste0(
+        "Run {.run inspercidados::list_datasets()} or ",
+        "{.run inspercidados::list_projects()}."
+      )
     ))
   }
 
   if (is.null(slug) || is.na(slug) || !slug %in% names(proj)) {
     cli::cli_abort(c(
       "No project is registered for {.val {x}}.",
-      "i" = "Run {.run inspercidados::list_projects()} to see the studies available."
+      "i" = paste0(
+        "Run {.run inspercidados::list_projects()} to see the studies ",
+        "available."
+      )
     ))
   }
 
@@ -67,7 +73,10 @@ browse_project <- function(x, open = TRUE) {
 
   if (identical(entry[["visibility"]], "private")) {
     cli::cli_alert_warning(c(
-      "This repository is private. Opening it needs an Insper Cidades GitHub account."
+      paste0(
+        "This repository is private. Opening it needs an Insper Cidades ",
+        "GitHub account."
+      )
     ))
   }
 
