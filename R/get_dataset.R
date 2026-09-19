@@ -183,5 +183,5 @@ get_dataset <- function(
     )
   }
 
-  list(data = data, docs = docs_out)
+  return(list(data = data, docs = docs_out))
 }

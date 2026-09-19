@@ -123,7 +123,7 @@ resolve_resource_name <- function(
       call = call
     )
   }
-  resource
+  return(resource)
 }
 
 # A retired alias means the deposit moved or was withdrawn. Say which, rather
@@ -251,7 +251,7 @@ filter_dv_format <- function(file_names, format = NULL) {
   if (is.null(format)) {
     return(file_names)
   }
-  file_names[effective_ext(file_names) == format]
+  return(file_names[effective_ext(file_names) == format])
 }
 
 # Preferred download format, in order. Spatial deposits resolve to gpkg so the

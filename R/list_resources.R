@@ -52,5 +52,5 @@ list_resources <- function(dataset) {
     ))
   )
   out$years[!nzchar(out$years)] <- NA_character_
-  out
+  return(out)
 }
