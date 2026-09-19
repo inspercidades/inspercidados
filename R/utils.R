@@ -76,6 +76,56 @@ registry_entry <- function(x) {
   reg[[x]]
 }
 
+resolve_resource_name <- function(
+  entry,
+  dataset,
+  resource = NULL,
+  call = rlang::caller_env()
+) {
+  resources <- entry[["resources"]]
+  resource_names <- names(resources)
+  if (
+    !is.null(resource) &&
+      (!is.character(resource) || length(resource) != 1 || is.na(resource))
+  ) {
+    cli::cli_abort(
+      "{.arg resource} must be a single string or {.code NULL}.",
+      call = call
+    )
+  }
+  if (is.null(resource) && length(resource_names) == 1) {
+    return(resource_names[[1]])
+  }
+  if (is.null(resource)) {
+    defaults <- resource_names[vapply(
+      resources,
+      function(x) isTRUE(x[["default"]]),
+      logical(1)
+    )]
+    if (length(defaults) != 1) {
+      cli::cli_abort(
+        c(
+          "Dataset {.val {dataset}} contains multiple resources.",
+          "i" = "Choose one with {.arg resource}: {.val {resource_names}}.",
+          "i" = "Run {.run list_resources(\"{dataset}\")} for details."
+        ),
+        call = call
+      )
+    }
+    return(defaults[[1]])
+  }
+  if (!resource %in% resource_names) {
+    cli::cli_abort(
+      c(
+        "Resource {.val {resource}} is not available for {.val {dataset}}.",
+        "i" = "Available resources: {.val {resource_names}}"
+      ),
+      call = call
+    )
+  }
+  resource
+}
+
 # A retired alias means the deposit moved or was withdrawn. Say which, rather
 # than letting the user hit a bare "not found".
 abort_retired <- function(alias, entry) {
@@ -195,6 +245,13 @@ effective_ext <- function(filenames) {
     character(1),
     USE.NAMES = FALSE
   )
+}
+
+filter_dv_format <- function(file_names, format = NULL) {
+  if (is.null(format)) {
+    return(file_names)
+  }
+  file_names[effective_ext(file_names) == format]
 }
 
 # Preferred download format, in order. Spatial deposits resolve to gpkg so the

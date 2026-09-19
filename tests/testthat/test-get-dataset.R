@@ -16,6 +16,25 @@ test_that("get_dataset() validates resource names before downloading", {
   })
 })
 
+test_that("a sole resource does not need a default flag", {
+  entry <- list(resources = list(dados = list(default = FALSE)))
+
+  expect_equal(resolve_resource_name(entry, "exemplo"), "dados")
+})
+
+test_that("multiple resources without a default require a selection", {
+  entry <- list(
+    resources = list(
+      dados = list(default = FALSE),
+      pontos = list(default = FALSE)
+    )
+  )
+
+  expect_snapshot(error = TRUE, {
+    resolve_resource_name(entry, "exemplo")
+  })
+})
+
 test_that("get_dataset() validates year before downloading", {
   expect_snapshot(error = TRUE, {
     get_dataset("pemob_anual", year = c(2023, 2024))

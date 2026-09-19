@@ -76,34 +76,7 @@ get_dataset <- function(
   doi_url <- doi_to_url(doi)
   server <- insper_server()
   resources <- entry[["resources"]]
-  resource_names <- names(resources)
-  if (
-    !is.null(resource) &&
-      (!is.character(resource) || length(resource) != 1 || is.na(resource))
-  ) {
-    cli::cli_abort("{.arg resource} must be a single string or {.code NULL}.")
-  }
-  if (is.null(resource)) {
-    defaults <- resource_names[vapply(
-      resources,
-      function(x) isTRUE(x[["default"]]),
-      logical(1)
-    )]
-    if (length(defaults) != 1) {
-      cli::cli_abort(c(
-        "Dataset {.val {dataset}} contains multiple resources.",
-        "i" = "Choose one with {.arg resource}: {.val {resource_names}}.",
-        "i" = "Run {.run list_resources(\"{dataset}\")} for details."
-      ))
-    }
-    resource <- defaults[[1]]
-  }
-  if (!resource %in% resource_names) {
-    cli::cli_abort(c(
-      "Resource {.val {resource}} is not available for {.val {dataset}}.",
-      "i" = "Available resources: {.val {resource_names}}"
-    ))
-  }
+  resource <- resolve_resource_name(entry, dataset, resource)
   definition <- resources[[resource]]
   if (
     !is.null(year) &&
@@ -152,6 +125,7 @@ get_dataset <- function(
       ))
     }
   }
+  file_names <- filter_dv_format(file_names, format)
 
   target <- select_dv_file(
     file_names,

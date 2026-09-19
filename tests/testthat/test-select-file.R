@@ -15,6 +15,16 @@ test_that("effective_ext() looks through .gz", {
   )
 })
 
+test_that("filter_dv_format() treats format as a strict selector", {
+  files <- c("dados_2023.tab", "dados_2024.parquet")
+  parquet <- filter_dv_format(files, "parquet")
+
+  expect_equal(parquet, "dados_2024.parquet")
+  expect_snapshot(error = TRUE, {
+    select_dv_file(parquet, year = 2023, strict = TRUE)
+  })
+})
+
 test_that("format_priority() puts spatial formats first for spatial data", {
   skip_if_not_installed("sf")
 

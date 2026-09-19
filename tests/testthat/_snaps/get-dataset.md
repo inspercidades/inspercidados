@@ -26,6 +26,16 @@
       ! Resource "estacoes" is not available for "qualidade_ar_mare".
       i Available resources: "dados" and "pontos"
 
+# multiple resources without a default require a selection
+
+    Code
+      resolve_resource_name(entry, "exemplo")
+    Condition
+      Error:
+      ! Dataset "exemplo" contains multiple resources.
+      i Choose one with `resource`: "dados" and "pontos".
+      i Run `list_resources("exemplo")` for details.
+
 # get_dataset() validates year before downloading
 
     Code
