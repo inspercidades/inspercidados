@@ -15,6 +15,16 @@ test_that("effective_ext() looks through .gz", {
   )
 })
 
+test_that("filter_dv_format() treats format as a strict selector", {
+  files <- c("dados_2023.tab", "dados_2024.parquet")
+  parquet <- filter_dv_format(files, "parquet")
+
+  expect_equal(parquet, "dados_2024.parquet")
+  expect_snapshot(error = TRUE, {
+    select_dv_file(parquet, year = 2023, strict = TRUE)
+  })
+})
+
 test_that("format_priority() puts spatial formats first for spatial data", {
   skip_if_not_installed("sf")
 
@@ -66,6 +76,12 @@ test_that("select_dv_file() warns for tied winning-format files", {
     "Multiple"
   )
   expect_equal(out, "pemob_2022.tab")
+})
+
+test_that("select_dv_file() rejects ambiguous files in strict mode", {
+  expect_snapshot(error = TRUE, {
+    select_dv_file(files, prefer = "tab", strict = TRUE)
+  })
 })
 
 test_that("select_dv_file() never returns a documentation workbook", {

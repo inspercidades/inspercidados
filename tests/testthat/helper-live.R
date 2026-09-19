@@ -32,15 +32,13 @@ live_file_names <- function(doi) {
   return(out)
 }
 
-# Files that belong to an alias, after its registry file_pattern.
-live_alias_files <- function(entry) {
+# Files that belong to one registered resource.
+live_resource_files <- function(entry, resource) {
   file_names <- live_file_names(entry[["doi"]])
   if (inherits(file_names, "live_error")) {
     return(file_names)
   }
-  pattern <- entry[["file_pattern"]]
-  if (!is.null(pattern)) {
-    file_names <- file_names[grepl(pattern, file_names, perl = TRUE)]
-  }
+  pattern <- entry[["resources"]][[resource]][["file_pattern"]]
+  file_names <- file_names[grepl(pattern, file_names, perl = TRUE)]
   return(file_names)
 }

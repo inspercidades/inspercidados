@@ -6,28 +6,28 @@
 \usage{
 get_dataset(
   dataset,
+  ...,
+  resource = NULL,
   year = NULL,
-  filename = NULL,
-  file_pattern = NULL,
+  format = NULL,
   docs = FALSE
 )
 }
 \arguments{
 \item{dataset}{A dataset identifier. One of:
-\itemize{
-\item A short alias, e.g. \code{"iptu_sp"} (see \code{\link[=list_datasets]{list_datasets()}} for all aliases).
-\item A bare DOI, e.g. \code{"10.60873/FK2/TOXCRF"}.
-\item A full DOI URL, e.g. \code{"https://doi.org/10.60873/FK2/TOXCRF"}.
-}}
+A short alias, e.g. \code{"iptu_sp"}. See \code{\link[=list_datasets]{list_datasets()}} for all aliases.}
+
+\item{...}{Reserved for future selectors. Must be empty.}
+
+\item{resource}{The name of a logical resource within the registered
+dataset. When \code{NULL}, the resource marked as the default is used. See
+\code{\link[=list_resources]{list_resources()}} for the available names.}
 
 \item{year}{An integer or character year used to filter files when a dataset
 contains multiple annual files (e.g. \code{year = 2023}).}
 
-\item{filename}{The exact filename to download from the dataset. Overrides
-\code{year} and \code{file_pattern}.}
-
-\item{file_pattern}{A regex pattern matched against filenames. Applied after
-\code{year} filtering.}
+\item{format}{An optional file format, such as \code{"parquet"}, \code{"gpkg"}, or
+\code{"xlsx"}. The format must be available for the selected resource.}
 
 \item{docs}{Logical. If \code{TRUE}, returns a named list with two elements:
 \code{data} (the downloaded tibble/sf object) and \code{docs}. When the dataset
@@ -43,35 +43,33 @@ object with the \code{"doi"} attribute set. When \code{docs = TRUE}: a named lis
 with elements \code{data} and \code{docs}.
 }
 \description{
-Downloads a dataset into R as a tibble or \code{sf} object. The dataset can be
-identified by its short alias, bare DOI, or full DOI URL.
+Downloads a registered dataset into R as a tibble or \code{sf} object. Identify
+the dataset by its short alias; use \code{\link[=get_dataverse]{get_dataverse()}} for a DOI or URL.
 }
 \details{
-When a deposit contains multiple files, the function picks one by format.
-Spatial datasets resolve to GeoPackage so the result is an \code{sf} object;
-other datasets favour RDS, then Parquet, then delimited text, then Excel.
-Formats needing a suggested package are skipped when it is not installed.
-Use \code{year}, \code{filename}, or \code{file_pattern} to override the choice.
+A Dataverse deposit may contain several logical resources, each distributed
+in several formats. Use \code{resource} to select the logical dataset and
+\code{format} to select its representation. Deposits with one resource, or a
+declared default, need neither argument.
 
-Some aliases share a single Dataverse deposit. \code{"pemob_anual"} and
-\code{"pemob_harmonizada"} both point at the PEMOB deposit and are separated by a
-file pattern stored in the registry.
+When \code{format} is omitted, spatial resources prefer GeoPackage and GeoJSON;
+other resources prefer RDS, Parquet, delimited text, and Excel. Formats that
+need an uninstalled suggested package are skipped.
 }
 \examples{
 \dontshow{if (live_examples()) withAutoprint(\{ # examplesIf}
 # By alias
 embarques <- get_dataset("embarques_mensais")
 
-# By DOI, or by the DOI URL
-embarques <- get_dataset("10.60873/FK2/BPYHFB")
-embarques <- get_dataset("https://doi.org/10.60873/FK2/BPYHFB")
-
 # Pick one year from a multi-year dataset
 pemob_2023 <- get_dataset("pemob_anual", year = 2023)
 
-# Request a file by exact name, or by regex
-linhas <- get_dataset("estacoes_motiva", filename = "dim_line.rds")
-estacoes <- get_dataset("estacoes_motiva", file_pattern = "^dim_station")
+# Pick a resource and an explicit format
+pontos <- get_dataset(
+  "qualidade_ar_mare",
+  resource = "pontos",
+  format = "gpkg"
+)
 
 # Return the data with its documentation
 result <- get_dataset("embarques_mensais", docs = TRUE)

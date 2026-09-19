@@ -11,8 +11,7 @@
   geojson = "geojson",
   json = "geojson",
   xlsx = "xlsx",
-  xls = "xlsx",
-  zip = "zip"
+  xls = "xlsx"
 )
 
 # Inner extension (after stripping .gz) -> file type
@@ -39,16 +38,17 @@ read_json_asset <- function(file) {
   reg <- jsonlite::read_json(path)
   # jsonlite decodes \uXXXX escapes but leaves strings marked "unknown".
   # Tag each string as UTF-8 so R displays it correctly in any locale.
-  out <- lapply(reg, function(entry) {
-    lapply(entry, function(v) {
-      if (is.character(v)) {
-        Encoding(v) <- "UTF-8"
-        v
-      } else {
-        v
-      }
-    })
-  })
+  mark_utf8 <- function(x) {
+    if (is.character(x)) {
+      Encoding(x) <- "UTF-8"
+      return(x)
+    }
+    if (is.list(x)) {
+      return(lapply(x, mark_utf8))
+    }
+    return(x)
+  }
+  out <- lapply(reg, mark_utf8)
   assign(file, out, envir = .registry_cache)
   out
 }
@@ -74,6 +74,56 @@ registry_entry <- function(x) {
     return(NULL)
   }
   reg[[x]]
+}
+
+resolve_resource_name <- function(
+  entry,
+  dataset,
+  resource = NULL,
+  call = rlang::caller_env()
+) {
+  resources <- entry[["resources"]]
+  resource_names <- names(resources)
+  if (
+    !is.null(resource) &&
+      (!is.character(resource) || length(resource) != 1 || is.na(resource))
+  ) {
+    cli::cli_abort(
+      "{.arg resource} must be a single string or {.code NULL}.",
+      call = call
+    )
+  }
+  if (is.null(resource) && length(resource_names) == 1) {
+    return(resource_names[[1]])
+  }
+  if (is.null(resource)) {
+    defaults <- resource_names[vapply(
+      resources,
+      function(x) isTRUE(x[["default"]]),
+      logical(1)
+    )]
+    if (length(defaults) != 1) {
+      cli::cli_abort(
+        c(
+          "Dataset {.val {dataset}} contains multiple resources.",
+          "i" = "Choose one with {.arg resource}: {.val {resource_names}}.",
+          "i" = "Run {.run list_resources(\"{dataset}\")} for details."
+        ),
+        call = call
+      )
+    }
+    return(defaults[[1]])
+  }
+  if (!resource %in% resource_names) {
+    cli::cli_abort(
+      c(
+        "Resource {.val {resource}} is not available for {.val {dataset}}.",
+        "i" = "Available resources: {.val {resource_names}}"
+      ),
+      call = call
+    )
+  }
+  return(resource)
 }
 
 # A retired alias means the deposit moved or was withdrawn. Say which, rather
@@ -197,6 +247,13 @@ effective_ext <- function(filenames) {
   )
 }
 
+filter_dv_format <- function(file_names, format = NULL) {
+  if (is.null(format)) {
+    return(file_names)
+  }
+  return(file_names[effective_ext(file_names) == format])
+}
+
 # Preferred download format, in order. Spatial deposits resolve to gpkg so the
 # result is an sf object; everything else favours typed formats over text.
 format_priority <- function(is_spatial = FALSE) {
@@ -223,8 +280,7 @@ DATA_EXTS <- c(
   "gpkg",
   "geojson",
   "xlsx",
-  "xls",
-  "zip"
+  "xls"
 )
 
 # Select a file from those available in the dataset.
@@ -235,7 +291,8 @@ select_dv_file <- function(
   year = NULL,
   filename = NULL,
   file_pattern = NULL,
-  prefer = NULL
+  prefer = NULL,
+  strict = FALSE
 ) {
   if (!is.null(filename)) {
     if (!filename %in% file_names) {
@@ -307,6 +364,16 @@ select_dv_file <- function(
       next
     }
     if (length(hit) > 1) {
+      if (strict) {
+        cli::cli_abort(c(
+          "Multiple files remain after applying the dataset selectors.",
+          "i" = paste0(
+            "Use {.arg year}, {.arg resource}, or {.arg format} to be ",
+            "more specific."
+          ),
+          "i" = "Matched files: {.val {hit}}"
+        ))
+      }
       cli::cli_warn(c(
         "Multiple {.val {ext}} files found; using {.val {hit[[1]]}}.",
         "i" = paste0(
@@ -317,6 +384,13 @@ select_dv_file <- function(
       ))
     }
     return(hit[[1]])
+  }
+
+  if (strict) {
+    cli::cli_abort(c(
+      "No file matched the requested or readable formats.",
+      "i" = "Available files: {.val {candidates}}"
+    ))
   }
 
   cli::cli_warn(c(

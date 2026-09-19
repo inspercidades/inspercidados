@@ -1,6 +1,6 @@
 Package: inspercidados
 Title: Access to Brazilian Urban Datasets from Insper Cidades
-Version: 0.3.0
+Version: 0.4.0
 Authors@R: c(
     person("Vinicius", "Oike", , "viniciusor@insper.edu.br", role = c("aut", "cre"),
            comment = c(ORCID = "0009-0005-8015-9189")),
@@ -8,9 +8,9 @@ Authors@R: c(
   )
 Description: A lightweight interface for discovering, downloading, and citing
     curated Brazilian urban datasets hosted on Insper's Dataverse repository.
-    Provides three core functions: list_datasets() to browse available data,
-    get_dataset() to download data directly into R, and cite_dataset() to
-    generate properly formatted academic citations.
+    Lists datasets and their logical resources, downloads data directly into
+    R, links each dataset to its replication project, and generates academic
+    citations from repository metadata.
 License: MIT + file LICENSE
 URL: https://github.com/inspercidades/inspercidados,
     https://inspercidades.github.io/inspercidados

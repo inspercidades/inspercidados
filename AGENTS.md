@@ -18,18 +18,19 @@ The package website is built with **pkgdown**.
 | `list_projects()`  | List the studies behind the datasets, with their repos                                                                                                     |
 | `get_dataset()`    | Download a registered dataset into R                                                                                                                       |
 | `get_dataverse()`  | Download any Insper Dataverse deposit from a pasted DOI/URL                                                                                                |
-| `browse_project()` | Print a study, its datasets, and open its repository                                                                                                       |
+| `open_project()` | Print a study, its datasets, and open its repository                                                                                                       |
 | `cite_dataset()`   | Generate a citation for a dataset                                                                                                                          |
-| `get_script()`     | Deprecated shim (lifecycle badge + `cli_warn`) that forwards to `browse_project()`                                                                         |
+| `get_script()`     | Deprecated shim (lifecycle badge + `cli_warn`) that forwards to `open_project()`                                                                         |
 
 ## Package Architecture
 
 ```
-inst/datasets.json          <- alias -> DOI, metadata, file_pattern, formats, status
+inst/datasets.json          <- alias -> DOI, metadata, logical resources, status
 inst/projects.json          <- project slug -> title, repo_url, visibility, member datasets
 inst/scripts/               <- standalone pipeline scripts shipped with the package
 data-raw/build_registry.R   <- Google Sheet + Dataverse API -> both JSON files
-data-raw/aliases.csv        <- DOI (+ file_pattern) -> alias, project
+data-raw/aliases.csv        <- DOI -> alias, project
+data-raw/resources.csv      <- alias -> resource, file pattern, title, default
 data-raw/projects.csv       <- project -> repo URL, visibility
 data-raw/retired.csv        <- aliases that no longer resolve
 data-raw/_template/         <- skeleton pipeline (download -> clean -> validate -> export) for new datasets
@@ -38,7 +39,7 @@ R/list_datasets.R           <- list_datasets()
 R/list_projects.R           <- list_projects()
 R/get_dataset.R             <- get_dataset()
 R/get_dataverse.R           <- get_dataverse()
-R/browse_project.R          <- browse_project()
+R/open_project.R          <- open_project()
 R/cite_dataset.R            <- cite_dataset()
 R/get_script.R              <- deprecated shim
 R/utils.R                   <- internal helpers (server, resolve ID, readers)
@@ -56,10 +57,11 @@ column cannot say that. `is_spatial` and `formats` are derived from the
 deposited file extensions, never from the sheet's `is_geoportal` column, which
 means something else. Auth uses `CIDADOS_GS4_EMAIL` from `.Renviron`.
 
-**An alias is a DOI plus an optional file pattern.** Several aliases can share
-one deposit. `pemob_anual` and `pemob_harmonizada` both point at
-`10.60873/FK2/5XUNNW` and separate by `file_pattern`. `get_dataset()` applies
-that pattern before any user selector.
+**An alias contains one or more logical resources.** Each resource identifies
+one logical dataset through a file pattern and may be distributed in several
+formats or split by a declared dimension such as year. Several aliases can
+still share one deposit: `pemob_anual` and `pemob_harmonizada` both point at
+`10.60873/FK2/5XUNNW`, while their resource patterns keep their files separate.
 
 **Entries carry a `status`.** `active` is downloadable. `unpublished` is a
 catalogued study with no DOI yet (`"doi": null`): it is discoverable via
@@ -87,7 +89,16 @@ Example registry entry:
     "collection": "Pesquisa Nacional de Mobilidade Urbana (PEMOB) [2019-2024]",
     "project": "pemob",
     "access": "download",
-    "file_pattern": "^pemob_[0-9]{4}",
+    "resources": {
+      "dados": {
+        "title": "Bases anuais da PEMOB",
+        "file_pattern": "^pemob_[0-9]{4}[.]",
+        "formats": ["parquet", "tab", "xlsx"],
+        "is_spatial": false,
+        "years": ["2019", "2020", "2021", "2022", "2023", "2024"],
+        "default": true
+      }
+    },
     "formats": ["parquet", "tab", "xlsx"],
     "is_spatial": false,
     "status": "active"
@@ -97,7 +108,8 @@ Example registry entry:
 
 **Server** is always `dataverse.datascience.insper.edu.br` — never ask the user to configure it.
 
-**Identifier resolution** (in order):
+**Identifier resolution.** `get_dataset()` accepts registered aliases only.
+`get_dataverse()` resolves identifiers in this order:
 
 1. Alias (e.g. `"iptu_sp"`) -> look up DOI in `inst/datasets.json`
 2. DOI (e.g. `"10.60873/FK2/7IXFPX"`) -> use directly
@@ -132,7 +144,7 @@ Pipelines are published as whole repositories, not as one script per dataset,
 because a study normally produces several datasets across many files. The
 mapping lives in `inst/projects.json` and is many-to-many: `faixa-azul`
 produces three datasets, and some studies have no repository yet.
-`browse_project()` prints the study and opens its repo; repos marked `private`
+`open_project()` prints the study and opens its repo; repos marked `private`
 are flagged before opening.
 
 `replication_scripts/` is a stale local copy of code that now lives in the org
@@ -144,10 +156,9 @@ Users can identify a dataset in several ways:
 
 ```r
 get_dataset("iptu_sp")                          # by alias
-get_dataset("10.60873/FK2/TOXCRF")              # by DOI
 get_dataset("pemob_anual", year = 2023)         # filter by year in filename
-get_dataset("iptu_sp", filename = "iptu.gpkg")  # exact filename
-get_dataset("iptu_sp", file_pattern = "\\.gpkg$") # regex pattern
+get_dataset("qualidade_ar_mare", resource = "pontos")
+get_dataset("iptu_sp", format = "gpkg")
 get_dataset("iptu_sp", docs = TRUE)             # also return documentation
 
 # Any deposit, registered or not
@@ -196,7 +207,7 @@ pkgdown::build_site()     # build website
 - `readr` — delimited text readers
 - `rlang` — `check_installed()` for Suggests, `%||%` helper
 - `tibble` — `list_datasets()` / `list_projects()` output
-- `utils` — `browseURL` in `browse_project()`
+- `utils` — `browseURL` in `open_project()`
 - `tools` — file-extension helpers
 
 **Suggests** (loaded conditionally with `rlang::check_installed()`):

@@ -44,8 +44,7 @@ data_exts <- c(
   "gpkg",
   "geojson",
   "xlsx",
-  "xls",
-  "zip"
+  "xls"
 )
 spatial_exts <- c("gpkg", "geojson", "shp")
 
@@ -240,7 +239,9 @@ catalog_validation_issues <- function(catalog) {
 
   doi <- extract_doi(catalog$link_da_base_de_dados_data_verse)
   link <- clean_text(catalog$link_da_base_de_dados_data_verse)
-  invalid_doi <- !is.na(link) & is.na(doi)
+  claims_dataverse <- grepl("dataverse|doi", link, ignore.case = TRUE)
+  claims_dataverse[is.na(claims_dataverse)] <- FALSE
+  invalid_doi <- claims_dataverse & is.na(doi)
   for (index in which(invalid_doi)) {
     add_issue(
       index,
@@ -299,19 +300,19 @@ prepare_catalog <- function(catalog) {
 
 # Manual registry inputs ------------------------------------------------------
 
-reconcile_aliases <- function(catalog, aliases) {
+reconcile_aliases <- function(catalog, aliases, resources) {
   if (!"alias" %in% names(catalog)) {
     cli::cli_inform(
       "No {.field alias} column in the sheet; using {.file data-raw/aliases.csv}."
     )
-    return(aliases)
+    return(list(aliases = aliases, resources = resources))
   }
   sheet_alias <- clean_text(catalog$alias)
   supplied <- !is.na(sheet_alias) & !is.na(catalog$doi)
   cli::cli_inform("The sheet supplies {sum(supplied)} alias{?es}.")
 
   for (index in which(supplied)) {
-    hit <- aliases$doi == catalog$doi[index] & is.na(aliases$file_pattern)
+    hit <- aliases$doi == catalog$doi[index] & aliases$primary
     if (any(hit)) {
       first <- which(hit)[1]
       if (!identical(aliases$alias[first], sheet_alias[index])) {
@@ -319,14 +320,16 @@ reconcile_aliases <- function(catalog, aliases) {
           "Sheet alias {.val {sheet_alias[index]}} overrides {.val {aliases$alias[first]}} for {.val {catalog$doi[index]}}."
         )
       }
+      old_alias <- aliases$alias[first]
       aliases$alias[first] <- sheet_alias[index]
+      resources$alias[resources$alias == old_alias] <- sheet_alias[index]
     } else {
       aliases <- rbind(
         aliases,
         data.frame(
           doi = catalog$doi[index],
           alias = sheet_alias[index],
-          file_pattern = NA_character_,
+          primary = TRUE,
           project = NA_character_,
           notes = NA_character_,
           stringsAsFactors = FALSE
@@ -334,12 +337,17 @@ reconcile_aliases <- function(catalog, aliases) {
       )
     }
   }
-  return(aliases)
+  return(list(aliases = aliases, resources = resources))
 }
 
-validate_manual_inputs <- function(catalog, aliases, projects) {
+validate_manual_inputs <- function(catalog, aliases, resources, projects) {
   duplicate <- unique(aliases$alias[duplicated(aliases$alias)])
   unknown_project <- setdiff(stats::na.omit(aliases$project), projects$project)
+  missing_resources <- setdiff(aliases$alias, resources$alias)
+  unknown_aliases <- setdiff(resources$alias, aliases$alias)
+  resource_key <- paste(resources$alias, resources$resource, sep = "/")
+  duplicate_resources <- unique(resource_key[duplicated(resource_key)])
+  defaults <- tapply(resources$default, resources$alias, sum)
   problems <- character()
   if (length(duplicate) > 0) {
     problems <- c(
@@ -351,6 +359,43 @@ validate_manual_inputs <- function(catalog, aliases, projects) {
     problems <- c(
       problems,
       paste("Unknown project(s):", paste(unknown_project, collapse = ", "))
+    )
+  }
+  if (length(missing_resources) > 0) {
+    problems <- c(
+      problems,
+      paste(
+        "Aliases without resources:",
+        paste(missing_resources, collapse = ", ")
+      )
+    )
+  }
+  if (length(unknown_aliases) > 0) {
+    problems <- c(
+      problems,
+      paste(
+        "Resources for unknown aliases:",
+        paste(unknown_aliases, collapse = ", ")
+      )
+    )
+  }
+  if (length(duplicate_resources) > 0) {
+    problems <- c(
+      problems,
+      paste(
+        "Duplicated resources:",
+        paste(duplicate_resources, collapse = ", ")
+      )
+    )
+  }
+  invalid_defaults <- names(defaults)[is.na(defaults) | defaults > 1]
+  if (length(invalid_defaults) > 0) {
+    problems <- c(
+      problems,
+      paste(
+        "Aliases with invalid or multiple default resources:",
+        paste(invalid_defaults, collapse = ", ")
+      )
     )
   }
   if (length(problems) > 0) {
@@ -390,7 +435,7 @@ dataverse_files <- function(doi) {
   return(files)
 }
 
-build_dataset_registry <- function(catalog, aliases, retired) {
+build_dataset_registry <- function(catalog, aliases, resources, retired) {
   registry <- list()
   files_cache <- list()
   keyword_columns <- catalog_keyword_columns(catalog)
@@ -408,25 +453,62 @@ build_dataset_registry <- function(catalog, aliases, retired) {
       files_cache[[doi]] <- dataverse_files(doi) %||% character()
     }
     files <- files_cache[[doi]]
-    pattern <- aliases$file_pattern[index]
-    own <- if (is.na(pattern)) {
-      files
-    } else {
-      grep(pattern, files, value = TRUE, perl = TRUE)
+    definitions <- resources[resources$alias == alias, , drop = FALSE]
+    resource_list <- list()
+    matched_files <- character()
+    for (resource_index in seq_len(nrow(definitions))) {
+      resource <- definitions$resource[resource_index]
+      pattern <- definitions$file_pattern[resource_index]
+      own <- grep(pattern, files, value = TRUE, perl = TRUE)
+      own <- own[file_ext_each(own) %in% data_exts]
+      overlap <- intersect(own, matched_files)
+      if (length(overlap) > 0) {
+        cli::cli_abort(
+          "Resource {.val {resource}} for {.val {alias}} overlaps another resource: {.val {overlap}}."
+        )
+      }
+      if (length(files) > 0 && length(own) == 0) {
+        cli::cli_abort(
+          "Resource {.val {resource}} for {.val {alias}} matched no files in {.val {doi}}."
+        )
+      }
+      matched_files <- c(matched_files, own)
+      resource_formats <- file_exts(own)
+      documentation_pattern <- definitions$documentation_pattern[
+        resource_index
+      ] %||%
+        NULL
+      if (
+        !is.null(documentation_pattern) &&
+          !any(grepl(documentation_pattern, files, perl = TRUE))
+      ) {
+        cli::cli_abort(
+          "Documentation pattern for {.val {alias}}/{.val {resource}} matched no files in {.val {doi}}."
+        )
+      }
+      years <- unique(unlist(stringr::str_extract_all(
+        own,
+        "(?<![0-9])[12][0-9]{3}(?![0-9])"
+      )))
+      years <- sort(years[!is.na(years)])
+      resource_list[[resource]] <- list(
+        title = definitions$title[resource_index],
+        file_pattern = pattern,
+        documentation_pattern = documentation_pattern,
+        formats = resource_formats,
+        is_spatial = any(resource_formats %in% spatial_exts),
+        years = years,
+        default = isTRUE(definitions$default[resource_index])
+      )
     }
-    own <- own[file_ext_each(own) %in% data_exts]
     if (length(files) == 0) {
       cli::cli_warn(
         "{.val {alias}} ({.val {doi}}) has no released Dataverse version."
       )
-    } else if (!is.na(pattern) && length(own) == 0) {
-      cli::cli_warn(
-        "Pattern {.val {pattern}} for {.val {alias}} matched no files in {.val {doi}}."
-      )
     }
     keywords <- unlist(catalog[row, keyword_columns], use.names = FALSE)
     keywords <- keywords[!is.na(keywords)]
-    formats <- file_exts(own)
+    formats <- sort(unique(unlist(lapply(resource_list, `[[`, "formats"))))
     registry[[alias]] <- list(
       doi = doi,
       title = catalog$titulo_da_base_de_dados[row],
@@ -437,7 +519,7 @@ build_dataset_registry <- function(catalog, aliases, retired) {
       collection = catalog$titulo_da_colecao[row],
       project = aliases$project[index],
       access = catalog$access[row],
-      file_pattern = if (is.na(pattern)) NULL else pattern,
+      resources = resource_list,
       formats = formats,
       is_spatial = any(formats %in% spatial_exts),
       status = "active"
@@ -524,13 +606,18 @@ main <- function(validate_only = FALSE) {
   }
 
   aliases <- read_csv_input("data-raw/aliases.csv")
+  resources <- read_csv_input("data-raw/resources.csv")
   projects <- read_csv_input("data-raw/projects.csv")
   retired <- read_csv_input("data-raw/retired.csv")
-  aliases <- reconcile_aliases(catalog, aliases)
-  validate_manual_inputs(catalog, aliases, projects)
+  aliases$primary <- tolower(aliases$primary) == "true"
+  resources$default <- tolower(resources$default) == "true"
+  reconciled <- reconcile_aliases(catalog, aliases, resources)
+  aliases <- reconciled$aliases
+  resources <- reconciled$resources
+  validate_manual_inputs(catalog, aliases, resources, projects)
 
   cli::cli_h1("Building registries")
-  registry <- build_dataset_registry(catalog, aliases, retired)
+  registry <- build_dataset_registry(catalog, aliases, resources, retired)
   project_registry <- build_project_registry(projects, aliases, registry)
   write_registry(registry, project_registry)
   report_registry(registry, project_registry)

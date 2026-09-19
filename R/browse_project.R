@@ -1,88 +1,26 @@
-#' Open the study behind a dataset
+#' Deprecated alias for open_project()
 #'
-#' Prints the study a dataset came from, the other datasets it produced, and
-#' the repository holding its processing code, then opens that repository in a
-#' browser.
+#' @description
+#' `r lifecycle::badge("soft-deprecated")`
 #'
-#' Pipelines are published as repositories rather than as single scripts,
-#' because one study normally produces several datasets across many files.
-#' Some repositories are private and open only for Insper Cidades members;
-#' [list_projects()] reports which.
+#' `browse_project()` was renamed to [open_project()] to avoid the name
+#' conflict with `usethis::browse_project()`. It now forwards to
+#' [open_project()] and will be removed in a future release.
 #'
-#' @param x A dataset alias (see [list_datasets()]) or a project slug (see
-#'   [list_projects()]).
-#' @param open Logical. If `TRUE` (default), open the repository in a browser
-#'   when one is registered and the session is interactive.
+#' @param x A study, dataset alias.
+#' @param open Passed to [open_project()].
 #'
-#' @return The repository URL, invisibly, or `NULL` when no repository is
-#'   registered for the project.
+#' @return The repository URL, invisibly.
 #'
+#' @keywords internal
 #' @export
 #' @examples
-#' # By dataset alias
-#' browse_project("sinistros_sp", open = FALSE)
-#'
-#' # By project slug
-#' browse_project("motiva", open = FALSE)
+#' # Deprecated; use open_project() instead.
+#' open_project("sinistros_sp", open = FALSE)
 browse_project <- function(x, open = TRUE) {
-  proj <- read_projects()
-  reg <- read_registry()
-
-  slug <- if (x %in% names(proj)) {
-    x
-  } else if (x %in% names(reg)) {
-    reg[[x]][["project"]]
-  } else {
-    cli::cli_abort(c(
-      "{.val {x}} is neither a dataset alias nor a project slug.",
-      "i" = paste0(
-        "Run {.run inspercidados::list_datasets()} or ",
-        "{.run inspercidados::list_projects()}."
-      )
-    ))
-  }
-
-  if (is.null(slug) || is.na(slug) || !slug %in% names(proj)) {
-    cli::cli_abort(c(
-      "No project is registered for {.val {x}}.",
-      "i" = paste0(
-        "Run {.run inspercidados::list_projects()} to see the studies ",
-        "available."
-      )
-    ))
-  }
-
-  entry <- proj[[slug]]
-  datasets <- unlist(entry[["datasets"]])
-  repo <- entry[["repo_url"]]
-
-  cli::cli_h1(entry[["title"]] %||% slug)
-  cli::cli_text("{.strong Project}: {.val {slug}}")
-  if (length(datasets)) {
-    cli::cli_text("{.strong Datasets}: {.val {datasets}}")
-  }
-
-  if (is.null(repo)) {
-    cli::cli_alert_info(
-      "The processing code for this study is not published yet."
-    )
-    return(invisible(NULL))
-  }
-
-  cli::cli_text("{.strong Repository}: {.url {repo}}")
-
-  if (identical(entry[["visibility"]], "private")) {
-    cli::cli_alert_warning(c(
-      paste0(
-        "This repository is private. Opening it needs an Insper Cidades ",
-        "GitHub account."
-      )
-    ))
-  }
-
-  if (open && interactive()) {
-    utils::browseURL(repo)
-  }
-
-  invisible(repo)
+  cli::cli_warn(c(
+    "!" = "{.fn browse_project} is soft-deprecated.",
+    "v" = "Use {.fn open_project} instead."
+  ))
+  open_project(x, open = open)
 }

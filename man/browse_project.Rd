@@ -2,36 +2,27 @@
 % Please edit documentation in R/browse_project.R
 \name{browse_project}
 \alias{browse_project}
-\title{Open the study behind a dataset}
+\title{Deprecated alias for open_project()}
 \usage{
 browse_project(x, open = TRUE)
 }
 \arguments{
-\item{x}{A dataset alias (see \code{\link[=list_datasets]{list_datasets()}}) or a project slug (see
-\code{\link[=list_projects]{list_projects()}}).}
+\item{x}{A study, dataset alias.}
 
-\item{open}{Logical. If \code{TRUE} (default), open the repository in a browser
-when one is registered and the session is interactive.}
+\item{open}{Passed to \code{\link[=open_project]{open_project()}}.}
 }
 \value{
-The repository URL, invisibly, or \code{NULL} when no repository is
-registered for the project.
+The repository URL, invisibly.
 }
 \description{
-Prints the study a dataset came from, the other datasets it produced, and
-the repository holding its processing code, then opens that repository in a
-browser.
-}
-\details{
-Pipelines are published as repositories rather than as single scripts,
-because one study normally produces several datasets across many files.
-Some repositories are private and open only for Insper Cidades members;
-\code{\link[=list_projects]{list_projects()}} reports which.
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#soft-deprecated}{\figure{lifecycle-soft-deprecated.svg}{options: alt='[Soft-deprecated]'}}}{\strong{[Soft-deprecated]}}
+
+\code{browse_project()} was renamed to \code{\link[=open_project]{open_project()}} to avoid the name
+conflict with \code{usethis::browse_project()}. It now forwards to
+\code{\link[=open_project]{open_project()}} and will be removed in a future release.
 }
 \examples{
-# By dataset alias
-browse_project("sinistros_sp", open = FALSE)
-
-# By project slug
-browse_project("motiva", open = FALSE)
+# Deprecated; use open_project() instead.
+open_project("sinistros_sp", open = FALSE)
 }
+\keyword{internal}

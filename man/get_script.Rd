@@ -11,7 +11,7 @@ get_script(dataset, type = NULL, open = TRUE)
 
 \item{type}{Ignored.}
 
-\item{open}{Passed to \code{\link[=browse_project]{browse_project()}}.}
+\item{open}{Passed to \code{\link[=open_project]{open_project()}}.}
 }
 \value{
 The repository URL, invisibly.
@@ -22,10 +22,10 @@ The repository URL, invisibly.
 \code{get_script()} assumed one R script per dataset. Most datasets come from a
 study whose pipeline spans many files, and several studies publish more than
 one dataset, so scripts are now published as repositories.
-Use \code{\link[=browse_project]{browse_project()}} instead.
+Use \code{\link[=open_project]{open_project()}} instead.
 }
 \examples{
-# Deprecated; use browse_project() instead.
-browse_project("sinistros_sp", open = FALSE)
+# Deprecated; use open_project() instead.
+open_project("sinistros_sp", open = FALSE)
 }
 \keyword{internal}

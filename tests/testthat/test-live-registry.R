@@ -16,77 +16,104 @@ test_that("every active deposit can be listed", {
   expect_equal(broken, character(0))
 })
 
-test_that("every registry file_pattern matches files in its deposit", {
+test_that("every registered resource matches files in its deposit", {
   skip_if_no_dataverse()
   reg <- active_registry()
-  with_pattern <- Filter(function(x) !is.null(x[["file_pattern"]]), reg)
-
-  broken <- Filter(
-    function(alias) length(live_alias_files(with_pattern[[alias]])) == 0,
-    names(with_pattern)
-  )
+  broken <- unlist(lapply(names(reg), function(alias) {
+    resources <- names(reg[[alias]][["resources"]])
+    bad <- resources[vapply(
+      resources,
+      function(resource) {
+        length(live_resource_files(reg[[alias]], resource)) == 0
+      },
+      logical(1)
+    )]
+    if (length(bad) == 0) character() else paste(alias, bad, sep = "/")
+  }))
 
   expect_equal(broken, character(0))
 })
 
-test_that("get_dataset() can pick a data file for every active alias", {
+test_that("get_dataset() can pick a file for every registered resource", {
   skip_if_no_dataverse()
   reg <- active_registry()
 
-  broken <- Filter(
-    function(alias) {
-      entry <- reg[[alias]]
-      pick <- tryCatch(
-        suppressWarnings(select_dv_file(
-          live_alias_files(entry),
-          prefer = format_priority(isTRUE(entry[["is_spatial"]]))
-        )),
-        error = function(e) NULL
-      )
-      return(is.null(pick))
-    },
-    names(reg)
-  )
+  broken <- unlist(lapply(names(reg), function(alias) {
+    entry <- reg[[alias]]
+    resources <- names(entry[["resources"]])
+    bad <- resources[vapply(
+      resources,
+      function(resource) {
+        definition <- entry[["resources"]][[resource]]
+        years <- unlist(definition[["years"]])
+        pick <- tryCatch(
+          select_dv_file(
+            live_resource_files(entry, resource),
+            year = if (length(years) > 0) years[[1]] else NULL,
+            prefer = format_priority(isTRUE(definition[["is_spatial"]])),
+            strict = TRUE
+          ),
+          error = function(e) NULL
+        )
+        is.null(pick)
+      },
+      logical(1)
+    )]
+    if (length(bad) == 0) character() else paste(alias, bad, sep = "/")
+  }))
 
   expect_equal(broken, character(0))
 })
 
-test_that("registry formats match the files in each deposit", {
+test_that("registry formats match each resource's files", {
   skip_if_no_dataverse()
   reg <- active_registry()
 
-  drift <- lapply(names(reg), function(alias) {
-    file_names <- live_alias_files(reg[[alias]])
-    observed <- unique(effective_ext(file_names))
-    observed <- sort(observed[observed %in% DATA_EXTS])
-    registered <- sort(unlist(reg[[alias]][["formats"]]))
-    if (identical(observed, registered)) {
-      return(NULL)
-    }
-    return(sprintf(
-      "%s: registry has [%s], deposit has [%s]",
-      alias,
-      paste(registered, collapse = ", "),
-      paste(observed, collapse = ", ")
-    ))
-  })
+  drift <- unlist(lapply(names(reg), function(alias) {
+    entry <- reg[[alias]]
+    lapply(names(entry[["resources"]]), function(resource) {
+      file_names <- live_resource_files(entry, resource)
+      observed <- unique(effective_ext(file_names))
+      observed <- sort(observed[observed %in% DATA_EXTS])
+      registered <- sort(unlist(
+        entry[["resources"]][[resource]][["formats"]]
+      ))
+      if (identical(observed, registered)) {
+        return(NULL)
+      }
+      sprintf(
+        "%s/%s: registry has [%s], deposit has [%s]",
+        alias,
+        resource,
+        paste(registered, collapse = ", "),
+        paste(observed, collapse = ", ")
+      )
+    })
+  }))
 
-  expect_equal(unlist(drift), NULL)
+  expect_equal(drift, NULL)
 })
 
-test_that("is_spatial matches the presence of spatial files", {
+test_that("resource spatial flags match the presence of spatial files", {
   skip_if_no_dataverse()
   reg <- active_registry()
 
-  broken <- Filter(
-    function(alias) {
-      observed <- any(
-        effective_ext(live_alias_files(reg[[alias]])) %in% c("gpkg", "geojson")
-      )
-      return(observed != isTRUE(reg[[alias]][["is_spatial"]]))
-    },
-    names(reg)
-  )
+  broken <- unlist(lapply(names(reg), function(alias) {
+    entry <- reg[[alias]]
+    resources <- names(entry[["resources"]])
+    bad <- resources[vapply(
+      resources,
+      function(resource) {
+        observed <- any(
+          effective_ext(live_resource_files(entry, resource)) %in%
+            c("gpkg", "geojson")
+        )
+        observed != isTRUE(entry[["resources"]][[resource]][["is_spatial"]])
+      },
+      logical(1)
+    )]
+    if (length(bad) == 0) character() else paste(alias, bad, sep = "/")
+  }))
 
   expect_equal(broken, character(0))
 })

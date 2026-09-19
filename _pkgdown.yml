@@ -2,3 +2,22 @@ url: https://inspercidades.github.io/inspercidados/
 
 template:
   bootstrap: 5
+
+reference:
+  - title: Discover data
+    contents:
+      - list_datasets
+      - list_resources
+      - list_projects
+  - title: Download data
+    contents:
+      - get_dataset
+      - get_dataverse
+  - title: Cite and reproduce
+    contents:
+      - cite_dataset
+      - open_project
+      - get_script
+  - title: Internal
+    contents:
+      - live_examples
