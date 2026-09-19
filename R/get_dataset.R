@@ -144,7 +144,10 @@ get_dataset <- function(
     format <- tolower(format)
     if (!format %in% resource_formats) {
       cli::cli_abort(c(
-        "Format {.val {format}} is not available for resource {.val {resource}}.",
+        paste0(
+          "Format {.val {format}} is not available for resource ",
+          "{.val {resource}}."
+        ),
         "i" = "Available formats: {.val {resource_formats}}"
       ))
     }

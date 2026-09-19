@@ -42,3 +42,4 @@
       Error in `list_resources()`:
       ! `list_resources()` requires a registered dataset alias.
       i Run `list_datasets()` to see available aliases.
+
