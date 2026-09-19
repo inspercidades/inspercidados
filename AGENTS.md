@@ -25,11 +25,12 @@ The package website is built with **pkgdown**.
 ## Package Architecture
 
 ```
-inst/datasets.json          <- alias -> DOI, metadata, file_pattern, formats, status
+inst/datasets.json          <- alias -> DOI, metadata, logical resources, status
 inst/projects.json          <- project slug -> title, repo_url, visibility, member datasets
 inst/scripts/               <- standalone pipeline scripts shipped with the package
 data-raw/build_registry.R   <- Google Sheet + Dataverse API -> both JSON files
-data-raw/aliases.csv        <- DOI (+ file_pattern) -> alias, project
+data-raw/aliases.csv        <- DOI -> alias, project
+data-raw/resources.csv      <- alias -> resource, file pattern, title, default
 data-raw/projects.csv       <- project -> repo URL, visibility
 data-raw/retired.csv        <- aliases that no longer resolve
 data-raw/_template/         <- skeleton pipeline (download -> clean -> validate -> export) for new datasets
@@ -56,10 +57,11 @@ column cannot say that. `is_spatial` and `formats` are derived from the
 deposited file extensions, never from the sheet's `is_geoportal` column, which
 means something else. Auth uses `CIDADOS_GS4_EMAIL` from `.Renviron`.
 
-**An alias is a DOI plus an optional file pattern.** Several aliases can share
-one deposit. `pemob_anual` and `pemob_harmonizada` both point at
-`10.60873/FK2/5XUNNW` and separate by `file_pattern`. `get_dataset()` applies
-that pattern before any user selector.
+**An alias contains one or more logical resources.** Each resource identifies
+one logical dataset through a file pattern and may be distributed in several
+formats or split by a declared dimension such as year. Several aliases can
+still share one deposit: `pemob_anual` and `pemob_harmonizada` both point at
+`10.60873/FK2/5XUNNW`, while their resource patterns keep their files separate.
 
 **Entries carry a `status`.** `active` is downloadable. `unpublished` is a
 catalogued study with no DOI yet (`"doi": null`): it is discoverable via
@@ -87,7 +89,16 @@ Example registry entry:
     "collection": "Pesquisa Nacional de Mobilidade Urbana (PEMOB) [2019-2024]",
     "project": "pemob",
     "access": "download",
-    "file_pattern": "^pemob_[0-9]{4}",
+    "resources": {
+      "dados": {
+        "title": "Bases anuais da PEMOB",
+        "file_pattern": "^pemob_[0-9]{4}[.]",
+        "formats": ["parquet", "tab", "xlsx"],
+        "is_spatial": false,
+        "years": ["2019", "2020", "2021", "2022", "2023", "2024"],
+        "default": true
+      }
+    },
     "formats": ["parquet", "tab", "xlsx"],
     "is_spatial": false,
     "status": "active"
@@ -97,7 +108,8 @@ Example registry entry:
 
 **Server** is always `dataverse.datascience.insper.edu.br` — never ask the user to configure it.
 
-**Identifier resolution** (in order):
+**Identifier resolution.** `get_dataset()` accepts registered aliases only.
+`get_dataverse()` resolves identifiers in this order:
 
 1. Alias (e.g. `"iptu_sp"`) -> look up DOI in `inst/datasets.json`
 2. DOI (e.g. `"10.60873/FK2/7IXFPX"`) -> use directly
@@ -144,10 +156,9 @@ Users can identify a dataset in several ways:
 
 ```r
 get_dataset("iptu_sp")                          # by alias
-get_dataset("10.60873/FK2/TOXCRF")              # by DOI
 get_dataset("pemob_anual", year = 2023)         # filter by year in filename
-get_dataset("iptu_sp", filename = "iptu.gpkg")  # exact filename
-get_dataset("iptu_sp", file_pattern = "\\.gpkg$") # regex pattern
+get_dataset("qualidade_ar_mare", resource = "pontos")
+get_dataset("iptu_sp", format = "gpkg")
 get_dataset("iptu_sp", docs = TRUE)             # also return documentation
 
 # Any deposit, registered or not

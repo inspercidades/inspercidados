@@ -38,6 +38,21 @@ test_that("list_datasets() tells the user when nothing matches", {
   expect_equal(nrow(out), 0)
 })
 
+test_that("list_resources() describes logical resources", {
+  out <- list_resources("qualidade_ar_mare")
+
+  expect_s3_class(out, "tbl_df")
+  expect_equal(out$resource, c("dados", "pontos"))
+  expect_equal(out$default, c(TRUE, FALSE))
+  expect_equal(out$is_spatial, c(FALSE, TRUE))
+})
+
+test_that("list_resources() reports registered years", {
+  out <- list_resources("pemob_anual")
+
+  expect_equal(out$years, "2019, 2020, 2021, 2022, 2023, 2024")
+})
+
 test_that("list_projects() returns one row per project", {
   out <- list_projects()
 

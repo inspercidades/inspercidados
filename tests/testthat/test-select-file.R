@@ -68,6 +68,12 @@ test_that("select_dv_file() warns for tied winning-format files", {
   expect_equal(out, "pemob_2022.tab")
 })
 
+test_that("select_dv_file() rejects ambiguous files in strict mode", {
+  expect_snapshot(error = TRUE, {
+    select_dv_file(files, prefer = "tab", strict = TRUE)
+  })
+})
+
 test_that("select_dv_file() never returns a documentation workbook", {
   out <- select_dv_file(c("Documentacao.xlsx", "dados.xlsx"), prefer = "xlsx")
 

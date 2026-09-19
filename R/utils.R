@@ -11,8 +11,7 @@
   geojson = "geojson",
   json = "geojson",
   xlsx = "xlsx",
-  xls = "xlsx",
-  zip = "zip"
+  xls = "xlsx"
 )
 
 # Inner extension (after stripping .gz) -> file type
@@ -39,16 +38,17 @@ read_json_asset <- function(file) {
   reg <- jsonlite::read_json(path)
   # jsonlite decodes \uXXXX escapes but leaves strings marked "unknown".
   # Tag each string as UTF-8 so R displays it correctly in any locale.
-  out <- lapply(reg, function(entry) {
-    lapply(entry, function(v) {
-      if (is.character(v)) {
-        Encoding(v) <- "UTF-8"
-        v
-      } else {
-        v
-      }
-    })
-  })
+  mark_utf8 <- function(x) {
+    if (is.character(x)) {
+      Encoding(x) <- "UTF-8"
+      return(x)
+    }
+    if (is.list(x)) {
+      return(lapply(x, mark_utf8))
+    }
+    return(x)
+  }
+  out <- lapply(reg, mark_utf8)
   assign(file, out, envir = .registry_cache)
   out
 }
@@ -223,8 +223,7 @@ DATA_EXTS <- c(
   "gpkg",
   "geojson",
   "xlsx",
-  "xls",
-  "zip"
+  "xls"
 )
 
 # Select a file from those available in the dataset.
@@ -235,7 +234,8 @@ select_dv_file <- function(
   year = NULL,
   filename = NULL,
   file_pattern = NULL,
-  prefer = NULL
+  prefer = NULL,
+  strict = FALSE
 ) {
   if (!is.null(filename)) {
     if (!filename %in% file_names) {
@@ -307,6 +307,16 @@ select_dv_file <- function(
       next
     }
     if (length(hit) > 1) {
+      if (strict) {
+        cli::cli_abort(c(
+          "Multiple files remain after applying the dataset selectors.",
+          "i" = paste0(
+            "Use {.arg year}, {.arg resource}, or {.arg format} to be ",
+            "more specific."
+          ),
+          "i" = "Matched files: {.val {hit}}"
+        ))
+      }
       cli::cli_warn(c(
         "Multiple {.val {ext}} files found; using {.val {hit[[1]]}}.",
         "i" = paste0(
@@ -317,6 +327,13 @@ select_dv_file <- function(
       ))
     }
     return(hit[[1]])
+  }
+
+  if (strict) {
+    cli::cli_abort(c(
+      "No file matched the requested or readable formats.",
+      "i" = "Available files: {.val {candidates}}"
+    ))
   }
 
   cli::cli_warn(c(

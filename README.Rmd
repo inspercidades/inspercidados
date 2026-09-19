@@ -28,7 +28,19 @@ find, download, and cite datasets with a few short commands.
 
 ## Installation
 
-Install the development version from
+Install the package from R-universe:
+
+``` r
+install.packages(
+  "inspercidados",
+  repos = c(
+    "https://inspercidades.r-universe.dev",
+    "https://cloud.r-project.org"
+  )
+)
+```
+
+Or install the development version from
 [GitHub](https://github.com/inspercidades/inspercidados):
 
 ``` r
@@ -41,7 +53,9 @@ pak::pak("inspercidades/inspercidados")
 | Function | Purpose |
 |---|---|
 | `list_datasets()` | List or search available datasets |
+| `list_resources()` | List logical resources within a dataset |
 | `get_dataset()`   | Download a dataset into R |
+| `get_dataverse()` | Inspect or download an arbitrary Insper Dataverse deposit |
 | `cite_dataset()`  | Generate a citation for a dataset |
 | `open_project()` | Open the repository of the study behind a dataset |
 
@@ -64,21 +78,31 @@ list_datasets("Mobilidade")
 
 ## Download a dataset
 
-Identify a dataset by its short alias, a bare DOI, or a full DOI URL:
+Identify a registered dataset by its short alias:
 
 ```{r get, eval = FALSE}
 # By alias
 embarques <- get_dataset("embarques_mensais")
 
-# By DOI
-embarques <- get_dataset("10.60873/FK2/BPYHFB")
-
 # Filter by year in multi-year datasets
 pemob_2023 <- get_dataset("pemob_anual", year = 2023)
 
-# Request a specific file or pattern
-geo <- get_dataset("iptu_sp", filename = "iptu_2024.gpkg")
+# Select a logical resource and format
+pontos <- get_dataset(
+  "qualidade_ar_mare",
+  resource = "pontos",
+  format = "gpkg"
+)
 ```
+
+Use `list_resources()` to see the logical datasets and formats available
+inside a registered Dataverse deposit:
+
+```{r resources}
+list_resources("qualidade_ar_mare")
+```
+
+For an unregistered DOI or a physical filename, use `get_dataverse()`.
 
 With `docs = TRUE`, the function returns the data together with its
 documentation:

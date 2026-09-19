@@ -104,3 +104,20 @@ test_that("effective extensions look through gzip compression", {
     c("csv", "gpkg", "")
   )
 })
+
+test_that("sheet aliases carry their resources when renamed", {
+  catalog <- data.frame(alias = "novo", doi = "10.60873/FK2/TEST")
+  aliases <- data.frame(
+    doi = "10.60873/FK2/TEST",
+    alias = "antigo",
+    primary = TRUE,
+    project = NA_character_,
+    notes = NA_character_
+  )
+  resources <- data.frame(alias = "antigo", resource = "dados")
+
+  out <- suppressWarnings(reconcile_aliases(catalog, aliases, resources))
+
+  expect_equal(out$aliases$alias, "novo")
+  expect_equal(out$resources$alias, "novo")
+})

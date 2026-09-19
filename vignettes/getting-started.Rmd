@@ -67,7 +67,7 @@ To search by title, theme, region, or keywords use the `search` argument in `lis
 list_datasets(search = "Mobilidade")
 ```
 
-Each dataset is identified by DOI and anlso by a short alias. To download a dataset use ` get_dataset`.
+Each registered dataset has a short alias. Use `get_dataset()` to download it.
 
 ```{r download, eval = FALSE}
 # By alias
@@ -75,6 +75,20 @@ embarques <- get_dataset("embarques_mensais")
 
 # Filter by year in multi-year datasets
 pemob_2023 <- get_dataset("pemob_anual", year = 2023)
+
+# Select one logical resource and file format
+pontos <- get_dataset(
+  "qualidade_ar_mare",
+  resource = "pontos",
+  format = "gpkg"
+)
+```
+
+Some Dataverse deposits contain several logical datasets. Use
+`list_resources()` to inspect them without making a network request.
+
+```{r resources}
+list_resources("qualidade_ar_mare")
 ```
 
 ## Cite a dataset

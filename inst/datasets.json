@@ -9,8 +9,18 @@
     "collection": "Imposto sobre Transmissão de Bens Imóveis (ITBI) [2006-2025]",
     "project": "itbi",
     "access": "download",
-    "file_pattern": null,
-    "formats": ["csv", "parquet", "rds", "tab", "xlsx", "zip"],
+    "resources": {
+      "dados": {
+        "title": "Transações de ITBI",
+        "file_pattern": "^itbi[.]",
+        "documentation_pattern": null,
+        "formats": ["csv", "parquet", "rds"],
+        "is_spatial": false,
+        "years": [],
+        "default": true
+      }
+    },
+    "formats": ["csv", "parquet", "rds"],
     "is_spatial": false,
     "status": "active"
   },
@@ -24,23 +34,43 @@
     "collection": "Densidade Populacional e Verticalização [2022,2024]",
     "project": "densidade",
     "access": "download",
-    "file_pattern": null,
-    "formats": ["geojson", "gpkg", "parquet", "xlsx", "zip"],
+    "resources": {
+      "dados": {
+        "title": "IPTU residencial",
+        "file_pattern": "^iptu_residencial[.]",
+        "documentation_pattern": null,
+        "formats": ["geojson", "gpkg", "parquet"],
+        "is_spatial": true,
+        "years": [],
+        "default": true
+      }
+    },
+    "formats": ["geojson", "gpkg", "parquet"],
     "is_spatial": true,
     "status": "active"
   },
   "alvaras_sp": {
     "doi": "10.60873/FK2/FPCIDI",
-    "title": "Alvarás de licenciamento de novas edificações [2010-2024]",
-    "description": "Informações sobre novas edificações formais a partir de dados dos alvarás de licenciamento. Conjunto de dados tratados e enriquecidos pelo Centro de Estudos das Cidades.",
+    "title": "Alvarás de licenciamento de novas edificações [2004-2021]",
+    "description": "Agregação por lote/empreendimento dos dados de registros de alvarás de licenciamento gerados pelo Sistema de Administração do Código de Obras e Edificações (SISACOE).",
     "theme": "Habitação e Mercado Imobiliário",
     "region": "São Paulo",
     "keywords": "Residências; Imóveis; Licenciamento; Novas edificações; Incorporação imobiliária",
     "collection": "Alvarás de licenciamento de novas edificações [2004-2024]",
     "project": "alvaras",
     "access": "download",
-    "file_pattern": null,
-    "formats": ["geojson", "gpkg", "parquet", "xlsx", "zip"],
+    "resources": {
+      "dados": {
+        "title": "Alvarás de construção",
+        "file_pattern": "^alvaras[.]",
+        "documentation_pattern": null,
+        "formats": ["geojson", "gpkg", "parquet"],
+        "is_spatial": true,
+        "years": [],
+        "default": true
+      }
+    },
+    "formats": ["geojson", "gpkg", "parquet"],
     "is_spatial": true,
     "status": "active"
   },
@@ -54,8 +84,18 @@
     "collection": "Densidade Populacional e Verticalização [2022,2024]",
     "project": "densidade",
     "access": "download",
-    "file_pattern": null,
-    "formats": ["geojson", "gpkg", "parquet", "xlsx", "zip"],
+    "resources": {
+      "dados": {
+        "title": "Densidade dos setores censitários",
+        "file_pattern": "^censo_densidade[.]",
+        "documentation_pattern": null,
+        "formats": ["geojson", "gpkg", "parquet"],
+        "is_spatial": true,
+        "years": [],
+        "default": true
+      }
+    },
+    "formats": ["geojson", "gpkg", "parquet"],
     "is_spatial": true,
     "status": "active"
   },
@@ -69,8 +109,18 @@
     "collection": "Densidade Populacional e Verticalização [2022,2024]",
     "project": "densidade",
     "access": "download",
-    "file_pattern": null,
-    "formats": ["geojson", "gpkg", "parquet", "tab", "xlsx"],
+    "resources": {
+      "dados": {
+        "title": "Densidade populacional",
+        "file_pattern": "^densidade_populacional[.]",
+        "documentation_pattern": null,
+        "formats": ["geojson", "gpkg", "parquet"],
+        "is_spatial": true,
+        "years": [],
+        "default": true
+      }
+    },
+    "formats": ["geojson", "gpkg", "parquet"],
     "is_spatial": true,
     "status": "active"
   },
@@ -84,8 +134,18 @@
     "collection": "Densidade Populacional e Verticalização [2022,2024]",
     "project": "densidade",
     "access": "download",
-    "file_pattern": null,
-    "formats": ["geojson", "gpkg", "parquet", "xlsx", "zip"],
+    "resources": {
+      "dados": {
+        "title": "Densidade de imoveis",
+        "file_pattern": "^iptu_censo[.]",
+        "documentation_pattern": null,
+        "formats": ["geojson", "gpkg", "parquet"],
+        "is_spatial": true,
+        "years": [],
+        "default": true
+      }
+    },
+    "formats": ["geojson", "gpkg", "parquet"],
     "is_spatial": true,
     "status": "active"
   },
@@ -99,7 +159,17 @@
     "collection": "Índice GeoSES [2010]",
     "project": "geoses",
     "access": "download",
-    "file_pattern": null,
+    "resources": {
+      "dados": {
+        "title": "Índice GeoSES",
+        "file_pattern": "^geoses[.]",
+        "documentation_pattern": null,
+        "formats": ["geojson", "gpkg", "parquet", "tab", "xlsx"],
+        "is_spatial": true,
+        "years": [],
+        "default": true
+      }
+    },
     "formats": ["geojson", "gpkg", "parquet", "tab", "xlsx"],
     "is_spatial": true,
     "status": "active"
@@ -114,8 +184,18 @@
     "collection": "Mortalidade prematura por distrito [2019]",
     "project": "mortalidade",
     "access": "download",
-    "file_pattern": null,
-    "formats": ["geojson", "gpkg", "parquet", "tab", "zip"],
+    "resources": {
+      "distritos": {
+        "title": "Distritos com indicadores de mortalidade",
+        "file_pattern": "^distritos_sp[.]",
+        "documentation_pattern": null,
+        "formats": ["geojson", "gpkg", "parquet"],
+        "is_spatial": true,
+        "years": [],
+        "default": true
+      }
+    },
+    "formats": ["geojson", "gpkg", "parquet"],
     "is_spatial": true,
     "status": "active"
   },
@@ -129,8 +209,27 @@
     "collection": "Medições de ilhas de calor e qualidade do ar, Favela da Maré-RJ [2023]",
     "project": "mare",
     "access": "download",
-    "file_pattern": "^ilhas_de_calor",
-    "formats": ["geojson", "gpkg", "parquet", "tab", "xlsx", "zip"],
+    "resources": {
+      "dados": {
+        "title": "Medições de ilhas de calor",
+        "file_pattern": "^ilhas_de_calor[.](parquet|tab|xlsx)$",
+        "documentation_pattern": null,
+        "formats": ["parquet", "tab", "xlsx"],
+        "is_spatial": false,
+        "years": [],
+        "default": true
+      },
+      "pontos": {
+        "title": "Pontos das medições de ilhas de calor",
+        "file_pattern": "^ilhas_de_calor_pontos[.]",
+        "documentation_pattern": null,
+        "formats": ["geojson", "gpkg", "parquet"],
+        "is_spatial": true,
+        "years": [],
+        "default": false
+      }
+    },
+    "formats": ["geojson", "gpkg", "parquet", "tab", "xlsx"],
     "is_spatial": true,
     "status": "active"
   },
@@ -144,8 +243,27 @@
     "collection": "Medições de ilhas de calor e qualidade do ar, Favela da Maré-RJ [2023]",
     "project": "mare",
     "access": "download",
-    "file_pattern": "^qualidade_do_ar",
-    "formats": ["geojson", "gpkg", "parquet", "tab", "xlsx", "zip"],
+    "resources": {
+      "dados": {
+        "title": "Medições de qualidade do ar",
+        "file_pattern": "^qualidade_do_ar[.](parquet|tab|xlsx)$",
+        "documentation_pattern": null,
+        "formats": ["parquet", "tab", "xlsx"],
+        "is_spatial": false,
+        "years": [],
+        "default": true
+      },
+      "pontos": {
+        "title": "Pontos das medições de qualidade do ar",
+        "file_pattern": "^qualidade_do_ar_pontos[.]",
+        "documentation_pattern": null,
+        "formats": ["geojson", "gpkg", "parquet"],
+        "is_spatial": true,
+        "years": [],
+        "default": false
+      }
+    },
+    "formats": ["geojson", "gpkg", "parquet", "tab", "xlsx"],
     "is_spatial": true,
     "status": "active"
   },
@@ -159,8 +277,18 @@
     "collection": "Medições de ilhas de calor e qualidade do ar, Favela da Maré-RJ [2023]",
     "project": "mare",
     "access": "download",
-    "file_pattern": "^areas_coleta",
-    "formats": ["geojson", "gpkg", "parquet", "zip"],
+    "resources": {
+      "dados": {
+        "title": "Areas de coleta",
+        "file_pattern": "^areas_coleta[.]",
+        "documentation_pattern": null,
+        "formats": ["geojson", "gpkg", "parquet"],
+        "is_spatial": true,
+        "years": [],
+        "default": true
+      }
+    },
+    "formats": ["geojson", "gpkg", "parquet"],
     "is_spatial": true,
     "status": "active"
   },
@@ -174,7 +302,17 @@
     "collection": "Pesquisa Nacional de Mobilidade Urbana (PEMOB) [2019-2024]",
     "project": "pemob",
     "access": "download",
-    "file_pattern": "^pemob_[0-9]{4}",
+    "resources": {
+      "dados": {
+        "title": "Bases anuais da PEMOB",
+        "file_pattern": "^pemob_[0-9]{4}[.]",
+        "documentation_pattern": null,
+        "formats": ["parquet", "tab", "xlsx"],
+        "is_spatial": false,
+        "years": ["2019", "2020", "2021", "2022", "2023", "2024"],
+        "default": true
+      }
+    },
     "formats": ["parquet", "tab", "xlsx"],
     "is_spatial": false,
     "status": "active"
@@ -189,7 +327,17 @@
     "collection": "Pesquisa Nacional de Mobilidade Urbana (PEMOB) [2019-2024]",
     "project": "pemob",
     "access": "download",
-    "file_pattern": "^pemob_harmonizada",
+    "resources": {
+      "dados": {
+        "title": "Painel harmonizado da PEMOB",
+        "file_pattern": "^pemob_harmonizada[.]",
+        "documentation_pattern": null,
+        "formats": ["parquet", "tab", "xlsx"],
+        "is_spatial": false,
+        "years": [],
+        "default": true
+      }
+    },
     "formats": ["parquet", "tab", "xlsx"],
     "is_spatial": false,
     "status": "active"
@@ -204,8 +352,18 @@
     "collection": "Embarques nas Estação de Trem/Metrô operados pela Motiva [2012-2026]",
     "project": "motiva",
     "access": "download",
-    "file_pattern": null,
-    "formats": ["csv", "parquet", "rds", "xlsx"],
+    "resources": {
+      "dados": {
+        "title": "Embarques por horário",
+        "file_pattern": "^emb_horarios[.]",
+        "documentation_pattern": null,
+        "formats": ["csv", "parquet", "rds"],
+        "is_spatial": false,
+        "years": [],
+        "default": true
+      }
+    },
+    "formats": ["csv", "parquet", "rds"],
     "is_spatial": false,
     "status": "active"
   },
@@ -219,8 +377,18 @@
     "collection": "Embarques nas Estação de Trem/Metrô operados pela Motiva [2012-2026]",
     "project": "motiva",
     "access": "download",
-    "file_pattern": null,
-    "formats": ["parquet", "rds", "tab", "xlsx"],
+    "resources": {
+      "dados": {
+        "title": "Embarques diarios",
+        "file_pattern": "^emb_diarios[.]",
+        "documentation_pattern": null,
+        "formats": ["parquet", "rds", "tab"],
+        "is_spatial": false,
+        "years": [],
+        "default": true
+      }
+    },
+    "formats": ["parquet", "rds", "tab"],
     "is_spatial": false,
     "status": "active"
   },
@@ -234,7 +402,17 @@
     "collection": "Embarques nas Estação de Trem/Metrô operados pela Motiva [2012-2026]",
     "project": "motiva",
     "access": "download",
-    "file_pattern": null,
+    "resources": {
+      "dados": {
+        "title": "Media diaria de embarques",
+        "file_pattern": "^emb_media[.]",
+        "documentation_pattern": null,
+        "formats": ["rds", "tab", "xlsx"],
+        "is_spatial": false,
+        "years": [],
+        "default": true
+      }
+    },
     "formats": ["rds", "tab", "xlsx"],
     "is_spatial": false,
     "status": "active"
@@ -249,7 +427,17 @@
     "collection": "Embarques nas Estação de Trem/Metrô operados pela Motiva [2012-2026]",
     "project": "motiva",
     "access": "download",
-    "file_pattern": null,
+    "resources": {
+      "dados": {
+        "title": "Embarques por modo",
+        "file_pattern": "^emb_modo[.]",
+        "documentation_pattern": null,
+        "formats": ["parquet", "rds", "tab", "xlsx"],
+        "is_spatial": false,
+        "years": [],
+        "default": true
+      }
+    },
     "formats": ["parquet", "rds", "tab", "xlsx"],
     "is_spatial": false,
     "status": "active"
@@ -260,11 +448,21 @@
     "description": "Tabela de linhas e estações de trem/metrô dos sistemas operados pela Motiva. Dados incluem Metrô Bahia, ViaQuatro, ViaMobilidade (Linhas 5, 8 e 9) e VLT Carioca.",
     "theme": "Mobilidade",
     "region": "Brasil",
-    "keywords": "Transporte público; Sistemas metroferroviários; Sistemas metroferroviários; Metrô; VLT",
+    "keywords": "Transporte público; Sistemas metroferroviários; Metrô; VLT",
     "collection": "Embarques nas Estação de Trem/Metrô operados pela Motiva [2012-2026]",
     "project": "motiva",
     "access": "download",
-    "file_pattern": "^dim_line",
+    "resources": {
+      "dados": {
+        "title": "Linhas",
+        "file_pattern": "^dim_line[.]",
+        "documentation_pattern": "^documentacao_linhas[.]",
+        "formats": ["rds", "tab", "xlsx"],
+        "is_spatial": false,
+        "years": [],
+        "default": true
+      }
+    },
     "formats": ["rds", "tab", "xlsx"],
     "is_spatial": false,
     "status": "active"
@@ -275,11 +473,21 @@
     "description": "Tabela de linhas e estações de trem/metrô dos sistemas operados pela Motiva. Dados incluem Metrô Bahia, ViaQuatro, ViaMobilidade (Linhas 5, 8 e 9) e VLT Carioca.",
     "theme": "Mobilidade",
     "region": "Brasil",
-    "keywords": "Transporte público; Sistemas metroferroviários; Sistemas metroferroviários; Metrô; VLT",
+    "keywords": "Transporte público; Sistemas metroferroviários; Metrô; VLT",
     "collection": "Embarques nas Estação de Trem/Metrô operados pela Motiva [2012-2026]",
     "project": "motiva",
     "access": "download",
-    "file_pattern": "^dim_station",
+    "resources": {
+      "dados": {
+        "title": "Estações",
+        "file_pattern": "^dim_station[.]",
+        "documentation_pattern": "^documentacao_estacaoes[.]",
+        "formats": ["rds", "tab", "xlsx"],
+        "is_spatial": false,
+        "years": [],
+        "default": true
+      }
+    },
     "formats": ["rds", "tab", "xlsx"],
     "is_spatial": false,
     "status": "active"
@@ -294,8 +502,18 @@
     "collection": "Trechos com Faixas Dedicadas a Motociclistas (Faixa Azul) [2022-2025]",
     "project": "faixa_azul",
     "access": "download",
-    "file_pattern": null,
-    "formats": ["geojson", "gpkg", "parquet", "tab", "xlsx", "zip"],
+    "resources": {
+      "dados": {
+        "title": "Faixa Azul",
+        "file_pattern": "^faixa_azul[.]",
+        "documentation_pattern": null,
+        "formats": ["geojson", "gpkg", "parquet"],
+        "is_spatial": true,
+        "years": [],
+        "default": true
+      }
+    },
+    "formats": ["geojson", "gpkg", "parquet"],
     "is_spatial": true,
     "status": "active"
   },
@@ -309,7 +527,17 @@
     "collection": "Sinistros de Trânsito [2022-2025]",
     "project": "faixa_azul",
     "access": "download",
-    "file_pattern": null,
+    "resources": {
+      "dados": {
+        "title": "Sinistros",
+        "file_pattern": "^sinistros[.]",
+        "documentation_pattern": null,
+        "formats": ["parquet", "tab", "xlsx"],
+        "is_spatial": false,
+        "years": [],
+        "default": true
+      }
+    },
     "formats": ["parquet", "tab", "xlsx"],
     "is_spatial": false,
     "status": "active"
@@ -324,8 +552,18 @@
     "collection": "Sinistros de Trânsito [2022-2025]",
     "project": "faixa_azul",
     "access": "download",
-    "file_pattern": null,
-    "formats": ["geojson", "gpkg", "parquet", "tab", "xlsx", "zip"],
+    "resources": {
+      "dados": {
+        "title": "Sinistros agregados por trecho",
+        "file_pattern": "^trechos_agregados_sinistros[.]",
+        "documentation_pattern": null,
+        "formats": ["geojson", "gpkg", "parquet", "tab", "xlsx"],
+        "is_spatial": true,
+        "years": [],
+        "default": true
+      }
+    },
+    "formats": ["geojson", "gpkg", "parquet", "tab", "xlsx"],
     "is_spatial": true,
     "status": "active"
   },
@@ -361,18 +599,6 @@
     "region": "São Paulo",
     "collection": "Ganhos e horas trabalhadas dos entregadores parceiros do iFood [2022-2026]",
     "access": "secure_room",
-    "formats": [],
-    "is_spatial": false,
-    "status": "unpublished"
-  },
-  "_unpublished_6": {
-    "doi": null,
-    "title": "Alvarás de licenciamento de novas edificações [2004-2021]",
-    "description": "Agregação por lote/empreendimento dos dados de registros de alvarás de licenciamento gerados pelo Sistema de Administração do Código de Obras e Edificações (SISACOE).",
-    "theme": "Habitação e Mercado Imobiliário",
-    "region": "São Paulo",
-    "collection": "Alvarás de licenciamento de novas edificações [2004-2024]",
-    "access": "unpublished",
     "formats": [],
     "is_spatial": false,
     "status": "unpublished"

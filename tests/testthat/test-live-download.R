@@ -11,12 +11,12 @@ test_that("get_dataset() reads an rds file by alias", {
   expect_equal(attr(out, "doi"), "10.60873/FK2/UOKFMF")
 })
 
-test_that("get_dataset() reads a tab file by filename", {
+test_that("get_dataset() reads a requested tab format", {
   skip_if_no_dataverse()
 
   out <- suppressMessages(get_dataset(
     "estacoes_motiva",
-    filename = "dim_line.tab"
+    format = "tab"
   ))
 
   expect_s3_class(out, "data.frame")
@@ -30,7 +30,7 @@ test_that("get_dataset() reads xlsx and filters by year", {
   out <- suppressMessages(get_dataset(
     "pemob_anual",
     year = 2023,
-    file_pattern = "\\.xlsx$"
+    format = "xlsx"
   ))
 
   expect_s3_class(out, "data.frame")
@@ -43,7 +43,7 @@ test_that("get_dataset() reads parquet", {
 
   out <- suppressMessages(get_dataset(
     "iptu_verticalizacao_sp",
-    filename = "densidade_populacional.parquet"
+    format = "parquet"
   ))
 
   expect_s3_class(out, "data.frame")
@@ -54,7 +54,10 @@ test_that("get_dataset() returns sf for a spatial alias", {
   skip_if_no_dataverse()
   skip_if_not_installed("sf")
 
-  out <- suppressMessages(get_dataset("qualidade_ar_mare"))
+  out <- suppressMessages(get_dataset(
+    "qualidade_ar_mare",
+    resource = "pontos"
+  ))
 
   expect_s3_class(out, "sf")
   expect_gt(nrow(out), 0)
@@ -66,7 +69,8 @@ test_that("get_dataset() reads geojson", {
 
   out <- suppressMessages(get_dataset(
     "qualidade_ar_mare",
-    filename = "qualidade_do_ar_pontos.geojson"
+    resource = "pontos",
+    format = "geojson"
   ))
 
   expect_s3_class(out, "sf")
@@ -81,6 +85,17 @@ test_that("get_dataset(docs = TRUE) returns data and documentation", {
   expect_named(out, c("data", "docs"))
   expect_s3_class(out$data, "data.frame")
   expect_s3_class(out$docs, "data.frame")
+})
+
+test_that("get_dataset() selects resource documentation", {
+  skip_if_no_dataverse()
+  skip_if_not_installed("readxl")
+
+  out <- suppressMessages(get_dataset("linhas_motiva", docs = TRUE))
+
+  expect_s3_class(out$docs, "data.frame")
+  expect_contains(out$docs$col_names, "line_name")
+  expect_equal("station_name" %in% out$docs$col_names, FALSE)
 })
 
 test_that("get_dataverse() lists files from a DOI and a landing page URL", {

@@ -1,0 +1,25 @@
+alias,resource,title,file_pattern,default,documentation_pattern
+itbi_sp,dados,Transações de ITBI,^itbi[.],true
+iptu_sp,dados,IPTU residencial,^iptu_residencial[.],true
+alvaras_sp,dados,Alvarás de construção,^alvaras[.],true
+censo_setores_sp,dados,Densidade dos setores censitários,^censo_densidade[.],true
+iptu_verticalizacao_sp,dados,Densidade populacional,^densidade_populacional[.],true
+densidade_imoveis_sp,dados,Densidade de imoveis,^iptu_censo[.],true
+geoses_sp,dados,Índice GeoSES,^geoses[.],true
+mortalidade_sp,distritos,Distritos com indicadores de mortalidade,^distritos_sp[.],true
+ilhas_calor_mare,dados,Medições de ilhas de calor,^ilhas_de_calor[.](parquet|tab|xlsx)$,true
+ilhas_calor_mare,pontos,Pontos das medições de ilhas de calor,^ilhas_de_calor_pontos[.],false
+qualidade_ar_mare,dados,Medições de qualidade do ar,^qualidade_do_ar[.](parquet|tab|xlsx)$,true
+qualidade_ar_mare,pontos,Pontos das medições de qualidade do ar,^qualidade_do_ar_pontos[.],false
+areas_coleta_mare,dados,Areas de coleta,^areas_coleta[.],true
+pemob_anual,dados,Bases anuais da PEMOB,^pemob_[0-9]{4}[.],true
+pemob_harmonizada,dados,Painel harmonizado da PEMOB,^pemob_harmonizada[.],true
+embarques_hora,dados,Embarques por horário,^emb_horarios[.],true
+embarques_diarios,dados,Embarques diarios,^emb_diarios[.],true
+embarques_mensais,dados,Media diaria de embarques,^emb_media[.],true
+embarques_integracao,dados,Embarques por modo,^emb_modo[.],true
+linhas_motiva,dados,Linhas,^dim_line[.],true,^documentacao_linhas[.]
+estacoes_motiva,dados,Estações,^dim_station[.],true,^documentacao_estacaoes[.]
+faixa_azul_sp,dados,Faixa Azul,^faixa_azul[.],true
+sinistros_sp,dados,Sinistros,^sinistros[.],true
+sinistros_via_sp,dados,Sinistros agregados por trecho,^trechos_agregados_sinistros[.],true

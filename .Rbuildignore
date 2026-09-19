@@ -15,3 +15,5 @@
 ^_pkgdown\.yml$
 ^doc$
 ^Meta$
+^design$
+^docs$

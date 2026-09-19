@@ -1,28 +1,27 @@
 #' Download a dataset from Insper Dataverse
 #'
-#' Downloads a dataset into R as a tibble or `sf` object. The dataset can be
-#' identified by its short alias, bare DOI, or full DOI URL.
+#' Downloads a registered dataset into R as a tibble or `sf` object. Identify
+#' the dataset by its short alias; use [get_dataverse()] for a DOI or URL.
 #'
-#' When a deposit contains multiple files, the function picks one by format.
-#' Spatial datasets resolve to GeoPackage so the result is an `sf` object;
-#' other datasets favour RDS, then Parquet, then delimited text, then Excel.
-#' Formats needing a suggested package are skipped when it is not installed.
-#' Use `year`, `filename`, or `file_pattern` to override the choice.
+#' A Dataverse deposit may contain several logical resources, each distributed
+#' in several formats. Use `resource` to select the logical dataset and
+#' `format` to select its representation. Deposits with one resource, or a
+#' declared default, need neither argument.
 #'
-#' Some aliases share a single Dataverse deposit. `"pemob_anual"` and
-#' `"pemob_harmonizada"` both point at the PEMOB deposit and are separated by a
-#' file pattern stored in the registry.
+#' When `format` is omitted, spatial resources prefer GeoPackage and GeoJSON;
+#' other resources prefer RDS, Parquet, delimited text, and Excel. Formats that
+#' need an uninstalled suggested package are skipped.
 #'
 #' @param dataset A dataset identifier. One of:
-#'   - A short alias, e.g. `"iptu_sp"` (see [list_datasets()] for all aliases).
-#'   - A bare DOI, e.g. `"10.60873/FK2/TOXCRF"`.
-#'   - A full DOI URL, e.g. `"https://doi.org/10.60873/FK2/TOXCRF"`.
+#'   A short alias, e.g. `"iptu_sp"`. See [list_datasets()] for all aliases.
+#' @param ... Reserved for future selectors. Must be empty.
+#' @param resource The name of a logical resource within the registered
+#'   dataset. When `NULL`, the resource marked as the default is used. See
+#'   [list_resources()] for the available names.
 #' @param year An integer or character year used to filter files when a dataset
 #'   contains multiple annual files (e.g. `year = 2023`).
-#' @param filename The exact filename to download from the dataset. Overrides
-#'   `year` and `file_pattern`.
-#' @param file_pattern A regex pattern matched against filenames. Applied after
-#'   `year` filtering.
+#' @param format An optional file format, such as `"parquet"`, `"gpkg"`, or
+#'   `"xlsx"`. The format must be available for the selected resource.
 #' @param docs Logical. If `TRUE`, returns a named list with two elements:
 #'   `data` (the downloaded tibble/sf object) and `docs`. When the dataset
 #'   contains a file whose name starts with `"documentacao"` (e.g.
@@ -40,16 +39,15 @@
 #' # By alias
 #' embarques <- get_dataset("embarques_mensais")
 #'
-#' # By DOI, or by the DOI URL
-#' embarques <- get_dataset("10.60873/FK2/BPYHFB")
-#' embarques <- get_dataset("https://doi.org/10.60873/FK2/BPYHFB")
-#'
 #' # Pick one year from a multi-year dataset
 #' pemob_2023 <- get_dataset("pemob_anual", year = 2023)
 #'
-#' # Request a file by exact name, or by regex
-#' linhas <- get_dataset("estacoes_motiva", filename = "dim_line.rds")
-#' estacoes <- get_dataset("estacoes_motiva", file_pattern = "^dim_station")
+#' # Pick a resource and an explicit format
+#' pontos <- get_dataset(
+#'   "qualidade_ar_mare",
+#'   resource = "pontos",
+#'   format = "gpkg"
+#' )
 #'
 #' # Return the data with its documentation
 #' result <- get_dataset("embarques_mensais", docs = TRUE)
@@ -60,18 +58,62 @@
 #' faixa_azul <- get_dataset("faixa_azul_sp")
 get_dataset <- function(
   dataset,
+  ...,
+  resource = NULL,
   year = NULL,
-  filename = NULL,
-  file_pattern = NULL,
+  format = NULL,
   docs = FALSE
 ) {
+  rlang::check_dots_empty()
+  entry <- registry_entry(dataset)
+  if (is.null(entry)) {
+    cli::cli_abort(c(
+      "{.fn get_dataset} requires a registered dataset alias.",
+      "i" = "Use {.fn get_dataverse} to download a DOI or Dataverse URL."
+    ))
+  }
   doi <- resolve_dataset(dataset)
   doi_url <- doi_to_url(doi)
   server <- insper_server()
-  entry <- registry_entry(dataset)
+  resources <- entry[["resources"]]
+  resource_names <- names(resources)
+  if (
+    !is.null(resource) &&
+      (!is.character(resource) || length(resource) != 1 || is.na(resource))
+  ) {
+    cli::cli_abort("{.arg resource} must be a single string or {.code NULL}.")
+  }
+  if (is.null(resource)) {
+    defaults <- resource_names[vapply(
+      resources,
+      function(x) isTRUE(x[["default"]]),
+      logical(1)
+    )]
+    if (length(defaults) != 1) {
+      cli::cli_abort(c(
+        "Dataset {.val {dataset}} contains multiple resources.",
+        "i" = "Choose one with {.arg resource}: {.val {resource_names}}.",
+        "i" = "Run {.run list_resources(\"{dataset}\")} for details."
+      ))
+    }
+    resource <- defaults[[1]]
+  }
+  if (!resource %in% resource_names) {
+    cli::cli_abort(c(
+      "Resource {.val {resource}} is not available for {.val {dataset}}.",
+      "i" = "Available resources: {.val {resource_names}}"
+    ))
+  }
+  definition <- resources[[resource]]
+  if (
+    !is.null(year) &&
+      (!is.atomic(year) || length(year) != 1 || is.na(year))
+  ) {
+    cli::cli_abort("{.arg year} must be a single value or {.code NULL}.")
+  }
 
-  spatial <- isTRUE(entry[["is_spatial"]])
-  if (spatial && !rlang::is_installed("sf")) {
+  spatial <- isTRUE(definition[["is_spatial"]])
+  if (spatial && is.null(format) && !rlang::is_installed("sf")) {
     cli::cli_warn(c(
       "Dataset {.val {dataset}} contains spatial data.",
       "i" = "Install {.pkg sf} to read it as an {.cls sf} object.",
@@ -83,31 +125,36 @@ get_dataset <- function(
   files <- dataverse::dataset_files(doi_url, server = server)
   file_names <- vapply(files, function(f) f[["label"]], character(1))
 
-  # Several aliases can share one deposit (PEMOB, Maré). The registry pattern
-  # narrows the deposit to the files that belong to this alias before any
-  # user-supplied selector is applied.
-  own_pattern <- entry[["file_pattern"]]
-  if (!is.null(own_pattern) && is.null(filename)) {
-    keep <- grepl(own_pattern, file_names, perl = TRUE)
-    if (!any(keep)) {
+  own_pattern <- definition[["file_pattern"]]
+  keep <- grepl(own_pattern, file_names, perl = TRUE)
+  if (!any(keep)) {
+    cli::cli_abort(c(
+      "No files in {.val {doi}} matched resource {.val {resource}}.",
+      "i" = "The deposit may have been restructured; please report this.",
+      "i" = "Files present: {.val {file_names}}"
+    ))
+  }
+  file_names <- file_names[keep]
+
+  resource_formats <- unlist(definition[["formats"]], use.names = FALSE)
+  if (!is.null(format)) {
+    if (!is.character(format) || length(format) != 1 || is.na(format)) {
+      cli::cli_abort("{.arg format} must be a single string or {.code NULL}.")
+    }
+    format <- tolower(format)
+    if (!format %in% resource_formats) {
       cli::cli_abort(c(
-        paste0(
-          "No files in {.val {doi}} matched the registry pattern for ",
-          "{.val {dataset}}."
-        ),
-        "i" = "The deposit may have been restructured; please report this.",
-        "i" = "Files present: {.val {file_names}}"
+        "Format {.val {format}} is not available for resource {.val {resource}}.",
+        "i" = "Available formats: {.val {resource_formats}}"
       ))
     }
-    file_names <- file_names[keep]
   }
 
   target <- select_dv_file(
     file_names,
     year = year,
-    filename = filename,
-    file_pattern = file_pattern,
-    prefer = format_priority(spatial)
+    prefer = format %||% format_priority(spatial),
+    strict = TRUE
   )
   ftype <- detect_file_type(target)
 
@@ -125,6 +172,10 @@ get_dataset <- function(
     grepl("^documenta", all_names, ignore.case = TRUE) &
       tools::file_ext(tolower(all_names)) %in% c("xlsx", "xls")
   ]
+  documentation_pattern <- definition[["documentation_pattern"]]
+  if (!is.null(documentation_pattern)) {
+    doc_file <- doc_file[grepl(documentation_pattern, doc_file, perl = TRUE)]
+  }
 
   if (length(doc_file) > 0) {
     cli::cli_inform(c(
