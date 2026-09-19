@@ -19,22 +19,25 @@ The package website is built with **pkgdown**.
 
 | Function | Purpose |
 |----|----|
-| [`list_datasets()`](https://inspercidades.github.io/inspercidados/reference/list_datasets.md) | List datasets; filters on theme, region, project, spatial, access |
+| [`list_datasets()`](https://inspercidades.github.io/inspercidados/reference/list_datasets.md) | List datasets; `search`, `theme`, `region`, `project`, and `spatial` filters; `include` switches between active, catalogued (secure room), and all entries |
 | [`list_projects()`](https://inspercidades.github.io/inspercidados/reference/list_projects.md) | List the studies behind the datasets, with their repos |
 | [`get_dataset()`](https://inspercidades.github.io/inspercidados/reference/get_dataset.md) | Download a registered dataset into R |
 | [`get_dataverse()`](https://inspercidades.github.io/inspercidados/reference/get_dataverse.md) | Download any Insper Dataverse deposit from a pasted DOI/URL |
 | [`browse_project()`](https://inspercidades.github.io/inspercidados/reference/browse_project.md) | Print a study, its datasets, and open its repository |
 | [`cite_dataset()`](https://inspercidades.github.io/inspercidados/reference/cite_dataset.md) | Generate a citation for a dataset |
-| [`get_script()`](https://inspercidades.github.io/inspercidados/reference/get_script.md) | Deprecated shim that forwards to [`browse_project()`](https://inspercidades.github.io/inspercidados/reference/browse_project.md) |
+| [`get_script()`](https://inspercidades.github.io/inspercidados/reference/get_script.md) | Deprecated shim (lifecycle badge + `cli_warn`) that forwards to [`browse_project()`](https://inspercidades.github.io/inspercidados/reference/browse_project.md) |
 
 ## Package Architecture
 
     inst/datasets.json          <- alias -> DOI, metadata, file_pattern, formats, status
-    inst/projects.json          <- project slug -> repo, visibility, member datasets
+    inst/projects.json          <- project slug -> title, repo_url, visibility, member datasets
+    inst/scripts/               <- standalone pipeline scripts shipped with the package
     data-raw/build_registry.R   <- Google Sheet + Dataverse API -> both JSON files
     data-raw/aliases.csv        <- DOI (+ file_pattern) -> alias, project
     data-raw/projects.csv       <- project -> repo URL, visibility
     data-raw/retired.csv        <- aliases that no longer resolve
+    data-raw/_template/         <- skeleton pipeline (download -> clean -> validate -> export) for new datasets
+    data-raw/simu-pemob/        <- in-progress PEMOB simulation pipeline
     R/list_datasets.R           <- list_datasets()
     R/list_projects.R           <- list_projects()
     R/get_dataset.R             <- get_dataset()
@@ -43,14 +46,19 @@ The package website is built with **pkgdown**.
     R/cite_dataset.R            <- cite_dataset()
     R/get_script.R              <- deprecated shim
     R/utils.R                   <- internal helpers (server, resolve ID, readers)
+    R/live_examples.R           <- gates network-dependent examples (@examplesIf)
 
 **Registry generation.** The Google Sheet “Site Cidados” / “Catálogo de
 dados” is the source of truth for dataset metadata.
 `data-raw/build_registry.R` reads it with `googlesheets4`, joins the
 alias and project tables from `data-raw/`, queries the Dataverse API for
-each deposit’s file list, and writes both JSON files. `is_spatial` and
-`formats` are derived from the deposited file extensions, never from the
-sheet’s `is_geoportal` column, which means something else. Auth uses
+each deposit’s file list, and writes both JSON files. When the sheet
+carries an `alias` column, it supplies the primary alias for each
+catalog row, overriding `aliases.csv`; `aliases.csv` still provides
+sub-aliases, because one deposit can hold several datasets and a single
+sheet column cannot say that. `is_spatial` and `formats` are derived
+from the deposited file extensions, never from the sheet’s
+`is_geoportal` column, which means something else. Auth uses
 `CIDADOS_GS4_EMAIL` from `.Renviron`.
 
 **An alias is a DOI plus an optional file pattern.** Several aliases can
@@ -60,11 +68,19 @@ share one deposit. `pemob_anual` and `pemob_harmonizada` both point at
 applies that pattern before any user selector.
 
 **Entries carry a `status`.** `active` is downloadable. `unpublished` is
-catalogued but held in Insper’s secure data room. `retired` is a
-tombstone for an alias whose deposit was withdrawn or merged, carrying
-`superseded_by` so the error names the replacement.
+a catalogued study with no DOI yet (`"doi": null`): it is discoverable
+via `list_datasets(include = "catalogued")` but cannot be downloaded.
+`retired` is a tombstone for an alias whose deposit was withdrawn or
+merged, carrying `superseded_by` and `reason` so the error names the
+replacement.
 [`list_datasets()`](https://inspercidades.github.io/inspercidados/reference/list_datasets.md)
 shows only `active` by default.
+
+**`access` is separate from `status`.** It tells the user how the data
+can be reached: `download` (DOI present), `secure_room` (held in
+Insper’s secure data room), or `unpublished` (catalogued, not yet
+released). It is derived from the sheet’s access column and from DOI
+presence, never from `is_geoportal`.
 
 Example registry entry:
 
@@ -73,6 +89,11 @@ Example registry entry:
   "pemob_anual": {
     "doi": "10.60873/FK2/5XUNNW",
     "title": "Pesquisa Nacional de Mobilidade Urbana (PEMOB) [2019-2024]",
+    "description": "Base anual e harmonizada (formato de painel) da PEMOB entre os anos de 2019 a 2024.",
+    "theme": "Mobilidade",
+    "region": "Brasil",
+    "keywords": "Mobilidade Urbana; Gestão de Transportes; Transporte público; SIMU; Políticas de Mobilidade",
+    "collection": "Pesquisa Nacional de Mobilidade Urbana (PEMOB) [2019-2024]",
     "project": "pemob",
     "access": "download",
     "file_pattern": "^pemob_[0-9]{4}",
@@ -86,11 +107,12 @@ Example registry entry:
 **Server** is always `dataverse.datascience.insper.edu.br` — never ask
 the user to configure it.
 
-**Identifier resolution** (in order): 1. Alias (e.g. `"iptu_sp"`) -\>
-look up DOI in `inst/datasets.json` 2. DOI
-(e.g. `"10.60873/FK2/7IXFPX"`) -\> use directly 3. Full URL
-(`https://doi.org/...` or a Dataverse `?persistentId=doi:...` landing
-page) -\> extract DOI
+**Identifier resolution** (in order):
+
+1.  Alias (e.g. `"iptu_sp"`) -\> look up DOI in `inst/datasets.json`
+2.  DOI (e.g. `"10.60873/FK2/7IXFPX"`) -\> use directly
+3.  Full URL (`https://doi.org/...`, a Dataverse `?persistentId=doi:...`
+    landing page, or a bare `doi:` prefix) -\> extract DOI
 
 Only the `10.60873` prefix is served. Other DOIs abort with an explicit
 message rather than being passed through.
@@ -104,12 +126,17 @@ All downloads go through the `dataverse` package (\>= 0.3.15):
 dataverse::get_dataframe_by_name(
   filename   = "emb_diarios.tab",
   dataset    = "https://doi.org/10.60873/FK2/9MZGJL",
+  original   = TRUE,
   .f         = \(x) readr::read_delim(x, delim = "\t"),
   server     = "dataverse.datascience.insper.edu.br"
 )
 ```
 
-File listing uses
+Delimited text goes through `get_dataframe_by_name(original = TRUE)`.
+Binary formats (rds, parquet, gpkg, geojson, xlsx, gzipped tables)
+download via
+[`dataverse::get_file_by_name()`](https://iqss.github.io/dataverse-client-r/reference/files.html)
+and are parsed locally. File listing uses
 [`dataverse::dataset_files()`](https://iqss.github.io/dataverse-client-r/reference/get_dataset.html).
 Metadata fetching uses
 [`dataverse::get_dataset()`](https://iqss.github.io/dataverse-client-r/reference/get_dataset.html).
@@ -139,10 +166,16 @@ get_dataset("10.60873/FK2/TOXCRF")              # by DOI
 get_dataset("pemob_anual", year = 2023)         # filter by year in filename
 get_dataset("iptu_sp", filename = "iptu.gpkg")  # exact filename
 get_dataset("iptu_sp", file_pattern = "\\.gpkg$") # regex pattern
+get_dataset("iptu_sp", docs = TRUE)             # also return documentation
 
 # Any deposit, registered or not
 get_dataverse("10.60873/FK2/AOLEOI", files = TRUE)
 ```
+
+`docs = TRUE` returns a named list with `data` and `docs`: the `docs`
+element is a `documentacao*.xlsx` workbook when the deposit carries one,
+otherwise a named list of Dataverse metadata (title, description,
+authors, DOI, URL, year).
 
 ## Messaging Conventions
 
@@ -158,6 +191,10 @@ get_dataverse("10.60873/FK2/AOLEOI", files = TRUE)
 - No `\dontrun{}` unless the example truly cannot run (e.g. requires
   network)
 - All exported functions have `@examples`
+- Network examples are gated with `@examplesIf live_examples()`: they
+  run during `devtools::check()`, `devtools::run_examples()`, and
+  pkgdown builds (`NOT_CRAN` / `IN_PKGDOWN`), and are skipped on CRAN,
+  offline, or when the server is down
 - `DESCRIPTION` has complete `Title`, `Description`, proper `Authors@R`
 - No internet calls in tests — use
   [`testthat::skip_if_offline()`](https://testthat.r-lib.org/reference/skip.html)
@@ -178,15 +215,36 @@ pkgdown::build_site()     # build website
 
 ## Key Dependencies
 
-**Imports** (always available): - `dataverse` (\>= 0.3.15) — Dataverse
-API client - `cli` — user messaging - `jsonlite` — read
-inst/datasets.json
+**Imports** (always available):
+
+- `dataverse` (\>= 0.3.15) — Dataverse API client
+- `cli` — user messaging
+- `jsonlite` — read inst/datasets.json
+- `readr` — delimited text readers
+- `rlang` — `check_installed()` for Suggests, `%||%` helper
+- `tibble` —
+  [`list_datasets()`](https://inspercidades.github.io/inspercidados/reference/list_datasets.md)
+  /
+  [`list_projects()`](https://inspercidades.github.io/inspercidados/reference/list_projects.md)
+  output
+- `utils` — `browseURL` in
+  [`browse_project()`](https://inspercidades.github.io/inspercidados/reference/browse_project.md)
+- `tools` — file-extension helpers
 
 **Suggests** (loaded conditionally with
-[`rlang::check_installed()`](https://rlang.r-lib.org/reference/is_installed.html)): -
-`arrow` — Parquet file support - `sf` — spatial GeoPackage and GeoJSON
-support - `readxl` — Excel file support - `googlesheets4`, `janitor` —
-used only by `data-raw/build_registry.R`
+[`rlang::check_installed()`](https://rlang.r-lib.org/reference/is_installed.html)):
+
+- `arrow` — Parquet file support
+- `sf` — spatial GeoPackage and GeoJSON support
+- `readxl` — Excel file support
+- `curl` — server check in
+  [`live_examples()`](https://inspercidades.github.io/inspercidados/reference/live_examples.md)
+- `lifecycle` — deprecation badge on
+  [`get_script()`](https://inspercidades.github.io/inspercidados/reference/get_script.md)
+- `rstudioapi` — declared in Suggests, not currently referenced in `R/`
+- `googlesheets4`, `janitor` — used only by `data-raw/build_registry.R`
+- `knitr`, `rmarkdown`, `testthat`, `pkgdown` — vignettes, tests,
+  website
 
 Format preference in
 [`get_dataset()`](https://inspercidades.github.io/inspercidados/reference/get_dataset.md)

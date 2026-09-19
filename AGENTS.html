@@ -46,10 +46,10 @@
 </div>
 <div class="section level2">
 <h2 id="core-functions-public-api">Core Functions (Public API)<a class="anchor" aria-label="anchor" href="#core-functions-public-api"></a></h2>
-<table class="table"><colgroup><col width="50%"><col width="50%"></colgroup><thead><tr><th>Function</th>
+<table class="table"><colgroup><col width="10%"><col width="89%"></colgroup><thead><tr><th>Function</th>
 <th>Purpose</th>
 </tr></thead><tbody><tr><td><code><a href="reference/list_datasets.html">list_datasets()</a></code></td>
-<td>List datasets; filters on theme, region, project, spatial, access</td>
+<td>List datasets; <code>search</code>, <code>theme</code>, <code>region</code>, <code>project</code>, and <code>spatial</code> filters; <code>include</code> switches between active, catalogued (secure room), and all entries</td>
 </tr><tr><td><code><a href="reference/list_projects.html">list_projects()</a></code></td>
 <td>List the studies behind the datasets, with their repos</td>
 </tr><tr><td><code><a href="reference/get_dataset.html">get_dataset()</a></code></td>
@@ -61,17 +61,20 @@
 </tr><tr><td><code><a href="reference/cite_dataset.html">cite_dataset()</a></code></td>
 <td>Generate a citation for a dataset</td>
 </tr><tr><td><code><a href="reference/get_script.html">get_script()</a></code></td>
-<td>Deprecated shim that forwards to <code><a href="reference/browse_project.html">browse_project()</a></code>
+<td>Deprecated shim (lifecycle badge + <code>cli_warn</code>) that forwards to <code><a href="reference/browse_project.html">browse_project()</a></code>
 </td>
 </tr></tbody></table></div>
 <div class="section level2">
 <h2 id="package-architecture">Package Architecture<a class="anchor" aria-label="anchor" href="#package-architecture"></a></h2>
 <pre><code>inst/datasets.json          &lt;- alias -&gt; DOI, metadata, file_pattern, formats, status
-inst/projects.json          &lt;- project slug -&gt; repo, visibility, member datasets
+inst/projects.json          &lt;- project slug -&gt; title, repo_url, visibility, member datasets
+inst/scripts/               &lt;- standalone pipeline scripts shipped with the package
 data-raw/build_registry.R   &lt;- Google Sheet + Dataverse API -&gt; both JSON files
 data-raw/aliases.csv        &lt;- DOI (+ file_pattern) -&gt; alias, project
 data-raw/projects.csv       &lt;- project -&gt; repo URL, visibility
 data-raw/retired.csv        &lt;- aliases that no longer resolve
+data-raw/_template/         &lt;- skeleton pipeline (download -&gt; clean -&gt; validate -&gt; export) for new datasets
+data-raw/simu-pemob/        &lt;- in-progress PEMOB simulation pipeline
 R/list_datasets.R           &lt;- list_datasets()
 R/list_projects.R           &lt;- list_projects()
 R/get_dataset.R             &lt;- get_dataset()
@@ -79,26 +82,37 @@ R/get_dataverse.R           &lt;- get_dataverse()
 R/browse_project.R          &lt;- browse_project()
 R/cite_dataset.R            &lt;- cite_dataset()
 R/get_script.R              &lt;- deprecated shim
-R/utils.R                   &lt;- internal helpers (server, resolve ID, readers)</code></pre>
-<p><strong>Registry generation.</strong> The Google Sheet “Site Cidados” / “Catálogo de dados” is the source of truth for dataset metadata. <code>data-raw/build_registry.R</code> reads it with <code>googlesheets4</code>, joins the alias and project tables from <code>data-raw/</code>, queries the Dataverse API for each deposit’s file list, and writes both JSON files. <code>is_spatial</code> and <code>formats</code> are derived from the deposited file extensions, never from the sheet’s <code>is_geoportal</code> column, which means something else. Auth uses <code>CIDADOS_GS4_EMAIL</code> from <code>.Renviron</code>.</p>
+R/utils.R                   &lt;- internal helpers (server, resolve ID, readers)
+R/live_examples.R           &lt;- gates network-dependent examples (@examplesIf)</code></pre>
+<p><strong>Registry generation.</strong> The Google Sheet “Site Cidados” / “Catálogo de dados” is the source of truth for dataset metadata. <code>data-raw/build_registry.R</code> reads it with <code>googlesheets4</code>, joins the alias and project tables from <code>data-raw/</code>, queries the Dataverse API for each deposit’s file list, and writes both JSON files. When the sheet carries an <code>alias</code> column, it supplies the primary alias for each catalog row, overriding <code>aliases.csv</code>; <code>aliases.csv</code> still provides sub-aliases, because one deposit can hold several datasets and a single sheet column cannot say that. <code>is_spatial</code> and <code>formats</code> are derived from the deposited file extensions, never from the sheet’s <code>is_geoportal</code> column, which means something else. Auth uses <code>CIDADOS_GS4_EMAIL</code> from <code>.Renviron</code>.</p>
 <p><strong>An alias is a DOI plus an optional file pattern.</strong> Several aliases can share one deposit. <code>pemob_anual</code> and <code>pemob_harmonizada</code> both point at <code>10.60873/FK2/5XUNNW</code> and separate by <code>file_pattern</code>. <code><a href="reference/get_dataset.html">get_dataset()</a></code> applies that pattern before any user selector.</p>
-<p><strong>Entries carry a <code>status</code>.</strong> <code>active</code> is downloadable. <code>unpublished</code> is catalogued but held in Insper’s secure data room. <code>retired</code> is a tombstone for an alias whose deposit was withdrawn or merged, carrying <code>superseded_by</code> so the error names the replacement. <code><a href="reference/list_datasets.html">list_datasets()</a></code> shows only <code>active</code> by default.</p>
+<p><strong>Entries carry a <code>status</code>.</strong> <code>active</code> is downloadable. <code>unpublished</code> is a catalogued study with no DOI yet (<code>"doi": null</code>): it is discoverable via <code>list_datasets(include = "catalogued")</code> but cannot be downloaded. <code>retired</code> is a tombstone for an alias whose deposit was withdrawn or merged, carrying <code>superseded_by</code> and <code>reason</code> so the error names the replacement. <code><a href="reference/list_datasets.html">list_datasets()</a></code> shows only <code>active</code> by default.</p>
+<p><strong><code>access</code> is separate from <code>status</code>.</strong> It tells the user how the data can be reached: <code>download</code> (DOI present), <code>secure_room</code> (held in Insper’s secure data room), or <code>unpublished</code> (catalogued, not yet released). It is derived from the sheet’s access column and from DOI presence, never from <code>is_geoportal</code>.</p>
 <p>Example registry entry:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode json"><code class="sourceCode json"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">{</span></span>
 <span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  <span class="dt">"pemob_anual"</span><span class="fu">:</span> <span class="fu">{</span></span>
 <span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>    <span class="dt">"doi"</span><span class="fu">:</span> <span class="st">"10.60873/FK2/5XUNNW"</span><span class="fu">,</span></span>
 <span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>    <span class="dt">"title"</span><span class="fu">:</span> <span class="st">"Pesquisa Nacional de Mobilidade Urbana (PEMOB) [2019-2024]"</span><span class="fu">,</span></span>
-<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>    <span class="dt">"project"</span><span class="fu">:</span> <span class="st">"pemob"</span><span class="fu">,</span></span>
-<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>    <span class="dt">"access"</span><span class="fu">:</span> <span class="st">"download"</span><span class="fu">,</span></span>
-<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>    <span class="dt">"file_pattern"</span><span class="fu">:</span> <span class="st">"^pemob_[0-9]{4}"</span><span class="fu">,</span></span>
-<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>    <span class="dt">"formats"</span><span class="fu">:</span> <span class="ot">[</span><span class="st">"parquet"</span><span class="ot">,</span> <span class="st">"tab"</span><span class="ot">,</span> <span class="st">"xlsx"</span><span class="ot">]</span><span class="fu">,</span></span>
-<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>    <span class="dt">"is_spatial"</span><span class="fu">:</span> <span class="kw">false</span><span class="fu">,</span></span>
-<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>    <span class="dt">"status"</span><span class="fu">:</span> <span class="st">"active"</span></span>
-<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>  <span class="fu">}</span></span>
-<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>    <span class="dt">"description"</span><span class="fu">:</span> <span class="st">"Base anual e harmonizada (formato de painel) da PEMOB entre os anos de 2019 a 2024."</span><span class="fu">,</span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>    <span class="dt">"theme"</span><span class="fu">:</span> <span class="st">"Mobilidade"</span><span class="fu">,</span></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>    <span class="dt">"region"</span><span class="fu">:</span> <span class="st">"Brasil"</span><span class="fu">,</span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>    <span class="dt">"keywords"</span><span class="fu">:</span> <span class="st">"Mobilidade Urbana; Gestão de Transportes; Transporte público; SIMU; Políticas de Mobilidade"</span><span class="fu">,</span></span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>    <span class="dt">"collection"</span><span class="fu">:</span> <span class="st">"Pesquisa Nacional de Mobilidade Urbana (PEMOB) [2019-2024]"</span><span class="fu">,</span></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>    <span class="dt">"project"</span><span class="fu">:</span> <span class="st">"pemob"</span><span class="fu">,</span></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>    <span class="dt">"access"</span><span class="fu">:</span> <span class="st">"download"</span><span class="fu">,</span></span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>    <span class="dt">"file_pattern"</span><span class="fu">:</span> <span class="st">"^pemob_[0-9]{4}"</span><span class="fu">,</span></span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>    <span class="dt">"formats"</span><span class="fu">:</span> <span class="ot">[</span><span class="st">"parquet"</span><span class="ot">,</span> <span class="st">"tab"</span><span class="ot">,</span> <span class="st">"xlsx"</span><span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a>    <span class="dt">"is_spatial"</span><span class="fu">:</span> <span class="kw">false</span><span class="fu">,</span></span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a>    <span class="dt">"status"</span><span class="fu">:</span> <span class="st">"active"</span></span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a>  <span class="fu">}</span></span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
 <p><strong>Server</strong> is always <code>dataverse.datascience.insper.edu.br</code> — never ask the user to configure it.</p>
-<p><strong>Identifier resolution</strong> (in order): 1. Alias (e.g. <code>"iptu_sp"</code>) -&gt; look up DOI in <code>inst/datasets.json</code> 2. DOI (e.g. <code>"10.60873/FK2/7IXFPX"</code>) -&gt; use directly 3. Full URL (<code>https://doi.org/...</code> or a Dataverse <code>?persistentId=doi:...</code> landing page) -&gt; extract DOI</p>
-<p>Only the <code>10.60873</code> prefix is served. Other DOIs abort with an explicit message rather than being passed through.</p>
+<p><strong>Identifier resolution</strong> (in order):</p>
+<ol style="list-style-type: decimal"><li>Alias (e.g. <code>"iptu_sp"</code>) -&gt; look up DOI in <code>inst/datasets.json</code>
+</li>
+<li>DOI (e.g. <code>"10.60873/FK2/7IXFPX"</code>) -&gt; use directly</li>
+<li>Full URL (<code>https://doi.org/...</code>, a Dataverse <code>?persistentId=doi:...</code> landing page, or a bare <code>doi:</code> prefix) -&gt; extract DOI</li>
+</ol><p>Only the <code>10.60873</code> prefix is served. Other DOIs abort with an explicit message rather than being passed through.</p>
 </div>
 <div class="section level2">
 <h2 id="dataverse-integration">Dataverse Integration<a class="anchor" aria-label="anchor" href="#dataverse-integration"></a></h2>
@@ -107,10 +121,11 @@ R/utils.R                   &lt;- internal helpers (server, resolve ID, readers)
 <code class="sourceCode R"><span><span class="fu">dataverse</span><span class="fu">::</span><span class="fu"><a href="https://iqss.github.io/dataverse-client-r/reference/get_dataframe.html" class="external-link">get_dataframe_by_name</a></span><span class="op">(</span></span>
 <span>  filename   <span class="op">=</span> <span class="st">"emb_diarios.tab"</span>,</span>
 <span>  dataset    <span class="op">=</span> <span class="st">"https://doi.org/10.60873/FK2/9MZGJL"</span>,</span>
+<span>  original   <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  .f         <span class="op">=</span> \<span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html" class="external-link">read_delim</a></span><span class="op">(</span><span class="va">x</span>, delim <span class="op">=</span> <span class="st">"\t"</span><span class="op">)</span>,</span>
 <span>  server     <span class="op">=</span> <span class="st">"dataverse.datascience.insper.edu.br"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>File listing uses <code><a href="https://iqss.github.io/dataverse-client-r/reference/get_dataset.html" class="external-link">dataverse::dataset_files()</a></code>. Metadata fetching uses <code><a href="https://iqss.github.io/dataverse-client-r/reference/get_dataset.html" class="external-link">dataverse::get_dataset()</a></code>.</p>
+<p>Delimited text goes through <code>get_dataframe_by_name(original = TRUE)</code>. Binary formats (rds, parquet, gpkg, geojson, xlsx, gzipped tables) download via <code><a href="https://iqss.github.io/dataverse-client-r/reference/files.html" class="external-link">dataverse::get_file_by_name()</a></code> and are parsed locally. File listing uses <code><a href="https://iqss.github.io/dataverse-client-r/reference/get_dataset.html" class="external-link">dataverse::dataset_files()</a></code>. Metadata fetching uses <code><a href="https://iqss.github.io/dataverse-client-r/reference/get_dataset.html" class="external-link">dataverse::get_dataset()</a></code>.</p>
 </div>
 <div class="section level2">
 <h2 id="discoverability">Discoverability<a class="anchor" aria-label="anchor" href="#discoverability"></a></h2>
@@ -126,9 +141,11 @@ R/utils.R                   &lt;- internal helpers (server, resolve ID, readers)
 <span><span class="fu"><a href="reference/get_dataset.html">get_dataset</a></span><span class="op">(</span><span class="st">"pemob_anual"</span>, year <span class="op">=</span> <span class="fl">2023</span><span class="op">)</span>         <span class="co"># filter by year in filename</span></span>
 <span><span class="fu"><a href="reference/get_dataset.html">get_dataset</a></span><span class="op">(</span><span class="st">"iptu_sp"</span>, filename <span class="op">=</span> <span class="st">"iptu.gpkg"</span><span class="op">)</span>  <span class="co"># exact filename</span></span>
 <span><span class="fu"><a href="reference/get_dataset.html">get_dataset</a></span><span class="op">(</span><span class="st">"iptu_sp"</span>, file_pattern <span class="op">=</span> <span class="st">"\\.gpkg$"</span><span class="op">)</span> <span class="co"># regex pattern</span></span>
+<span><span class="fu"><a href="reference/get_dataset.html">get_dataset</a></span><span class="op">(</span><span class="st">"iptu_sp"</span>, docs <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>             <span class="co"># also return documentation</span></span>
 <span></span>
 <span><span class="co"># Any deposit, registered or not</span></span>
 <span><span class="fu"><a href="reference/get_dataverse.html">get_dataverse</a></span><span class="op">(</span><span class="st">"10.60873/FK2/AOLEOI"</span>, files <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p><code>docs = TRUE</code> returns a named list with <code>data</code> and <code>docs</code>: the <code>docs</code> element is a <code>documentacao*.xlsx</code> workbook when the deposit carries one, otherwise a named list of Dataverse metadata (title, description, authors, DOI, URL, year).</p>
 </div>
 <div class="section level2">
 <h2 id="messaging-conventions">Messaging Conventions<a class="anchor" aria-label="anchor" href="#messaging-conventions"></a></h2>
@@ -142,6 +159,7 @@ R/utils.R                   &lt;- internal helpers (server, resolve ID, readers)
 <ul><li>No <code>\dontrun{}</code> unless the example truly cannot run (e.g. requires network)</li>
 <li>All exported functions have <code>@examples</code>
 </li>
+<li>Network examples are gated with <code>@examplesIf live_examples()</code>: they run during <code>devtools::check()</code>, <code>devtools::run_examples()</code>, and pkgdown builds (<code>NOT_CRAN</code> / <code>IN_PKGDOWN</code>), and are skipped on CRAN, offline, or when the server is down</li>
 <li>
 <code>DESCRIPTION</code> has complete <code>Title</code>, <code>Description</code>, proper <code>Authors@R</code>
 </li>
@@ -160,9 +178,46 @@ R/utils.R                   &lt;- internal helpers (server, resolve ID, readers)
 </div>
 <div class="section level2">
 <h2 id="key-dependencies">Key Dependencies<a class="anchor" aria-label="anchor" href="#key-dependencies"></a></h2>
-<p><strong>Imports</strong> (always available): - <code>dataverse</code> (&gt;= 0.3.15) — Dataverse API client - <code>cli</code> — user messaging - <code>jsonlite</code> — read inst/datasets.json</p>
-<p><strong>Suggests</strong> (loaded conditionally with <code><a href="https://rlang.r-lib.org/reference/is_installed.html" class="external-link">rlang::check_installed()</a></code>): - <code>arrow</code> — Parquet file support - <code>sf</code> — spatial GeoPackage and GeoJSON support - <code>readxl</code> — Excel file support - <code>googlesheets4</code>, <code>janitor</code> — used only by <code>data-raw/build_registry.R</code></p>
-<p>Format preference in <code><a href="reference/get_dataset.html">get_dataset()</a></code> skips any format whose package is missing, so the package stays usable with none of the Suggests installed.</p>
+<p><strong>Imports</strong> (always available):</p>
+<ul><li>
+<code>dataverse</code> (&gt;= 0.3.15) — Dataverse API client</li>
+<li>
+<code>cli</code> — user messaging</li>
+<li>
+<code>jsonlite</code> — read inst/datasets.json</li>
+<li>
+<code>readr</code> — delimited text readers</li>
+<li>
+<code>rlang</code> — <code>check_installed()</code> for Suggests, <code>%||%</code> helper</li>
+<li>
+<code>tibble</code> — <code><a href="reference/list_datasets.html">list_datasets()</a></code> / <code><a href="reference/list_projects.html">list_projects()</a></code> output</li>
+<li>
+<code>utils</code> — <code>browseURL</code> in <code><a href="reference/browse_project.html">browse_project()</a></code>
+</li>
+<li>
+<code>tools</code> — file-extension helpers</li>
+</ul><p><strong>Suggests</strong> (loaded conditionally with <code><a href="https://rlang.r-lib.org/reference/is_installed.html" class="external-link">rlang::check_installed()</a></code>):</p>
+<ul><li>
+<code>arrow</code> — Parquet file support</li>
+<li>
+<code>sf</code> — spatial GeoPackage and GeoJSON support</li>
+<li>
+<code>readxl</code> — Excel file support</li>
+<li>
+<code>curl</code> — server check in <code><a href="reference/live_examples.html">live_examples()</a></code>
+</li>
+<li>
+<code>lifecycle</code> — deprecation badge on <code><a href="reference/get_script.html">get_script()</a></code>
+</li>
+<li>
+<code>rstudioapi</code> — declared in Suggests, not currently referenced in <code>R/</code>
+</li>
+<li>
+<code>googlesheets4</code>, <code>janitor</code> — used only by <code>data-raw/build_registry.R</code>
+</li>
+<li>
+<code>knitr</code>, <code>rmarkdown</code>, <code>testthat</code>, <code>pkgdown</code> — vignettes, tests, website</li>
+</ul><p>Format preference in <code><a href="reference/get_dataset.html">get_dataset()</a></code> skips any format whose package is missing, so the package stays usable with none of the Suggests installed.</p>
 </div>
 <div class="section level2">
 <h2 id="file-conventions">File Conventions<a class="anchor" aria-label="anchor" href="#file-conventions"></a></h2>
