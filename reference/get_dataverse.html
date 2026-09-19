@@ -105,7 +105,10 @@ talks to Insper's Dataverse.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Or the landing-page URL</span></span></span>
 <span class="r-in"><span><span class="va">linhas</span> <span class="op">&lt;-</span> <span class="fu">get_dataverse</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="st">"https://dataverse.datascience.insper.edu.br/dataset.xhtml?persistentId=doi:10.60873/FK2/YWXLQS"</span>,</span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="st">"https://dataverse.datascience.insper.edu.br/dataset.xhtml?"</span>,</span></span>
+<span class="r-in"><span>    <span class="st">"persistentId=doi:10.60873/FK2/YWXLQS"</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span>,</span></span>
 <span class="r-in"><span>  filename <span class="op">=</span> <span class="st">"dim_line.rds"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
