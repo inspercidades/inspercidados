@@ -1,11 +1,10 @@
-# Live tests hit the real Insper Dataverse. They never run on CRAN, skip when
-# the server is unreachable, and can be switched off locally with
-# INSPERCIDADOS_SKIP_LIVE=true.
+# Live tests hit the real Insper Dataverse. Run them only when explicitly
+# enabled by the scheduled live-test workflow or a local developer.
 skip_if_no_dataverse <- function() {
   testthat::skip_on_cran()
   testthat::skip_if(
-    isTRUE(as.logical(Sys.getenv("INSPERCIDADOS_SKIP_LIVE", "false"))),
-    "INSPERCIDADOS_SKIP_LIVE is set"
+    !isTRUE(as.logical(Sys.getenv("INSPERCIDADOS_RUN_LIVE", "false"))),
+    "INSPERCIDADOS_RUN_LIVE is not set"
   )
   testthat::skip_if_offline(insper_server())
   return(invisible(TRUE))
