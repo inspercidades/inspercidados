@@ -60,7 +60,7 @@ test_that("select_dv_file() errors on a year with no files", {
   expect_error(select_dv_file(files, year = 1999), "No files matched")
 })
 
-test_that("select_dv_file() warns when several files share the winning format", {
+test_that("select_dv_file() warns for tied winning-format files", {
   expect_warning(
     out <- select_dv_file(files, prefer = "tab"),
     "Multiple"

@@ -14,9 +14,9 @@ list_datasets(
 )
 }
 \arguments{
-\item{search}{A character string to filter results. Matched case-insensitively
-against alias, title, description, keywords, theme, and region. Pass \code{NULL}
-(default) to return all datasets.}
+\item{search}{A character string to filter results. Matched
+case-insensitively against alias, title, description, keywords, theme, and
+region. Pass \code{NULL} (default) to return all datasets.}
 
 \item{theme, region, project}{Optional filters, matched case-insensitively as
 regular expressions against the corresponding column.}

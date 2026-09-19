@@ -24,13 +24,13 @@ allowed_themes <- c(
   "Trabalho e renda"
 )
 allowed_access <- c("Disponível para download", "Sala segura do Insper")
-keyword_columns <- paste0("palavra_chave_", 1:5)
+required_keyword_columns <- paste0("palavra_chave_", 1:5)
 required_catalog_columns <- c(
   "titulo_da_colecao",
   "filtro_tema",
   "filtro_regiao",
   "filtro_acesso",
-  keyword_columns,
+  required_keyword_columns,
   "titulo_da_base_de_dados",
   "descricao_da_base_de_dados",
   "link_da_base_de_dados_data_verse"
@@ -72,6 +72,11 @@ extract_doi <- function(x) {
     "doi:(10[.]60873/[^&#[:space:]]+)"
   )
   return(match[, 2])
+}
+
+catalog_keyword_columns <- function(catalog) {
+  columns <- grep("^palavra_chave_[0-9]+$", names(catalog), value = TRUE)
+  return(columns)
 }
 
 file_ext_each <- function(files) {
@@ -149,6 +154,7 @@ catalog_validation_issues <- function(catalog) {
     seq_len(nrow(catalog)) + 2L
   }
   issues <- list()
+  keyword_columns <- catalog_keyword_columns(catalog)
   add_issue <- function(index, field, problem) {
     issues[[length(issues) + 1L]] <<- new_issue(
       sheet_rows[index],
@@ -233,12 +239,13 @@ catalog_validation_issues <- function(catalog) {
   }
 
   doi <- extract_doi(catalog$link_da_base_de_dados_data_verse)
-  download <- catalog$filtro_acesso == "Disponível para download"
-  for (index in which(!is.na(download) & download & is.na(doi))) {
+  link <- clean_text(catalog$link_da_base_de_dados_data_verse)
+  invalid_doi <- !is.na(link) & is.na(doi)
+  for (index in which(invalid_doi)) {
     add_issue(
       index,
       "link_da_base_de_dados_data_verse",
-      "downloadable datasets require a valid 10.60873 Dataverse DOI link"
+      "links must contain a valid 10.60873 Dataverse DOI"
     )
   }
 
@@ -386,6 +393,7 @@ dataverse_files <- function(doi) {
 build_dataset_registry <- function(catalog, aliases, retired) {
   registry <- list()
   files_cache <- list()
+  keyword_columns <- catalog_keyword_columns(catalog)
   for (index in seq_len(nrow(aliases))) {
     alias <- aliases$alias[index]
     doi <- aliases$doi[index]

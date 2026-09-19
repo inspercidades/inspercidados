@@ -14,10 +14,9 @@
       validate_catalog(catalog)
     Condition
       Error in `validate_catalog()`:
-      ! Catalog validation failed with 4 issues.
+      ! Catalog validation failed with 3 issues.
       x Google Sheet row 3 [filtro_tema]: unknown theme 'Transportes'; use one of: Clima e Meio Ambiente, Educação, Habitação e Mercado Imobiliário, Mobilidade, Multidisciplinar e transversal, Saúde, Trabalho e renda
       x Google Sheet row 3 [keywords]: expected 3 to 5 keywords, found 2
       x Google Sheet row 3 [keywords]: duplicated keyword(s): Mobilidade Urbana
-      x Google Sheet row 3 [link_da_base_de_dados_data_verse]: downloadable datasets require a valid 10.60873 Dataverse DOI link
       i Fix these values in the Google Sheet and run `Rscript data-raw/build_registry.R` again. No registry files were written.
 

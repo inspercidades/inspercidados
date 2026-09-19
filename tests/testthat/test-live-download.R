@@ -85,7 +85,10 @@ test_that("get_dataset(docs = TRUE) returns data and documentation", {
 
 test_that("get_dataverse() lists files from a DOI and a landing page URL", {
   skip_if_no_dataverse()
-  url <- "https://dataverse.datascience.insper.edu.br/dataset.xhtml?persistentId=doi:10.60873/FK2/UOKFMF"
+  url <- paste0(
+    "https://dataverse.datascience.insper.edu.br/dataset.xhtml?",
+    "persistentId=doi:10.60873/FK2/UOKFMF"
+  )
 
   by_doi <- suppressMessages(get_dataverse("10.60873/FK2/UOKFMF", files = TRUE))
   by_url <- suppressMessages(get_dataverse(url, files = TRUE))

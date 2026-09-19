@@ -23,7 +23,10 @@ new_catalog_row <- function() {
     palavra_chave_5 = NA_character_,
     titulo_da_base_de_dados = "Dataset [2020-2024]",
     descricao_da_base_de_dados = "Dataset description.",
-    link_da_base_de_dados_data_verse = "https://example.org/?persistentId=doi:10.60873/FK2/TEST",
+    link_da_base_de_dados_data_verse = paste0(
+      "https://example.org/?persistentId=",
+      "doi:10.60873/FK2/TEST"
+    ),
     stringsAsFactors = FALSE
   ))
 }
@@ -60,6 +63,27 @@ test_that("secure-room entries may omit a DOI", {
   catalog$filtro_acesso <- "Sala segura do Insper"
   catalog$link_da_base_de_dados_data_verse <- NA_character_
   expect_no_error(validate_catalog(catalog))
+})
+
+test_that("download entries without a DOI become unpublished", {
+  catalog <- new_catalog_row()
+  catalog$link_da_base_de_dados_data_verse <- NA_character_
+
+  prepared <- prepare_catalog(catalog)
+
+  expect_equal(prepared$access, "unpublished")
+})
+
+test_that("additional keyword columns count toward the maximum", {
+  catalog <- new_catalog_row()
+  catalog$palavra_chave_4 <- "Metrô"
+  catalog$palavra_chave_5 <- "Fluxo"
+  catalog$palavra_chave_6 <- "Demanda de passageiros"
+
+  issues <- catalog_validation_issues(catalog)
+
+  expect_equal(issues$field, "keywords")
+  expect_match(issues$problem, "expected 3 to 5 keywords, found 6")
 })
 
 test_that("DOIs are extracted from persistent identifier links", {

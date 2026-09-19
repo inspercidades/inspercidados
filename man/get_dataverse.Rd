@@ -51,7 +51,10 @@ linhas <- get_dataverse("10.60873/FK2/YWXLQS", filename = "dim_line.rds")
 
 # Or the landing-page URL
 linhas <- get_dataverse(
-  "https://dataverse.datascience.insper.edu.br/dataset.xhtml?persistentId=doi:10.60873/FK2/YWXLQS",
+  paste0(
+    "https://dataverse.datascience.insper.edu.br/dataset.xhtml?",
+    "persistentId=doi:10.60873/FK2/YWXLQS"
+  ),
   filename = "dim_line.rds"
 )
 \dontshow{\}) # examplesIf}
