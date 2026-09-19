@@ -5,7 +5,7 @@
 `get_script()` assumed one R script per dataset. Most datasets come from
 a study whose pipeline spans many files, and several studies publish
 more than one dataset, so scripts are now published as repositories. Use
-[`browse_project()`](https://inspercidades.github.io/inspercidados/reference/browse_project.md)
+[`open_project()`](https://inspercidades.github.io/inspercidados/reference/open_project.md)
 instead.
 
 ## Usage
@@ -27,7 +27,7 @@ get_script(dataset, type = NULL, open = TRUE)
 - open:
 
   Passed to
-  [`browse_project()`](https://inspercidades.github.io/inspercidados/reference/browse_project.md).
+  [`open_project()`](https://inspercidades.github.io/inspercidados/reference/open_project.md).
 
 ## Value
 
@@ -36,8 +36,8 @@ The repository URL, invisibly.
 ## Examples
 
 ``` r
-# Deprecated; use browse_project() instead.
-browse_project("sinistros_sp", open = FALSE)
+# Deprecated; use open_project() instead.
+open_project("sinistros_sp", open = FALSE)
 #> 
 #> ── Faixa Azul e sinistros de trânsito ──────────────────────────────────────────
 #> Project: "faixa_azul"

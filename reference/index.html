@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">inspercidados</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -20,6 +20,7 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/getting-started.html">Getting started with inspercidados</a></li>
   </ul></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/inspercidades/inspercidados/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
@@ -35,7 +36,7 @@
     </div>
 
     <div class="section level2">
-      <h2 id="all-functions">All functions<a class="anchor" aria-label="anchor" href="#all-functions"></a></h2>
+      <h2 id="discover-data">Discover data<a class="anchor" aria-label="anchor" href="#discover-data"></a></h2>
 
 
 
@@ -46,19 +47,35 @@
 
       <dl><dt>
 
-          <code><a href="browse_project.html">browse_project()</a></code>
+          <code><a href="list_datasets.html">list_datasets()</a></code>
 
         </dt>
-        <dd>Open the study behind a dataset</dd>
+        <dd>List available datasets</dd>
 
         <dt>
 
-          <code><a href="cite_dataset.html">cite_dataset()</a></code>
+          <code><a href="list_resources.html">list_resources()</a></code>
 
         </dt>
-        <dd>Generate a citation for a dataset</dd>
+        <dd>List a dataset's logical resources</dd>
 
         <dt>
+
+          <code><a href="list_projects.html">list_projects()</a></code>
+
+        </dt>
+        <dd>List the studies behind the datasets</dd>
+      </dl></div><div class="section level2">
+      <h2 id="download-data">Download data<a class="anchor" aria-label="anchor" href="#download-data"></a></h2>
+
+
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
 
           <code><a href="get_dataset.html">get_dataset()</a></code>
 
@@ -71,22 +88,55 @@
 
         </dt>
         <dd>Download any Insper Dataverse dataset from a DOI or URL</dd>
+      </dl></div><div class="section level2">
+      <h2 id="cite-and-reproduce">Cite and reproduce<a class="anchor" aria-label="anchor" href="#cite-and-reproduce"></a></h2>
+
+
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="cite_dataset.html">cite_dataset()</a></code>
+
+        </dt>
+        <dd>Generate a citation for a dataset</dd>
 
         <dt>
 
-          <code><a href="list_datasets.html">list_datasets()</a></code>
+          <code><a href="open_project.html">open_project()</a></code>
 
         </dt>
-        <dd>List available datasets</dd>
+        <dd>Open the study behind a dataset</dd>
 
         <dt>
 
-          <code><a href="list_projects.html">list_projects()</a></code>
+          <code><a href="get_script.html">get_script()</a></code>
+          <span class="badge lifecycle lifecycle-deprecated">deprecated</span>
+        </dt>
+        <dd>Open or download the R script for a dataset</dd>
+      </dl></div><div class="section level2">
+      <h2 id="internal">Internal<a class="anchor" aria-label="anchor" href="#internal"></a></h2>
+
+
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="live_examples.html">live_examples()</a></code>
 
         </dt>
-        <dd>List the studies behind the datasets</dd>
+        <dd>Decide whether examples that download data should run</dd>
       </dl></div>
-  </main></div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">

@@ -13,13 +13,13 @@ Source:
 [`DESCRIPTION`](https://github.com/inspercidades/inspercidados/blob/main/DESCRIPTION)
 
 Oike V (2026). *inspercidados: Access to Brazilian Urban Datasets from
-Insper Cidades*. R package version 0.3.0,
+Insper Cidades*. R package version 0.4.0,
 <https://github.com/inspercidades/inspercidados>.
 
     @Manual{,
       title = {inspercidados: Access to Brazilian Urban Datasets from Insper Cidades},
       author = {Vinicius Oike},
       year = {2026},
-      note = {R package version 0.3.0},
+      note = {R package version 0.4.0},
       url = {https://github.com/inspercidades/inspercidados},
     }

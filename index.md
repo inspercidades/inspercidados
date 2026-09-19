@@ -8,7 +8,20 @@ can find, download, and cite datasets with a few short commands.
 
 ## Installation
 
-Install the development version from
+Install the package from R-universe:
+
+``` r
+
+install.packages(
+  "inspercidados",
+  repos = c(
+    "https://inspercidades.r-universe.dev",
+    "https://cloud.r-project.org"
+  )
+)
+```
+
+Or install the development version from
 [GitHub](https://github.com/inspercidades/inspercidados):
 
 ``` r
@@ -22,9 +35,11 @@ pak::pak("inspercidades/inspercidados")
 | Function | Purpose |
 |----|----|
 | [`list_datasets()`](https://inspercidades.github.io/inspercidados/reference/list_datasets.md) | List or search available datasets |
+| [`list_resources()`](https://inspercidades.github.io/inspercidados/reference/list_resources.md) | List logical resources within a dataset |
 | [`get_dataset()`](https://inspercidades.github.io/inspercidados/reference/get_dataset.md) | Download a dataset into R |
+| [`get_dataverse()`](https://inspercidades.github.io/inspercidados/reference/get_dataverse.md) | Inspect or download an arbitrary Insper Dataverse deposit |
 | [`cite_dataset()`](https://inspercidades.github.io/inspercidados/reference/cite_dataset.md) | Generate a citation for a dataset |
-| [`browse_project()`](https://inspercidades.github.io/inspercidados/reference/browse_project.md) | Open the repository of the study behind a dataset |
+| [`open_project()`](https://inspercidades.github.io/inspercidados/reference/open_project.md) | Open the repository of the study behind a dataset |
 
 ## Browse available datasets
 
@@ -37,20 +52,20 @@ with the package, so no network call is needed.
 library(inspercidados)
 
 list_datasets()
-#> # A tibble: 21 × 11
+#> # A tibble: 22 × 11
 #>    alias        title description theme region project access is_spatial formats
-#>    <chr>        <chr> <chr>       <chr> <chr>  <chr>   <chr>  <lgl>      <chr>  
+#>    <chr>        <chr> <chr>       <chr> <chr>  <chr>   <chr>  <lgl>      <chr>
 #>  1 itbi_sp      Impo… "Registros… Habi… São P… itbi    downl… FALSE      csv, p…
 #>  2 iptu_sp      IPTU… "Informaçõ… Habi… São P… densid… downl… TRUE       geojso…
-#>  3 alvaras_sp   Alva… "Informaçõ… Habi… São P… alvaras downl… TRUE       geojso…
+#>  3 alvaras_sp   Alva… "Agregação… Habi… São P… alvaras downl… TRUE       geojso…
 #>  4 censo_setor… Popu… "Dados pro… Habi… São P… densid… downl… TRUE       geojso…
 #>  5 iptu_vertic… IPTU… "Dados dem… Habi… São P… densid… downl… TRUE       geojso…
 #>  6 densidade_i… Dens… "Cruzament… Habi… São P… densid… downl… TRUE       geojso…
 #>  7 geoses_sp    Índi… "Índice so… Mult… São P… geoses  downl… TRUE       geojso…
-#>  8 mortalidade… Mort… "Medidas d… Saúde São P… mortal… downl… FALSE      tab    
+#>  8 mortalidade… Mort… "Medidas d… Saúde São P… mortal… downl… TRUE       geojso…
 #>  9 ilhas_calor… Medi… "Estatísti… Clim… Rio d… mare    downl… TRUE       geojso…
 #> 10 qualidade_a… Medi… "Estatísti… Clim… Rio d… mare    downl… TRUE       geojso…
-#> # ℹ 11 more rows
+#> # ℹ 12 more rows
 #> # ℹ 2 more variables: keywords <chr>, doi <chr>
 ```
 
@@ -59,9 +74,9 @@ Filter by alias, title, theme, region, or keywords:
 ``` r
 
 list_datasets("Mobilidade")
-#> # A tibble: 11 × 11
+#> # A tibble: 12 × 11
 #>    alias        title description theme region project access is_spatial formats
-#>    <chr>        <chr> <chr>       <chr> <chr>  <chr>   <chr>  <lgl>      <chr>  
+#>    <chr>        <chr> <chr>       <chr> <chr>  <chr>   <chr>  <lgl>      <chr>
 #>  1 geoses_sp    Índi… Índice soc… Mult… São P… geoses  downl… TRUE       geojso…
 #>  2 pemob_anual  Pesq… Base anual… Mobi… Brasil pemob   downl… FALSE      parque…
 #>  3 pemob_harmo… Pesq… Base anual… Mobi… Brasil pemob   downl… FALSE      parque…
@@ -69,31 +84,51 @@ list_datasets("Mobilidade")
 #>  5 embarques_d… Emba… Total de e… Mobi… Brasil motiva  downl… FALSE      parque…
 #>  6 embarques_m… Médi… Média de e… Mobi… Brasil motiva  downl… FALSE      rds, t…
 #>  7 embarques_i… Emba… Embarques … Mobi… Brasil motiva  downl… FALSE      parque…
-#>  8 estacoes_mo… Linh… Tabela de … Mobi… Brasil motiva  downl… FALSE      rds, t…
-#>  9 faixa_azul_… Trec… Localizaçã… Mobi… São P… faixa_… downl… TRUE       geojso…
-#> 10 sinistros_sp Sini… Sinistros … Mobi… São P… faixa_… downl… FALSE      parque…
-#> 11 sinistros_v… Sini… Localizaçã… Mobi… São P… faixa_… downl… TRUE       geojso…
+#>  8 linhas_moti… Linh… Tabela de … Mobi… Brasil motiva  downl… FALSE      rds, t…
+#>  9 estacoes_mo… Linh… Tabela de … Mobi… Brasil motiva  downl… FALSE      rds, t…
+#> 10 faixa_azul_… Trec… Localizaçã… Mobi… São P… faixa_… downl… TRUE       geojso…
+#> 11 sinistros_sp Sini… Sinistros … Mobi… São P… faixa_… downl… FALSE      parque…
+#> 12 sinistros_v… Sini… Localizaçã… Mobi… São P… faixa_… downl… TRUE       geojso…
 #> # ℹ 2 more variables: keywords <chr>, doi <chr>
 ```
 
 ## Download a dataset
 
-Identify a dataset by its short alias, a bare DOI, or a full DOI URL:
+Identify a registered dataset by its short alias:
 
 ``` r
 
 # By alias
 embarques <- get_dataset("embarques_mensais")
 
-# By DOI
-embarques <- get_dataset("10.60873/FK2/BPYHFB")
-
 # Filter by year in multi-year datasets
 pemob_2023 <- get_dataset("pemob_anual", year = 2023)
 
-# Request a specific file or pattern
-geo <- get_dataset("iptu_sp", filename = "iptu_2024.gpkg")
+# Select a logical resource and format
+pontos <- get_dataset(
+  "qualidade_ar_mare",
+  resource = "pontos",
+  format = "gpkg"
+)
 ```
+
+Use
+[`list_resources()`](https://inspercidades.github.io/inspercidados/reference/list_resources.md)
+to see the logical datasets and formats available inside a registered
+Dataverse deposit:
+
+``` r
+
+list_resources("qualidade_ar_mare")
+#> # A tibble: 2 × 6
+#>   resource title                                is_spatial years formats default
+#>   <chr>    <chr>                                <lgl>      <chr> <chr>   <lgl>
+#> 1 dados    Medições de qualidade do ar          FALSE      <NA>  parque… TRUE
+#> 2 pontos   Pontos das medições de qualidade do… TRUE       <NA>  geojso… FALSE
+```
+
+For an unregistered DOI or a physical filename, use
+[`get_dataverse()`](https://inspercidades.github.io/inspercidados/reference/get_dataverse.md).
 
 With `docs = TRUE`, the function returns the data together with its
 documentation:
@@ -122,12 +157,12 @@ cite_dataset("embarques_mensais", format = "ris")
 
 Most datasets come from a research study whose pipeline lives in its own
 repository.
-[`browse_project()`](https://inspercidades.github.io/inspercidados/reference/browse_project.md)
+[`open_project()`](https://inspercidades.github.io/inspercidados/reference/open_project.md)
 prints the study, lists its datasets, and opens the repository:
 
 ``` r
 
-browse_project("embarques_mensais")
+open_project("embarques_mensais")
 ```
 
 ## Learn more

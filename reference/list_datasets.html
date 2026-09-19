@@ -9,7 +9,7 @@ from the local registry (inst/datasets.json), so no network call is made."></hea
 
     <a class="navbar-brand me-2" href="../index.html">inspercidados</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -22,6 +22,7 @@ from the local registry (inst/datasets.json), so no network call is made."></hea
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/getting-started.html">Getting started with inspercidados</a></li>
   </ul></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/inspercidades/inspercidados/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
@@ -102,7 +103,7 @@ downloaded. <code>"all"</code> also includes retired aliases.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> itbi_sp      Impo… <span style="color: #949494;">"</span>Registros… Habi… São P… itbi    downl… FALSE      csv, p…</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> iptu_sp      IPTU… <span style="color: #949494;">"</span>Informaçõ… Habi… São P… densid… downl… TRUE       geojso…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> alvaras_sp   Alva… <span style="color: #949494;">"</span>Informaçõ… Habi… São P… alvaras downl… TRUE       geojso…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> alvaras_sp   Alva… <span style="color: #949494;">"</span>Agregação… Habi… São P… alvaras downl… TRUE       geojso…</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> censo_setor… Popu… <span style="color: #949494;">"</span>Dados pro… Habi… São P… densid… downl… TRUE       geojso…</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> iptu_vertic… IPTU… <span style="color: #949494;">"</span>Dados dem… Habi… São P… densid… downl… TRUE       geojso…</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> densidade_i… Dens… <span style="color: #949494;">"</span>Cruzament… Habi… São P… densid… downl… TRUE       geojso…</span>
@@ -140,7 +141,7 @@ downloaded. <code>"all"</code> also includes retired aliases.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    alias        title description theme region project access is_spatial formats</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> iptu_sp      IPTU… <span style="color: #949494;">"</span>Informaçõ… Habi… São P… densid… downl… TRUE       geojso…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> alvaras_sp   Alva… <span style="color: #949494;">"</span>Informaçõ… Habi… São P… alvaras downl… TRUE       geojso…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> alvaras_sp   Alva… <span style="color: #949494;">"</span>Agregação… Habi… São P… alvaras downl… TRUE       geojso…</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> censo_setor… Popu… <span style="color: #949494;">"</span>Dados pro… Habi… São P… densid… downl… TRUE       geojso…</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> iptu_vertic… IPTU… <span style="color: #949494;">"</span>Dados dem… Habi… São P… densid… downl… TRUE       geojso…</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> densidade_i… Dens… <span style="color: #949494;">"</span>Cruzament… Habi… São P… densid… downl… TRUE       geojso…</span>
@@ -165,12 +166,12 @@ downloaded. <code>"all"</code> also includes retired aliases.</p></dd>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Include datasets that are catalogued but not downloadable</span></span></span>
 <span class="r-in"><span><span class="fu">list_datasets</span><span class="op">(</span>include <span class="op">=</span> <span class="st">"catalogued"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 29 × 11</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 28 × 11</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    alias        title description theme region project access is_spatial formats</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> itbi_sp      Impo… <span style="color: #949494;">"</span>Registros… Habi… São P… itbi    downl… FALSE      csv, p…</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> iptu_sp      IPTU… <span style="color: #949494;">"</span>Informaçõ… Habi… São P… densid… downl… TRUE       geojso…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> alvaras_sp   Alva… <span style="color: #949494;">"</span>Informaçõ… Habi… São P… alvaras downl… TRUE       geojso…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> alvaras_sp   Alva… <span style="color: #949494;">"</span>Agregação… Habi… São P… alvaras downl… TRUE       geojso…</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> censo_setor… Popu… <span style="color: #949494;">"</span>Dados pro… Habi… São P… densid… downl… TRUE       geojso…</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> iptu_vertic… IPTU… <span style="color: #949494;">"</span>Dados dem… Habi… São P… densid… downl… TRUE       geojso…</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> densidade_i… Dens… <span style="color: #949494;">"</span>Cruzament… Habi… São P… densid… downl… TRUE       geojso…</span>
@@ -178,7 +179,7 @@ downloaded. <code>"all"</code> also includes retired aliases.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> mortalidade… Mort… <span style="color: #949494;">"</span>Medidas d… Saúde São P… mortal… downl… TRUE       geojso…</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> ilhas_calor… Medi… <span style="color: #949494;">"</span>Estatísti… Clim… Rio d… mare    downl… TRUE       geojso…</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> qualidade_a… Medi… <span style="color: #949494;">"</span>Estatísti… Clim… Rio d… mare    downl… TRUE       geojso…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 19 more rows</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 18 more rows</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 2 more variables: keywords &lt;chr&gt;, doi &lt;chr&gt;</span></span>
 </code></pre></div>
     </div>

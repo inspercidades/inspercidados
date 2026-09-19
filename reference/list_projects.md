@@ -27,7 +27,7 @@ only Insper Cidades members can open.
 
 ## See also
 
-[`browse_project()`](https://inspercidades.github.io/inspercidados/reference/browse_project.md)
+[`open_project()`](https://inspercidades.github.io/inspercidados/reference/open_project.md)
 to open a repository,
 [`list_datasets()`](https://inspercidades.github.io/inspercidados/reference/list_datasets.md)
 for the datasets themselves.
