@@ -26,24 +26,25 @@
 #' @seealso [get_dataset()] for registered datasets.
 #'
 #' @export
-#' @examples
-#' \dontrun{
+#' @examplesIf live_examples()
+#' # Inspect a deposit before downloading
+#' get_dataverse("10.60873/FK2/YWXLQS", files = TRUE)
+#'
 #' # Paste a DOI straight from the Dataverse page
-#' d <- get_dataverse("10.60873/FK2/AOLEOI")
+#' linhas <- get_dataverse("10.60873/FK2/YWXLQS", filename = "dim_line.rds")
 #'
 #' # Or the landing-page URL
-#' d <- get_dataverse(
-#'   "https://dataverse.datascience.insper.edu.br/dataset.xhtml?persistentId=doi:10.60873/FK2/AOLEOI"
+#' linhas <- get_dataverse(
+#'   "https://dataverse.datascience.insper.edu.br/dataset.xhtml?persistentId=doi:10.60873/FK2/YWXLQS",
+#'   filename = "dim_line.rds"
 #' )
-#'
-#' # Inspect the deposit before downloading
-#' get_dataverse("10.60873/FK2/AOLEOI", files = TRUE)
-#' }
-get_dataverse <- function(x,
-                          filename = NULL,
-                          file_pattern = NULL,
-                          year = NULL,
-                          files = FALSE) {
+get_dataverse <- function(
+  x,
+  filename = NULL,
+  file_pattern = NULL,
+  year = NULL,
+  files = FALSE
+) {
   doi <- resolve_dataset(x)
   doi_url <- doi_to_url(doi)
   server <- insper_server()

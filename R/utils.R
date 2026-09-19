@@ -86,7 +86,10 @@ abort_retired <- function(alias, entry) {
   if (!is.null(successor)) {
     msg <- c(msg, "v" = "Use {.val {successor}} instead.")
   } else {
-    msg <- c(msg, "i" = "Run {.run inspercidados::list_datasets()} to see current datasets.")
+    msg <- c(
+      msg,
+      "i" = "Run {.run inspercidados::list_datasets()} to see current datasets."
+    )
   }
   cli::cli_abort(msg)
 }
@@ -155,9 +158,15 @@ detect_file_type <- function(filename) {
       filename,
       ignore.case = TRUE
     )))
-    return(.gz_ext_map[[inner]] %||% "gz")
+    if (inner %in% names(.gz_ext_map)) {
+      return(.gz_ext_map[[inner]])
+    }
+    return("gz")
   }
-  .ext_map[[ext]] %||% "unknown"
+  if (ext %in% names(.ext_map)) {
+    return(.ext_map[[ext]])
+  }
+  return("unknown")
 }
 
 # Vectorised: returns the effective (innermost) extension for each filename.
@@ -185,7 +194,11 @@ effective_ext <- function(filenames) {
 # result is an sf object; everything else favours typed formats over text.
 format_priority <- function(is_spatial = FALSE) {
   parquet <- if (rlang::is_installed("arrow")) "parquet" else character(0)
-  spatial <- if (rlang::is_installed("sf")) c("gpkg", "geojson") else character(0)
+  spatial <- if (rlang::is_installed("sf")) {
+    c("gpkg", "geojson")
+  } else {
+    character(0)
+  }
   if (isTRUE(is_spatial)) {
     c(spatial, "rds", parquet, "tab", "csv", "xlsx")
   } else {
@@ -194,8 +207,17 @@ format_priority <- function(is_spatial = FALSE) {
 }
 
 DATA_EXTS <- c(
-  "rds", "csv", "tab", "tsv", "parquet", "pq",
-  "gpkg", "geojson", "xlsx", "xls", "zip"
+  "rds",
+  "csv",
+  "tab",
+  "tsv",
+  "parquet",
+  "pq",
+  "gpkg",
+  "geojson",
+  "xlsx",
+  "xls",
+  "zip"
 )
 
 # Select a file from those available in the dataset.
@@ -230,7 +252,11 @@ select_dv_file <- function(
   # Documentation workbooks share the deposit with the data and must never be
   # returned as the dataset itself. A deposit holding nothing else has no data
   # to return, so say that instead of handing back a documentation sheet.
-  is_doc <- grepl("^(documenta|metadados|readme|metodologia)", candidates, ignore.case = TRUE)
+  is_doc <- grepl(
+    "^(documenta|metadados|readme|metodologia)",
+    candidates,
+    ignore.case = TRUE
+  )
   if (all(is_doc)) {
     cli::cli_abort(c(
       "This deposit contains only documentation files, no data.",
@@ -270,7 +296,9 @@ select_dv_file <- function(
   exts <- effective_ext(candidates)
   for (ext in prefer) {
     hit <- candidates[exts == ext]
-    if (length(hit) == 0) next
+    if (length(hit) == 0) {
+      next
+    }
     if (length(hit) > 1) {
       cli::cli_warn(c(
         "Multiple {.val {ext}} files found; using {.val {hit[[1]]}}.",

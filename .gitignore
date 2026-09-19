@@ -54,5 +54,8 @@ package-overview.html
 
 # System files
 .DS_Store
-/doc/
-/Meta/
+
+# R CMD check local run
+# (doc/, Meta/ are covered by .Rbuildignore too)
+doc/
+Meta/

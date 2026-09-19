@@ -5,6 +5,9 @@
 
 <!-- badges: start -->
 
+[![R-CMD-check](https://github.com/inspercidades/inspercidados/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/inspercidades/inspercidados/actions/workflows/R-CMD-check.yaml)
+[![Codecov test
+coverage](https://codecov.io/gh/inspercidades/inspercidados/graph/badge.svg)](https://app.codecov.io/gh/inspercidades/inspercidados)
 <!-- badges: end -->
 
 **inspercidados** gives R users direct access to curated Brazilian urban
@@ -16,11 +19,11 @@ can find, download, and cite datasets with a few short commands.
 ## Installation
 
 Install the development version from
-[GitHub](https://github.com/portalcidados/inspercidados):
+[GitHub](https://github.com/inspercidades/inspercidados):
 
 ``` r
 # install.packages("pak")
-pak::pak("portalcidados/inspercidados")
+pak::pak("inspercidades/inspercidados")
 ```
 
 ## Core functions
@@ -129,5 +132,5 @@ browse_project("embarques_mensais")
 
 ## Learn more
 
-- Full reference: <https://portalcidados.github.io/inspercidados>
+- Full reference: <https://inspercidades.github.io/inspercidados>
 - Data source: <https://dataverse.datascience.insper.edu.br>

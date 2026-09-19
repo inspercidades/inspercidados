@@ -10,5 +10,8 @@
 ^inspercidados\.Rproj$
 ^replication_scripts$
 ^package-overview\.html$
+^\.github$
+^\.lintr$
+^_pkgdown\.yml$
 ^doc$
 ^Meta$

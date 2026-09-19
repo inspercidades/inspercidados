@@ -38,19 +38,22 @@
 #'
 #' # Include datasets that are catalogued but not downloadable
 #' list_datasets(include = "catalogued")
-list_datasets <- function(search = NULL,
-                          theme = NULL,
-                          region = NULL,
-                          project = NULL,
-                          spatial = NULL,
-                          include = c("active", "catalogued", "all")) {
+list_datasets <- function(
+  search = NULL,
+  theme = NULL,
+  region = NULL,
+  project = NULL,
+  spatial = NULL,
+  include = c("active", "catalogued", "all")
+) {
   include <- match.arg(include)
   reg <- read_registry()
 
-  keep_status <- switch(include,
-    active     = "active",
+  keep_status <- switch(
+    include,
+    active = "active",
     catalogued = c("active", "unpublished"),
-    all        = c("active", "unpublished", "retired")
+    all = c("active", "unpublished", "retired")
   )
   reg <- Filter(function(x) (x[["status"]] %||% "active") %in% keep_status, reg)
 
@@ -59,21 +62,21 @@ list_datasets <- function(search = NULL,
   }
 
   out <- tibble::tibble(
-    alias       = names(reg),
-    title       = chr("title"),
+    alias = names(reg),
+    title = chr("title"),
     description = chr("description"),
-    theme       = chr("theme"),
-    region      = chr("region"),
-    project     = chr("project"),
-    access      = chr("access"),
-    is_spatial  = vapply(reg, function(x) isTRUE(x[["is_spatial"]]), logical(1)),
-    formats     = vapply(
+    theme = chr("theme"),
+    region = chr("region"),
+    project = chr("project"),
+    access = chr("access"),
+    is_spatial = vapply(reg, function(x) isTRUE(x[["is_spatial"]]), logical(1)),
+    formats = vapply(
       reg,
       function(x) paste(unlist(x[["formats"]]), collapse = ", "),
       character(1)
     ),
-    keywords    = chr("keywords"),
-    doi         = chr("doi")
+    keywords = chr("keywords"),
+    doi = chr("doi")
   )
   out$formats[!nzchar(out$formats)] <- NA_character_
 
@@ -106,6 +109,7 @@ filter_col <- function(out, column, value) {
   if (is.null(value)) {
     return(out)
   }
-  keep <- grepl(value, out[[column]], ignore.case = TRUE) & !is.na(out[[column]])
+  keep <- grepl(value, out[[column]], ignore.case = TRUE) &
+    !is.na(out[[column]])
   out[keep, ]
 }

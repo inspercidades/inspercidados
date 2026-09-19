@@ -36,40 +36,39 @@
 #'   with elements `data` and `docs`.
 #'
 #' @export
-#' @examples
-#' \dontrun{
+#' @examplesIf live_examples()
 #' # By alias
-#' iptu <- get_dataset("iptu_sp")
+#' embarques <- get_dataset("embarques_mensais")
 #'
-#' # By DOI
-#' iptu <- get_dataset("10.60873/FK2/TOXCRF")
+#' # By DOI, or by the DOI URL
+#' embarques <- get_dataset("10.60873/FK2/BPYHFB")
+#' embarques <- get_dataset("https://doi.org/10.60873/FK2/BPYHFB")
 #'
-#' # By DOI URL
-#' iptu <- get_dataset("https://doi.org/10.60873/FK2/TOXCRF")
-#'
-#' # Filter to a specific year (for multi-year datasets)
-#' iptu_2023 <- get_dataset("iptu_sp", year = 2023)
-#'
-#' # Request a specific file by name
-#' geo <- get_dataset("iptu_sp", filename = "iptu_2024.gpkg")
-#'
-#' # Match files with a regex pattern
+#' # Pick one year from a multi-year dataset
 #' pemob_2023 <- get_dataset("pemob_anual", year = 2023)
 #'
-#' # Return data together with Dataverse metadata
-#' result <- get_dataset("iptu_sp", docs = TRUE)
-#' result$data
+#' # Request a file by exact name, or by regex
+#' linhas <- get_dataset("estacoes_motiva", filename = "dim_line.rds")
+#' estacoes <- get_dataset("estacoes_motiva", file_pattern = "^dim_station")
+#'
+#' # Return the data with its documentation
+#' result <- get_dataset("embarques_mensais", docs = TRUE)
 #' result$docs
-#' }
-get_dataset <- function(dataset,
-                        year         = NULL,
-                        filename     = NULL,
-                        file_pattern = NULL,
-                        docs         = FALSE) {
-  doi     <- resolve_dataset(dataset)
+#'
+#' @examplesIf live_examples() && requireNamespace("sf", quietly = TRUE)
+#' # Spatial datasets return an sf object
+#' faixa_azul <- get_dataset("faixa_azul_sp")
+get_dataset <- function(
+  dataset,
+  year = NULL,
+  filename = NULL,
+  file_pattern = NULL,
+  docs = FALSE
+) {
+  doi <- resolve_dataset(dataset)
   doi_url <- doi_to_url(doi)
-  server  <- insper_server()
-  entry   <- registry_entry(dataset)
+  server <- insper_server()
+  entry <- registry_entry(dataset)
 
   spatial <- isTRUE(entry[["is_spatial"]])
   if (spatial && !rlang::is_installed("sf")) {
@@ -81,7 +80,7 @@ get_dataset <- function(dataset,
   }
 
   cli::cli_inform(c("i" = "Fetching file list for {.val {doi}}"))
-  files      <- dataverse::dataset_files(doi_url, server = server)
+  files <- dataverse::dataset_files(doi_url, server = server)
   file_names <- vapply(files, function(f) f[["label"]], character(1))
 
   # Several aliases can share one deposit (PEMOB, Maré). The registry pattern
@@ -102,10 +101,10 @@ get_dataset <- function(dataset,
 
   target <- select_dv_file(
     file_names,
-    year         = year,
-    filename     = filename,
+    year = year,
+    filename = filename,
     file_pattern = file_pattern,
-    prefer       = format_priority(spatial)
+    prefer = format_priority(spatial)
   )
   ftype <- detect_file_type(target)
 
@@ -113,7 +112,9 @@ get_dataset <- function(dataset,
   data <- read_dv_file(target, doi_url, server, ftype)
   attr(data, "doi") <- doi
 
-  if (!docs) return(data)
+  if (!docs) {
+    return(data)
+  }
 
   # Prefer a "documentacao*.xlsx" file in the dataset over Dataverse metadata.
   all_names <- vapply(files, function(f) f[["label"]], character(1))
@@ -123,9 +124,15 @@ get_dataset <- function(dataset,
   ]
 
   if (length(doc_file) > 0) {
-    cli::cli_inform(c("i" = "Loading documentation from {.val {doc_file[[1]]}}"))
+    cli::cli_inform(c(
+      "i" = "Loading documentation from {.val {doc_file[[1]]}}"
+    ))
     rlang::check_installed("readxl", reason = "to read documentation files")
-    raw <- dataverse::get_file_by_name(doc_file[[1]], dataset = doi_url, server = server)
+    raw <- dataverse::get_file_by_name(
+      doc_file[[1]],
+      dataset = doi_url,
+      server = server
+    )
     ext <- tools::file_ext(tolower(doc_file[[1]]))
     tmp <- tempfile(fileext = paste0(".", ext))
     on.exit(unlink(tmp), add = TRUE)
@@ -133,15 +140,15 @@ get_dataset <- function(dataset,
     docs_out <- readxl::read_excel(tmp)
   } else {
     cli::cli_inform(c("i" = "Fetching documentation from Dataverse metadata"))
-    meta    <- dataverse::get_dataset(doi_url, server = server)
-    fields  <- meta$data$latestVersion$metadataBlocks$citation$fields
+    meta <- dataverse::get_dataset(doi_url, server = server)
+    fields <- meta$metadataBlocks$citation$fields
     docs_out <- list(
-      title       = extract_field(fields, "title"),
-      description = extract_field(fields, "dsDescriptionValue"),
-      authors     = extract_authors(fields),
-      doi         = doi,
-      url         = paste0("https://doi.org/", doi),
-      year        = extract_year(meta)
+      title = extract_field(fields, "title"),
+      description = extract_description(fields),
+      authors = extract_authors(fields),
+      doi = doi,
+      url = paste0("https://doi.org/", doi),
+      year = extract_year(meta)
     )
   }
 

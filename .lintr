@@ -1,0 +1,14 @@
+linters: linters_with_defaults(
+  commented_code_linter = NULL,
+  line_length_linter = line_length_linter(80L),
+  object_name_linter = object_name_linter(
+    styles = c("snake_case", "symbols"),
+    regexes = c(constants = "^[A-Z][A-Z0-9_]*$")
+  ),
+  object_usage_linter = NULL,
+  return_linter = NULL
+  )
+exclusions: list(
+  "data-raw",
+  "inst/scripts"
+  )
