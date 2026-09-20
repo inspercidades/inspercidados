@@ -16,6 +16,9 @@ knitr::opts_chunk$set(
 # inspercidados
 
 <!-- badges: start -->
+```{r, echo = FALSE, results = 'asis', eval = requireNamespace("badger", quietly = TRUE)}
+cat(badger::badge_runiverse())
+```
 [![R-CMD-check](https://github.com/inspercidades/inspercidados/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/inspercidades/inspercidados/actions/workflows/R-CMD-check.yaml)
 [![Codecov test coverage](https://codecov.io/gh/inspercidades/inspercidados/graph/badge.svg)](https://app.codecov.io/gh/inspercidades/inspercidados)
 <!-- badges: end -->
