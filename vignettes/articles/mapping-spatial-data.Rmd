@@ -149,7 +149,10 @@ glimpse(st_drop_geometry(roads))
 `sinistros_sp` is the plain table behind those counts, with one row per crash.
 
 ```{r crashes}
-crashes <- fetch("sinistros_sp", fallback = function() readRDS(ext_file("crashes.rds")))
+crashes <- fetch(
+  "sinistros_sp",
+  fallback = function() readRDS(ext_file("crashes.rds"))
+)
 glimpse(crashes)
 ```
 
