@@ -1,0 +1,323 @@
+// Insper Cidades touches ----
+//
+// Brand colours come from insperplot. The raw values are too saturated for
+// large web surfaces, so only their lighter and darker steps appear here:
+// strong colour marks what is clickable, everything else stays neutral.
+
+$insper-dark: #0E171D;     // azul_escuro
+$folhagem: #019881;        // cidades folhagem
+$folhagem-dark: #056958;   // links, light mode
+$folhagem-darker: #065246; // link hover, light mode
+$folhagem-light: #69D3BB;  // links, dark mode
+$folhagem-lighter: #8DF2D9;
+$folhagem-tint: #EEF6F4;   // hover and callout background
+$neutral-warm: #F4F4F2;    // diverging palettes' midpoint
+
+$dark-bg: #121B22;
+$dark-surface: #1A252D;
+
+// Navbar ----
+// Azul escuro in both modes, with a thin folhagem rule underneath.
+
+.navbar {
+  background: $insper-dark !important;
+  border-bottom: 3px solid $folhagem;
+
+  .navbar-brand,
+  .nav-link,
+  .nav-text,
+  .navbar-nav .nav-link.active {
+    color: #fff !important;
+  }
+
+  .nav-text {
+    opacity: 0.6;
+  }
+
+  .nav-link:hover,
+  .nav-link:focus {
+    color: $folhagem-lighter !important;
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  .nav-item.active .nav-link {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .navbar-toggler {
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+
+  .navbar-toggler-icon {
+    filter: invert(1);
+  }
+
+  input[type="search"] {
+    background-color: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #fff;
+
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.55);
+    }
+
+    &:focus {
+      background-color: rgba(255, 255, 255, 0.12);
+      border-color: $folhagem-light;
+      box-shadow: 0 0 0 0.2rem rgba($folhagem, 0.35);
+    }
+  }
+}
+
+// Centro de Estudos das Cidades logo ahead of the package name.
+// Compiled CSS lives in deps/bootstrap-*/, so the asset is two levels up.
+.navbar-brand {
+  display: inline-flex;
+  align-items: center;
+  font-weight: 600;
+
+  &::before {
+    content: "";
+    display: inline-block;
+    width: 140px;
+    height: 46px;
+    margin-right: 1rem;
+    padding-right: 1rem;
+    border-right: 1px solid rgba(255, 255, 255, 0.3);
+    background: url(../../cidades-logo.svg) no-repeat left center / contain;
+    background-origin: content-box;
+  }
+}
+
+.navbar > .container {
+  align-items: center;
+}
+
+@include media-breakpoint-down(sm) {
+  .navbar-brand::before {
+    width: 95px;
+    height: 32px;
+  }
+}
+
+// Links ----
+
+a {
+  text-underline-offset: 0.15em;
+  text-decoration-thickness: 1px;
+}
+
+a:hover {
+  color: $folhagem-darker;
+}
+
+// Sidebar links are navigation, not prose: underline on hover only
+aside a:not(:hover) {
+  text-decoration: none;
+}
+
+// Headings ----
+
+.page-header h1,
+main h1 {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.page-header {
+  border-bottom: 2px solid $folhagem;
+}
+
+main h2 {
+  letter-spacing: -0.01em;
+}
+
+// Sidebar headings: uppercase with letter-spacing, as on insperplot's site
+aside h2,
+#toc > .nav-title,
+#toc > h2 {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #626D76;
+}
+
+#toc > .nav a.nav-link:hover,
+#toc > .nav a.nav-link:focus {
+  background-color: $folhagem-tint;
+}
+
+#toc > .nav a.nav-link.active {
+  background-color: $folhagem-tint;
+  color: $folhagem-darker;
+  font-weight: 500;
+}
+
+// Code ----
+
+pre {
+  background-color: $neutral-warm;
+  border: 1px solid #E6E6E1;
+  border-radius: $border-radius;
+}
+
+code:not(pre code) {
+  color: #1B252D;
+  background-color: $neutral-warm;
+  padding: 0.1em 0.3em;
+  border-radius: 0.25rem;
+  font-size: 0.875em;
+}
+
+a > code:not(pre code) {
+  color: inherit;
+}
+
+// Reference index ----
+
+.template-reference-index {
+  main h2 {
+    margin-top: 2.5rem;
+    padding-bottom: 0.35rem;
+    border-bottom: 1px solid var(--bs-border-color);
+  }
+
+  dt code {
+    background: transparent;
+    padding: 0;
+    font-weight: 500;
+  }
+
+  dt code a {
+    color: $folhagem-dark;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+// Lifecycle badges: solar and folhagem tints instead of Bootstrap orange
+.lifecycle-deprecated,
+.lifecycle-experimental {
+  background-color: #FFE9D9;
+  color: #875702;
+}
+
+.lifecycle-stable {
+  background-color: $folhagem-tint;
+  color: $folhagem-darker;
+}
+
+// Argument targets and blockquotes pick up the folhagem accent
+dt:target,
+dt:target + dd {
+  border-left-color: $folhagem;
+}
+
+blockquote {
+  border-left: 3px solid $folhagem;
+  background: $folhagem-tint;
+  padding: 0.75rem 1rem;
+  border-radius: 0 $border-radius $border-radius 0;
+
+  p:last-child {
+    margin-bottom: 0;
+  }
+}
+
+// Footer ----
+
+footer {
+  border-top: 2px solid $insper-dark;
+}
+
+// Dark mode ----
+
+[data-bs-theme="dark"] {
+  a:hover {
+    color: $folhagem-lighter;
+  }
+
+  .page-header {
+    border-bottom-color: $folhagem-light;
+  }
+
+  aside h2,
+  #toc > .nav-title,
+  #toc > h2 {
+    color: #929EA9;
+  }
+
+  #toc > .nav a.nav-link:hover,
+  #toc > .nav a.nav-link:focus {
+    background-color: rgba($folhagem, 0.18);
+  }
+
+  main pre {
+    background-color: $dark-surface;
+    border-color: #26333D;
+  }
+
+  // Syntax colours: light steps of the Cidades ramps instead of a11y-dark's
+  // saturated yellow and cyan. `main` outranks the theme, which pkgdown
+  // appends after this file.
+  main pre code {
+    color: #DDE3E8;
+
+    span.fu { color: $folhagem-light; }
+    span.st,
+    span.ch,
+    span.vs,
+    span.ss { color: #FFD29D; }         // solar
+    span.dv,
+    span.fl,
+    span.bn,
+    span.cn { color: #D183D3; }         // asfalto
+    span.kw,
+    span.cf,
+    span.op,
+    span.sc { color: #FFAD92; font-weight: normal; } // tijolo
+    span.va,
+    span.at,
+    span.ot { color: #C5D2DF; }         // azul
+    span.co,
+    span.do { color: #929EA9; font-style: italic; }
+  }
+
+  code:not(pre code) {
+    color: #DDE3E8;
+    background-color: $dark-surface;
+  }
+
+  .template-reference-index dt code a {
+    color: $folhagem-light;
+  }
+
+  #toc > .nav a.nav-link.active {
+    background-color: rgba($folhagem, 0.22);
+    color: $folhagem-lighter;
+  }
+
+  .lifecycle-deprecated,
+  .lifecycle-experimental {
+    background-color: rgba(#FFA701, 0.18);
+    color: #FFBC5F;
+  }
+
+  .lifecycle-stable {
+    background-color: rgba($folhagem, 0.2);
+    color: $folhagem-lighter;
+  }
+
+  blockquote {
+    background: rgba($folhagem, 0.12);
+    border-left-color: $folhagem-light;
+  }
+
+  footer {
+    border-top-color: #26333D;
+  }
+}

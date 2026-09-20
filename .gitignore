@@ -52,6 +52,9 @@ CLAUDE.md
 PLAN.md
 package-overview.html
 
+# Dataset health-check output (data-raw/check_all_datasets.R)
+data-raw/check_results.csv
+
 # System files
 .DS_Store
 

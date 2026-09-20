@@ -8,6 +8,8 @@ This file provides guidance to Codex when working with this repository.
 
 The package is a thin wrapper around the `dataverse` R package. Insper's Dataverse is the single source of truth for data and metadata — the package does not duplicate metadata locally.
 
+**Scope.** The package serves a curated, hand-selected subset of Insper Cidades datasets. It is not an API client for every deposit on Insper's Dataverse and not for every Insper Cidades study. Deposits outside the curated catalog stay out of the registry on purpose, even when they share the same server.
+
 The package website is built with **pkgdown**.
 
 ## Core Functions (Public API)
@@ -33,6 +35,7 @@ data-raw/aliases.csv        <- DOI -> alias, project
 data-raw/resources.csv      <- alias -> resource, file pattern, title, default
 data-raw/projects.csv       <- project -> repo URL, visibility
 data-raw/retired.csv        <- aliases that no longer resolve
+data-raw/TODO.md            <- deposit and catalog backlog awaiting others
 data-raw/_template/         <- skeleton pipeline (download -> clean -> validate -> export) for new datasets
 data-raw/simu-pemob/        <- in-progress PEMOB simulation pipeline
 R/list_datasets.R           <- list_datasets()
@@ -57,6 +60,14 @@ column cannot say that. `is_spatial` and `formats` are derived from the
 deposited file extensions, never from the sheet's `is_geoportal` column, which
 means something else. Auth uses `CIDADOS_GS4_EMAIL` from `.Renviron`.
 
+**Titles differ between the portal and Dataverse.** `titulo_da_base_de_dados`
+becomes the registry `title` that the Cidados portal and `list_datasets()` show
+to a reader who has already picked the dataset, so it can stay short. A
+Dataverse title is stricter and should always name what, when, and where, but
+the package never reads it from the sheet. The sheet carries a separate
+`titulo_dataverse` column so curators keep the deposit title in one place. A
+registry title that differs from the deposit title is expected, not an error.
+
 **An alias contains one or more logical resources.** Each resource identifies
 one logical dataset through a file pattern and may be distributed in several
 formats or split by a declared dimension such as year. Several aliases can
@@ -64,16 +75,25 @@ still share one deposit: `pemob_anual` and `pemob_harmonizada` both point at
 `10.60873/FK2/5XUNNW`, while their resource patterns keep their files separate.
 
 **Entries carry a `status`.** `active` is downloadable. `unpublished` is a
-catalogued study with no DOI yet (`"doi": null`): it is discoverable via
-`list_datasets(include = "catalogued")` but cannot be downloaded. `retired` is
-a tombstone for an alias whose deposit was withdrawn or merged, carrying
-`superseded_by` and `reason` so the error names the replacement.
-`list_datasets()` shows only `active` by default.
+catalogued study with no DOI (`"doi": null`) and covers two cases that never
+turn into a download: a dataset held in Insper's secure data room
+(`access = "secure_room"`) and a study that is catalogued but not released
+(`access = "unpublished"`). Secure-room datasets never receive a DOI, so
+`unpublished` is not a promise of a future deposit. Both are discoverable via
+`list_datasets(include = "catalogued")` and neither can be downloaded.
+`retired` is a tombstone for an alias whose deposit was withdrawn or merged,
+carrying `superseded_by` and `reason` so the error names the replacement. A
+discontinued study is deleted from the sheet instead of tombstoned.
+`list_datasets()` shows only `active` by default, and catalog rows without a
+DOI are keyed by a `_unpublished_<row>` placeholder alias.
 
 **`access` is separate from `status`.** It tells the user how the data can be
 reached: `download` (DOI present), `secure_room` (held in Insper's secure data
 room), or `unpublished` (catalogued, not yet released). It is derived from the
-sheet's access column and from DOI presence, never from `is_geoportal`.
+sheet's access column and from DOI presence, never from `is_geoportal`. The
+sheet stores the access value as "Disponível para download" or
+"Sala segura do Insper". A `secure_room` entry is catalog-only and will never
+be downloadable.
 
 Example registry entry:
 
@@ -150,6 +170,36 @@ are flagged before opening.
 `replication_scripts/` is a stale local copy of code that now lives in the org
 repos. It is in `.Rbuildignore` and should not be extended.
 
+## Gotchas and idiosyncrasies
+
+- **A registry title is not the Dataverse title.** They serve different readers
+  and are allowed to differ. Do not "fix" one to match the other.
+- **`is_geoportal` is not `is_spatial`.** The sheet's `is_geoportal` column
+  means something else. Spatial status and formats come from the deposited
+  extensions alone.
+- **Secure room is permanent.** A `secure_room` catalog row carries no DOI by
+  design and will never gain one. It is not a deposit waiting to happen.
+- **Discontinued is not retired.** Delete a discontinued study from the sheet.
+  Reserve `retired.csv` for deposits that were withdrawn or merged into a
+  successor.
+- **One deposit, several aliases.** `pemob_anual` and `pemob_harmonizada` share
+  a DOI, as do the three Maré aliases and the two Motiva ones. Each alias
+  matches only its own files, so files owned by a sibling alias look uncovered
+  when you audit one alias on its own.
+- **Shapefile bundles stay out of `formats`.** Deposits ship `.zip` shapefile
+  sets and `.csv.gz` tables. `formats` lists logical formats, so it reports
+  `csv` rather than `gz` and never lists `zip`.
+- **Dictionaries need wiring.** A `dict_*` workbook is not surfaced by default.
+  Only `documentacao*` files and resources with a `documentation_pattern` reach
+  `docs = TRUE`.
+- **The package cannot publish.** Deposits are pushed by other people, so the
+  registry follows the deposit and never the reverse. Track what is waiting in
+  `data-raw/TODO.md`.
+- **The sheet is the source of truth.** `data-raw/202603_Catalogo_Dados.xlsx`
+  is a stale local snapshot. `build_registry.R` reads the live Google Sheet.
+- **The catalog is a subset.** Many deposits under `10.60873` are not curated
+  into the package. Absence from `list_datasets()` is not a bug.
+
 ## get_dataset() Flexible Parameters
 
 Users can identify a dataset in several ways:
@@ -196,6 +246,10 @@ devtools::check()         # full R CMD check
 devtools::test()          # run tests
 pkgdown::build_site()     # build website
 ```
+
+Deposit and catalog work that waits on other people lives in
+`data-raw/TODO.md`. Rebuilding the registry after a catalog edit runs
+`data-raw/build_registry.R`.
 
 ## Key Dependencies
 

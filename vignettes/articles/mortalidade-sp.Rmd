@@ -1,0 +1,90 @@
+---
+title: "Mapping maternal mortality in São Paulo"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7,
+  fig.height = 7
+)
+```
+
+```{r setup}
+library(inspercidados)
+library(dplyr)
+library(sf)
+library(ggplot2)
+```
+
+The `mortalidade_sp` deposit pairs São Paulo's district boundaries with health
+indicators for the city's 96 districts. This article downloads the boundaries
+and the maternal-mortality table, joins them by district code, and maps the
+maternal mortality ratio. The full narrative is on the
+[Cidados website](https://cidados.insper.edu.br/historias/desigualdades-em-saude-sp).
+
+## Download the layers
+
+`get_dataset()` returns an `sf` object for spatial resources, so the boundary
+layer arrives ready to map.
+
+```{r boundaries}
+distritos <- get_dataset("mortalidade_sp", format = "gpkg")
+distritos
+```
+
+The maternal-mortality annex holds one row per district, year, and indicator.
+
+```{r maternal}
+materna <- get_dataset(
+  "mortalidade_sp",
+  resource = "mortalidade_materna"
+)
+glimpse(materna)
+```
+
+## Build the ratio
+
+Pool the decade to steady the ratio, then express it as deaths per 100,000 live
+births.
+
+```{r ratio}
+razao <- materna |>
+  filter(indicador %in% c("obitos_maternos", "nascidos_vivos")) |>
+  summarise(
+    obitos = sum(valor[indicador == "obitos_maternos"], na.rm = TRUE),
+    nascidos = sum(valor[indicador == "nascidos_vivos"], na.rm = TRUE),
+    .by = distrito
+  ) |>
+  mutate(razao = obitos / nascidos * 1e5)
+```
+
+Join the ratio onto the boundaries by `distrito`.
+
+```{r join}
+mapa <- distritos |>
+  left_join(razao, by = "distrito")
+```
+
+## Map the districts
+
+```{r map, fig.alt = "Choropleth map of the maternal mortality ratio by district in São Paulo, ranging from zero to about 100 deaths per 100,000 live births."}
+ggplot(mapa) +
+  geom_sf(aes(fill = razao), colour = "white", linewidth = 0.1) +
+  scale_fill_gradientn(
+    colours = RColorBrewer::brewer.pal(9, "YlOrRd"),
+    na.value = "grey90",
+    name = "Deaths per\n100,000 live births"
+  ) +
+  labs(
+    title = "Maternal mortality by district",
+    subtitle = "São Paulo, 2010–2019"
+  ) +
+  theme_void()
+```
+
+## Learn more
+
+- [The story behind the data](https://cidados.insper.edu.br/historias/desigualdades-em-saude-sp)
+- [Full package reference](https://inspercidades.github.io/inspercidados)
