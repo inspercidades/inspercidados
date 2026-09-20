@@ -1,7 +1,7 @@
 # Dataset: [DATASET NAME]
 
 ## Overview
-Brief description of what this dataset contains and its importance for urban research.
+Brief description of what this dataset contains and its importance for research.
 
 ## Dataverse Metadata
 

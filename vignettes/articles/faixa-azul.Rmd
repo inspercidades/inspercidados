@@ -1,5 +1,9 @@
 ---
-title: "Mapping São Paulo's motorcycle lanes"
+title: "Mapping spatial datasets"
+subtitle: "Faixa Azul, São Paulo's motorcycle lanes"
+description: >
+  Download a spatial dataset, join it to a plain table, and map the
+  result with sf and ggplot2.
 ---
 
 ```{r, include = FALSE}

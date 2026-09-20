@@ -1,5 +1,7 @@
 ---
 title: "Getting started with inspercidados"
+description: >
+  Find a dataset, download it into R, and cite it.
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Getting started with inspercidados}
@@ -19,7 +21,7 @@ knitr::opts_chunk$set(
 library(inspercidados)
 ```
 
-`inspercidados` gives you direct access to curated Brazilian urban research datasets hosted on [Insper's Dataverse](https://dataverse.datascience.insper.edu.br). The datasets come from publications by authors related to [Insper Cidades](https://www.insper.edu.br/pt/pesquisa/centro-de-estudos-das-cidades). The [Cidados website](https://cidados.insper.edu.br) features these publications as data visualization narratives.
+`inspercidados` gives you direct access to datasets from [Insper Cidades](https://www.insper.edu.br/pt/pesquisa/centro-de-estudos-das-cidades), hosted on [Insper's Dataverse](https://dataverse.datascience.insper.edu.br). Insper Cidades is a multidisciplinary research center at Insper, and the datasets come from publications by its authors. The [Cidados website](https://cidados.insper.edu.br) features these publications as data visualization narratives.
 
 ## Open science
 
