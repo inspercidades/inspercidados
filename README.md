@@ -5,6 +5,8 @@
 
 <!-- badges: start -->
 
+[![r-universe status
+badge](https://inspercidades.r-universe.dev/badges/inspercidados)](https://inspercidades.r-universe.dev/inspercidados)
 [![R-CMD-check](https://github.com/inspercidades/inspercidados/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/inspercidades/inspercidados/actions/workflows/R-CMD-check.yaml)
 [![Codecov test
 coverage](https://codecov.io/gh/inspercidades/inspercidados/graph/badge.svg)](https://app.codecov.io/gh/inspercidades/inspercidados)
@@ -13,8 +15,8 @@ coverage](https://codecov.io/gh/inspercidades/inspercidados/graph/badge.svg)](ht
 **inspercidados** gives R users direct access to datasets from [Insper
 Cidades](https://www.insper.edu.br/pt/pesquisa/centro-de-estudos-das-cidades),
 hosted on [Insper’s
-Dataverse](https://dataverse.datascience.insper.edu.br). Insper Cidades is a
-multidisciplinary research center at Insper. The package wraps
+Dataverse](https://dataverse.datascience.insper.edu.br). Insper Cidades
+is a multidisciplinary research center at Insper. The package wraps
 [`dataverse`](https://github.com/IQSS/dataverse-client-r) so you can
 find, download, and cite datasets in a few short commands.
 
