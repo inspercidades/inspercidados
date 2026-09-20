@@ -186,7 +186,7 @@ citation <- tryCatch(
   cite_dataset("faixa_azul_sp"),
   error = function(e) {
     cli::cli_inform("Dataverse unreachable; using the bundled snapshot.")
-    read_lines(ext_file("citation.txt"))
+    readr::read_lines(ext_file("citation.txt"))
   }
 )
 citation
