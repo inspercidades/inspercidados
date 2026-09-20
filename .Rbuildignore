@@ -17,3 +17,5 @@
 ^Meta$
 ^design$
 ^docs$
+^pkgdown$
+^vignettes/articles$

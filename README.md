@@ -12,13 +12,13 @@ coverage](https://codecov.io/gh/inspercidades/inspercidados/graph/badge.svg)](ht
 
 **inspercidados** gives R users direct access to curated Brazilian urban
 research datasets hosted on [Insper’s
-Dataverse](https://dataverse.datascience.insper.edu.br). The package
-wraps [`dataverse`](https://github.com/IQSS/dataverse-client-r), so you
-can find, download, and cite datasets with a few short commands.
+Dataverse](https://dataverse.datascience.insper.edu.br). It wraps
+[`dataverse`](https://github.com/IQSS/dataverse-client-r) so you can
+find, download, and cite datasets in a few short commands.
 
 ## Installation
 
-Install the package from R-universe:
+Install the release from R-universe.
 
 ``` r
 install.packages(
@@ -30,8 +30,8 @@ install.packages(
 )
 ```
 
-Or install the development version from
-[GitHub](https://github.com/inspercidades/inspercidados):
+Or the development version from
+[GitHub](https://github.com/inspercidades/inspercidados).
 
 ``` r
 # install.packages("pak")
@@ -40,14 +40,14 @@ pak::pak("inspercidades/inspercidados")
 
 ## Core functions
 
-| Function | Purpose |
-|----|----|
-| `list_datasets()` | List or search available datasets |
-| `list_resources()` | List logical resources within a dataset |
-| `get_dataset()` | Download a dataset into R |
-| `get_dataverse()` | Inspect or download an arbitrary Insper Dataverse deposit |
-| `cite_dataset()` | Generate a citation for a dataset |
-| `open_project()` | Open the repository of the study behind a dataset |
+| Function           | Purpose                                          |
+|--------------------|--------------------------------------------------|
+| `list_datasets()`  | List or search available datasets                |
+| `list_resources()` | List logical resources within a dataset          |
+| `get_dataset()`    | Download a dataset into R                        |
+| `get_dataverse()`  | Inspect or download any Insper Dataverse deposit |
+| `cite_dataset()`   | Generate a citation for a dataset                |
+| `open_project()`   | Open the study repository behind a dataset       |
 
 ## Browse available datasets
 
@@ -60,7 +60,7 @@ library(inspercidados)
 list_datasets()
 #> # A tibble: 22 × 11
 #>    alias        title description theme region project access is_spatial formats
-#>    <chr>        <chr> <chr>       <chr> <chr>  <chr>   <chr>  <lgl>      <chr>
+#>    <chr>        <chr> <chr>       <chr> <chr>  <chr>   <chr>  <lgl>      <chr>  
 #>  1 itbi_sp      Impo… "Registros… Habi… São P… itbi    downl… FALSE      csv, p…
 #>  2 iptu_sp      IPTU… "Informaçõ… Habi… São P… densid… downl… TRUE       geojso…
 #>  3 alvaras_sp   Alva… "Agregação… Habi… São P… alvaras downl… TRUE       geojso…
@@ -75,13 +75,13 @@ list_datasets()
 #> # ℹ 2 more variables: keywords <chr>, doi <chr>
 ```
 
-Filter by alias, title, theme, region, or keywords:
+Search by alias, title, theme, region, or keywords.
 
 ``` r
 list_datasets("Mobilidade")
 #> # A tibble: 12 × 11
 #>    alias        title description theme region project access is_spatial formats
-#>    <chr>        <chr> <chr>       <chr> <chr>  <chr>   <chr>  <lgl>      <chr>
+#>    <chr>        <chr> <chr>       <chr> <chr>  <chr>   <chr>  <lgl>      <chr>  
 #>  1 geoses_sp    Índi… Índice soc… Mult… São P… geoses  downl… TRUE       geojso…
 #>  2 pemob_anual  Pesq… Base anual… Mobi… Brasil pemob   downl… FALSE      parque…
 #>  3 pemob_harmo… Pesq… Base anual… Mobi… Brasil pemob   downl… FALSE      parque…
@@ -99,7 +99,7 @@ list_datasets("Mobilidade")
 
 ## Download a dataset
 
-Identify a registered dataset by its short alias:
+Pass a short alias to download a registered dataset.
 
 ``` r
 # By alias
@@ -116,22 +116,21 @@ pontos <- get_dataset(
 )
 ```
 
-Use `list_resources()` to see the logical datasets and formats available
-inside a registered Dataverse deposit:
+`list_resources()` shows the logical datasets and formats inside a
+registered deposit.
 
 ``` r
 list_resources("qualidade_ar_mare")
 #> # A tibble: 2 × 6
 #>   resource title                                is_spatial years formats default
-#>   <chr>    <chr>                                <lgl>      <chr> <chr>   <lgl>
-#> 1 dados    Medições de qualidade do ar          FALSE      <NA>  parque… TRUE
+#>   <chr>    <chr>                                <lgl>      <chr> <chr>   <lgl>  
+#> 1 dados    Medições de qualidade do ar          FALSE      <NA>  parque… TRUE   
 #> 2 pontos   Pontos das medições de qualidade do… TRUE       <NA>  geojso… FALSE
 ```
 
 For an unregistered DOI or a physical filename, use `get_dataverse()`.
 
-With `docs = TRUE`, the function returns the data together with its
-documentation:
+Set `docs = TRUE` to return the data alongside its documentation.
 
 ``` r
 result <- get_dataset("iptu_sp", docs = TRUE)
@@ -142,7 +141,7 @@ result$docs
 ## Cite a dataset
 
 `cite_dataset()` fetches metadata from Dataverse and returns a citation
-as plain text, BibTeX, or RIS:
+in plain text, BibTeX, or RIS.
 
 ``` r
 cite_dataset("embarques_mensais")
@@ -154,7 +153,7 @@ cite_dataset("embarques_mensais", format = "ris")
 
 Most datasets come from a research study whose pipeline lives in its own
 repository. `open_project()` prints the study, lists its datasets, and
-opens the repository:
+opens the repository.
 
 ``` r
 open_project("embarques_mensais")

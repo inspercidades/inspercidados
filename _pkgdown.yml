@@ -2,6 +2,54 @@ url: https://inspercidades.github.io/inspercidados/
 
 template:
   bootstrap: 5
+  light-switch: true
+  theme: a11y-light
+  theme-dark: a11y-dark
+  bslib:
+    # Insper Cidades colours from insperplot, darkened for text contrast.
+    # Folhagem #019881 is too light for links on white (3.6:1).
+    primary: "#056958"
+    secondary: "#626D76"
+    success: "#056958"
+    info: "#04806C"
+    warning: "#D58B02"
+    danger: "#B23100"
+    body-color: "#1B252D"
+    body-bg-dark: "#121B22"
+    body-color-dark: "#DDE3E8"
+    link-color-dark: "#69D3BB"
+    # bslib bundles only weight 400 unless weights are listed
+    base_font: {google: {family: "Inter", wght: [400, 500, 600, 700]}}
+    heading_font: {google: {family: "Inter", wght: [400, 500, 600, 700]}}
+    code_font: {google: {family: "JetBrains Mono", wght: [400, 500]}}
+    headings-font-weight: 600
+    border-radius: 0.375rem
+    pkgdown-nav-height: 72px
+
+navbar:
+  # Navbar colour lives in pkgdown/extra.scss: pkgdown ignores `navbar: bg:`
+  # whenever `light-switch` is enabled.
+  structure:
+    left: [intro, reference, articles, news]
+    right: [search, github, lightswitch]
+  components:
+    github:
+      icon: fab fa-github fa-lg
+      href: https://github.com/inspercidades/inspercidados
+      aria-label: GitHub
+
+home:
+  sidebar:
+    structure: [links, license, community, citation, authors, dev]
+
+footer:
+  structure:
+    left: developed_by
+    right: built_with
+
+authors:
+  Vinicius Oike:
+    href: https://github.com/viniciusoike
 
 reference:
   - title: Discover data

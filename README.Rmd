@@ -22,13 +22,13 @@ knitr::opts_chunk$set(
 
 **inspercidados** gives R users direct access to curated Brazilian urban
 research datasets hosted on
-[Insper's Dataverse](https://dataverse.datascience.insper.edu.br). The package
-wraps [`dataverse`](https://github.com/IQSS/dataverse-client-r), so you can
-find, download, and cite datasets with a few short commands.
+[Insper's Dataverse](https://dataverse.datascience.insper.edu.br). It wraps
+[`dataverse`](https://github.com/IQSS/dataverse-client-r) so you can find,
+download, and cite datasets in a few short commands.
 
 ## Installation
 
-Install the package from R-universe:
+Install the release from R-universe.
 
 ``` r
 install.packages(
@@ -40,8 +40,8 @@ install.packages(
 )
 ```
 
-Or install the development version from
-[GitHub](https://github.com/inspercidades/inspercidados):
+Or the development version from
+[GitHub](https://github.com/inspercidades/inspercidados).
 
 ``` r
 # install.packages("pak")
@@ -55,9 +55,9 @@ pak::pak("inspercidades/inspercidados")
 | `list_datasets()` | List or search available datasets |
 | `list_resources()` | List logical resources within a dataset |
 | `get_dataset()`   | Download a dataset into R |
-| `get_dataverse()` | Inspect or download an arbitrary Insper Dataverse deposit |
+| `get_dataverse()` | Inspect or download any Insper Dataverse deposit |
 | `cite_dataset()`  | Generate a citation for a dataset |
-| `open_project()` | Open the repository of the study behind a dataset |
+| `open_project()` | Open the study repository behind a dataset |
 
 ## Browse available datasets
 
@@ -70,7 +70,7 @@ library(inspercidados)
 list_datasets()
 ```
 
-Filter by alias, title, theme, region, or keywords:
+Search by alias, title, theme, region, or keywords.
 
 ```{r search}
 list_datasets("Mobilidade")
@@ -78,7 +78,7 @@ list_datasets("Mobilidade")
 
 ## Download a dataset
 
-Identify a registered dataset by its short alias:
+Pass a short alias to download a registered dataset.
 
 ```{r get, eval = FALSE}
 # By alias
@@ -95,8 +95,8 @@ pontos <- get_dataset(
 )
 ```
 
-Use `list_resources()` to see the logical datasets and formats available
-inside a registered Dataverse deposit:
+`list_resources()` shows the logical datasets and formats inside a
+registered deposit.
 
 ```{r resources}
 list_resources("qualidade_ar_mare")
@@ -104,8 +104,7 @@ list_resources("qualidade_ar_mare")
 
 For an unregistered DOI or a physical filename, use `get_dataverse()`.
 
-With `docs = TRUE`, the function returns the data together with its
-documentation:
+Set `docs = TRUE` to return the data alongside its documentation.
 
 ```{r docs, eval = FALSE}
 result <- get_dataset("iptu_sp", docs = TRUE)
@@ -115,8 +114,8 @@ result$docs
 
 ## Cite a dataset
 
-`cite_dataset()` fetches metadata from Dataverse and returns a citation as
-plain text, BibTeX, or RIS:
+`cite_dataset()` fetches metadata from Dataverse and returns a citation in
+plain text, BibTeX, or RIS.
 
 ```{r cite, eval = FALSE}
 cite_dataset("embarques_mensais")
@@ -128,7 +127,7 @@ cite_dataset("embarques_mensais", format = "ris")
 
 Most datasets come from a research study whose pipeline lives in its own
 repository. `open_project()` prints the study, lists its datasets, and opens
-the repository:
+the repository.
 
 ```{r project, eval = FALSE}
 open_project("embarques_mensais")
