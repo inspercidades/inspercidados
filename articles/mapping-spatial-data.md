@@ -212,7 +212,10 @@ crash.
 
 ``` r
 
-crashes <- fetch("sinistros_sp", fallback = function() readRDS(ext_file("crashes.rds")))
+crashes <- fetch(
+  "sinistros_sp",
+  fallback = function() readRDS(ext_file("crashes.rds"))
+)
 #> ℹ Fetching file list for "10.60873/FK2/IRGJPX"
 #> No encoding supplied: defaulting to UTF-8.
 #> 
