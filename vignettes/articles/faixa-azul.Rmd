@@ -1,0 +1,161 @@
+---
+title: "Mapping São Paulo's motorcycle lanes"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7,
+  fig.height = 7,
+  dpi = 300
+)
+```
+
+```{r setup, message = FALSE, warning = FALSE}
+library(inspercidados)
+library(dplyr)
+library(sf)
+library(ggplot2)
+```
+
+Between 2022 and 2025, São Paulo painted *faixas azuis*, lanes reserved for
+motorcyclists, along a set of arterial corridors. Insper Cidades studied the
+programme and deposited three datasets: a spatial layer, another spatial layer
+with crash counts, and a large plain table. Between them they cover most of what
+this package does. The article stops at describing the data. The findings belong
+to the study, and `open_project()` at the end takes you there.
+
+All three datasets belong to one project, so filtering `list_datasets()` by
+project returns them together.
+
+```{r catalog}
+list_datasets(project = "faixa_azul")
+```
+
+## Download the lanes
+
+`list_resources()` reports what an alias contains before anything is downloaded.
+`faixa_azul_sp` holds one resource in three formats.
+
+```{r resources}
+list_resources("faixa_azul_sp")
+```
+
+`get_dataset()` downloads it. Spatial resources come back as `sf` objects, so the
+layer arrives ready to map.
+
+```{r lanes}
+lanes <- get_dataset("faixa_azul_sp", format = "gpkg")
+glimpse(st_drop_geometry(lanes))
+```
+
+Each row is one painted segment, with the street it sits on, the road attributes
+around it, and `data_implementacao`, the month the paint went down.
+
+`sinistros_via_sp` covers the road segments the study analysed. Its geometry makes
+a useful backdrop for the lanes.
+
+```{r roads}
+roads <- get_dataset("sinistros_via_sp", format = "gpkg")
+```
+
+Drawing one layer over the other shows where the lanes run.
+
+```{r map, fig.alt = "Map of São Paulo showing the road segments in the study as faint grey lines, with the motorcycle lanes drawn in blue on top. The blue corridors are scattered across the city, several of them radiating from the centre."}
+ggplot() +
+  geom_sf(data = roads, colour = "grey80", linewidth = 0.25) +
+  geom_sf(data = lanes, colour = "#1D4ED8", linewidth = 0.8) +
+  labs(
+    title = "Motorcycle lanes in São Paulo",
+    subtitle = "Segments painted between 2022 and 2025"
+  ) +
+  theme_void()
+```
+
+`data_implementacao` dates each segment, so the same layer doubles as a timeline.
+
+```{r rollout}
+lanes <- lanes |>
+  mutate(year = format(data_implementacao, "%Y"))
+
+lanes |>
+  st_drop_geometry() |>
+  as_tibble() |>
+  summarise(
+    segments = n(),
+    km = sum(comprimento, na.rm = TRUE) / 1000,
+    .by = year
+  ) |>
+  arrange(year)
+```
+
+```{r map-year, fig.alt = "The same map of motorcycle lanes, now coloured by the year each segment was painted, running from green in 2022 through blue and purple to black in 2025."}
+ggplot() +
+  geom_sf(data = roads, colour = "grey85", linewidth = 0.2) +
+  geom_sf(data = lanes, aes(colour = year), linewidth = 0.8) +
+  scale_colour_viridis_d(
+    option = "mako",
+    end = 0.8,
+    direction = -1,
+    name = NULL
+  ) +
+  labs(title = "Motorcycle lanes by year of implementation") +
+  theme_void()
+```
+
+## Read the attributes and the crash table
+
+`sinistros_via_sp` is the same kind of object as the lanes, with crash counts
+attached to each segment.
+
+```{r roads-glimpse}
+glimpse(st_drop_geometry(roads))
+```
+
+`sinistros_sp` is the plain table behind those counts, with one row per crash.
+
+```{r crashes}
+crashes <- get_dataset("sinistros_sp")
+glimpse(crashes)
+```
+
+The last year is partial, so check coverage before comparing years.
+
+```{r coverage}
+crashes |>
+  summarise(
+    crashes = n(),
+    first = min(data, na.rm = TRUE),
+    last = max(data, na.rm = TRUE),
+    .by = ano
+  ) |>
+  arrange(ano)
+```
+
+## Documentation, citation, and source code
+
+`docs = TRUE` returns the data alongside the deposit's documentation. When a
+deposit ships a documentation workbook the package reads it; otherwise the `docs`
+element carries the Dataverse metadata.
+
+```{r docs}
+deposit <- get_dataset("faixa_azul_sp", docs = TRUE)
+str(deposit$docs)
+```
+
+`cite_dataset()` pulls the citation from Dataverse in plain text, BibTeX, or RIS.
+
+```{r cite}
+cite_dataset("faixa_azul_sp")
+```
+
+`open_project()` prints the study behind the datasets and opens its pipeline
+repository, where the cleaning, aggregation, and analysis steps live.
+
+```{r project}
+open_project("faixa_azul", open = FALSE)
+```
+
+The full package reference is at
+<https://inspercidades.github.io/inspercidados>.

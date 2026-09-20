@@ -44,4 +44,8 @@ Suggests:
     lifecycle,
     stringr
 VignetteBuilder: knitr
+Config/Needs/website:
+    dplyr,
+    ggplot2,
+    sf
 Config/testthat/edition: 3
