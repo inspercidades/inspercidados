@@ -20,11 +20,12 @@ knitr::opts_chunk$set(
 [![Codecov test coverage](https://codecov.io/gh/inspercidades/inspercidados/graph/badge.svg)](https://app.codecov.io/gh/inspercidades/inspercidados)
 <!-- badges: end -->
 
-**inspercidados** gives R users direct access to curated Brazilian urban
-research datasets hosted on
-[Insper's Dataverse](https://dataverse.datascience.insper.edu.br). It wraps
-[`dataverse`](https://github.com/IQSS/dataverse-client-r) so you can find,
-download, and cite datasets in a few short commands.
+**inspercidados** gives R users direct access to datasets from
+[Insper Cidades](https://www.insper.edu.br/pt/pesquisa/centro-de-estudos-das-cidades),
+hosted on [Insper's Dataverse](https://dataverse.datascience.insper.edu.br).
+Insper Cidades is a multidisciplinary research center at Insper. The package
+wraps [`dataverse`](https://github.com/IQSS/dataverse-client-r) so you can
+find, download, and cite datasets in a few short commands.
 
 ## Installation
 

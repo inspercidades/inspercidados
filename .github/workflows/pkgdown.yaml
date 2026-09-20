@@ -34,6 +34,12 @@ jobs:
           extra-packages: any::pkgdown, local::.
           needs: website
 
+      # pkgdown renders every .md file in the package root and offers no way
+      # to exclude one, so AGENTS.md ships as AGENTS.html. Drop it from the
+      # checkout before building; the file is for agents, not for readers.
+      - name: Keep agent instructions out of the site
+        run: rm -f AGENTS.md
+
       - name: Build site
         run: pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)
         shell: Rscript {0}
@@ -42,6 +48,9 @@ jobs:
         if: github.event_name != 'pull_request'
         uses: JamesIves/github-pages-deploy-action@d92aa235d04922e8f08b40ce78cc5442fcfbfa2f # v4.8.0
         with:
-          clean: false
+          # gh-pages holds nothing that docs/ does not generate, so replace it
+          # wholesale. Keeping stale files is how AGENTS.html stayed published
+          # after it stopped being built.
+          clean: true
           branch: gh-pages
           folder: docs

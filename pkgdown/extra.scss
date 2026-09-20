@@ -1,20 +1,29 @@
 // Insper Cidades touches ----
 //
-// Brand colours come from insperplot. The raw values are too saturated for
-// large web surfaces, so only their lighter and darker steps appear here:
-// strong colour marks what is clickable, everything else stays neutral.
+// Brand colours come from insperplot, split by job. Folhagem marks structure:
+// the rules under the navbar and the page title, blockquotes, the stable
+// badge. Asfalto marks what responds to a click: links, hovers, the active
+// table-of-contents entry, focus rings. Code syntax takes neither — the
+// github-light and github-dark themes own it.
+//
+// The two are insperplot's sanctioned Cidades pair (`cidades_folhagem_asfalto`).
+// Asfalto also carries the interactive role at its published value, 9.0:1 on
+// white, while folhagem reaches only 3.6:1 and had to be darkened twice.
 
 $insper-dark: #0E171D;     // azul_escuro
 $folhagem: #019881;        // cidades folhagem
-$folhagem-dark: #056958;   // links, light mode
-$folhagem-darker: #065246; // link hover, light mode
-$folhagem-light: #69D3BB;  // links, dark mode
+$folhagem-darker: #065246; // stable badge text
+$folhagem-light: #69D3BB;  // rules and borders, dark mode
 $folhagem-lighter: #8DF2D9;
-$folhagem-tint: #EEF6F4;   // hover and callout background
-$neutral-warm: #F4F4F2;    // diverging palettes' midpoint
+$folhagem-tint: #EEF6F4;   // blockquote and badge background
+$asfalto: #7F1582;         // cidades asfalto; links, light mode
+$asfalto-dark: #6E0D71;    // link hover, light mode
+$asfalto-light: #D183D3;   // links, dark mode
+$asfalto-lighter: #FCB7FF; // link hover, dark mode
+$asfalto-tint: #F8F3F8;    // hover and active background
+$neutral-warm: #F4F4F2;    // code background, light mode
 
-$dark-bg: #121B22;
-$dark-surface: #1A252D;
+$dark-surface: #1A252D;    // code background, dark mode
 
 // Navbar ----
 // Azul escuro in both modes, with a thin folhagem rule underneath.
@@ -36,7 +45,7 @@ $dark-surface: #1A252D;
 
   .nav-link:hover,
   .nav-link:focus {
-    color: $folhagem-lighter !important;
+    color: $asfalto-light !important;
     background: rgba(255, 255, 255, 0.06);
   }
 
@@ -63,8 +72,8 @@ $dark-surface: #1A252D;
 
     &:focus {
       background-color: rgba(255, 255, 255, 0.12);
-      border-color: $folhagem-light;
-      box-shadow: 0 0 0 0.2rem rgba($folhagem, 0.35);
+      border-color: $asfalto-light;
+      box-shadow: 0 0 0 0.2rem rgba($asfalto-light, 0.35);
     }
   }
 }
@@ -108,7 +117,7 @@ a {
 }
 
 a:hover {
-  color: $folhagem-darker;
+  color: $asfalto-dark;
 }
 
 // Sidebar links are navigation, not prose: underline on hover only
@@ -116,9 +125,28 @@ aside a:not(:hover) {
   text-decoration: none;
 }
 
+// Autolinked function names. downlit turns every call in an example into a
+// link, so Bootstrap's default underlines one token in three. Code already
+// reads as code; the underline waits for the pointer.
+pre a,
+code a {
+  text-decoration: none;
+
+  &:hover,
+  &:focus {
+    text-decoration: underline;
+  }
+}
+
+// Bootstrap makes links inside code inherit the surrounding colour. A code
+// block can afford that, since the syntax colour already separates a call from
+// its arguments; a chip in a sentence cannot, so it takes the link colour.
+:not(pre) > code a:any-link {
+  color: $asfalto;
+}
+
 // Headings ----
 
-.page-header h1,
 main h1 {
   font-weight: 700;
   letter-spacing: -0.02em;
@@ -134,7 +162,6 @@ main h2 {
 
 // Sidebar headings: uppercase with letter-spacing, as on insperplot's site
 aside h2,
-#toc > .nav-title,
 #toc > h2 {
   font-size: 0.75rem;
   font-weight: 700;
@@ -145,12 +172,12 @@ aside h2,
 
 #toc > .nav a.nav-link:hover,
 #toc > .nav a.nav-link:focus {
-  background-color: $folhagem-tint;
+  background-color: $asfalto-tint;
 }
 
 #toc > .nav a.nav-link.active {
-  background-color: $folhagem-tint;
-  color: $folhagem-darker;
+  background-color: $asfalto-tint;
+  color: $asfalto-dark;
   font-weight: 500;
 }
 
@@ -170,6 +197,8 @@ code:not(pre code) {
   font-size: 0.875em;
 }
 
+// A code chip wrapped in a link takes the link colour rather than the
+// colour set just above.
 a > code:not(pre code) {
   color: inherit;
 }
@@ -190,12 +219,7 @@ a > code:not(pre code) {
   }
 
   dt code a {
-    color: $folhagem-dark;
-    text-decoration: none;
-
-    &:hover {
-      text-decoration: underline;
-    }
+    color: $asfalto;
   }
 }
 
@@ -214,7 +238,7 @@ a > code:not(pre code) {
 // Argument targets and blockquotes pick up the folhagem accent
 dt:target,
 dt:target + dd {
-  border-left-color: $folhagem;
+  border-left-color: $asfalto;
 }
 
 blockquote {
@@ -238,7 +262,11 @@ footer {
 
 [data-bs-theme="dark"] {
   a:hover {
-    color: $folhagem-lighter;
+    color: $asfalto-lighter;
+  }
+
+  :not(pre) > code a:any-link {
+    color: $asfalto-light;
   }
 
   .page-header {
@@ -246,14 +274,13 @@ footer {
   }
 
   aside h2,
-  #toc > .nav-title,
   #toc > h2 {
     color: #929EA9;
   }
 
   #toc > .nav a.nav-link:hover,
   #toc > .nav a.nav-link:focus {
-    background-color: rgba($folhagem, 0.18);
+    background-color: rgba($asfalto-light, 0.18);
   }
 
   main pre {
@@ -261,30 +288,12 @@ footer {
     border-color: #26333D;
   }
 
-  // Syntax colours: light steps of the Cidades ramps instead of a11y-dark's
-  // saturated yellow and cyan. `main` outranks the theme, which pkgdown
-  // appends after this file.
-  main pre code {
-    color: #DDE3E8;
-
-    span.fu { color: $folhagem-light; }
-    span.st,
-    span.ch,
-    span.vs,
-    span.ss { color: #FFD29D; }         // solar
-    span.dv,
-    span.fl,
-    span.bn,
-    span.cn { color: #D183D3; }         // asfalto
-    span.kw,
-    span.cf,
-    span.op,
-    span.sc { color: #FFAD92; font-weight: normal; } // tijolo
-    span.va,
-    span.at,
-    span.ot { color: #C5D2DF; }         // azul
-    span.co,
-    span.do { color: #929EA9; font-style: italic; }
+  // github-dark's comment grey is tuned for its own #24292e background and
+  // falls to 3.2:1 on ours. This is GitHub's lighter comment step, 5.1:1.
+  // `main` outranks the theme, which pkgdown appends after this file.
+  main pre code span.co,
+  main pre code span.do {
+    color: #8B949E;
   }
 
   code:not(pre code) {
@@ -293,12 +302,12 @@ footer {
   }
 
   .template-reference-index dt code a {
-    color: $folhagem-light;
+    color: $asfalto-light;
   }
 
   #toc > .nav a.nav-link.active {
-    background-color: rgba($folhagem, 0.22);
-    color: $folhagem-lighter;
+    background-color: rgba($asfalto-light, 0.22);
+    color: $asfalto-lighter;
   }
 
   .lifecycle-deprecated,

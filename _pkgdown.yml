@@ -3,12 +3,14 @@ url: https://inspercidades.github.io/inspercidados/
 template:
   bootstrap: 5
   light-switch: true
-  theme: a11y-light
-  theme-dark: a11y-dark
+  theme: github-light
+  theme-dark: github-dark
   bslib:
-    # Insper Cidades colours from insperplot, darkened for text contrast.
-    # Folhagem #019881 is too light for links on white (3.6:1).
-    primary: "#056958"
+    # Insper Cidades colours from insperplot, split by job: asfalto carries
+    # everything clickable, folhagem stays on structural rules (see extra.scss).
+    # Asfalto works at its published value (9.0:1 on white); folhagem does not
+    # (3.6:1), which is why the old link colour was two steps off brand.
+    primary: "#7F1582"
     secondary: "#626D76"
     success: "#056958"
     info: "#04806C"
@@ -17,7 +19,7 @@ template:
     body-color: "#1B252D"
     body-bg-dark: "#121B22"
     body-color-dark: "#DDE3E8"
-    link-color-dark: "#69D3BB"
+    link-color-dark: "#D183D3"
     # bslib bundles only weight 400 unless weights are listed
     base_font: {google: {family: "Inter", wght: [400, 500, 600, 700]}}
     heading_font: {google: {family: "Inter", wght: [400, 500, 600, 700]}}
