@@ -5,20 +5,22 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Access to Brazilian Urban Datasets from Insper Cidades • inspercidados</title>
-<script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Access to Datasets from Insper Cidades • inspercidados</title>
+<script src="lightswitch.js"></script><script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
-<script src="deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<script src="deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="deps/Inter-0.4.10/font.css" rel="stylesheet">
+<link href="deps/JetBrains_Mono-0.4.10/font.css" rel="stylesheet">
+<link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Access to Brazilian Urban Datasets from Insper Cidades">
-<meta name="description" content="A lightweight interface for discovering, downloading, and citing curated Brazilian urban datasets hosted on Insper's Dataverse repository. Lists datasets and their logical resources, downloads data directly into R, links each dataset to its replication project, and generates academic citations from repository metadata.">
-<meta property="og:description" content="A lightweight interface for discovering, downloading, and citing curated Brazilian urban datasets hosted on Insper's Dataverse repository. Lists datasets and their logical resources, downloads data directly into R, links each dataset to its replication project, and generates academic citations from repository metadata.">
+<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Access to Datasets from Insper Cidades">
+<meta name="description" content="A lightweight interface for discovering, downloading, and citing datasets from Insper Cidades, hosted on Insper's Dataverse repository. Lists datasets and their logical resources, downloads data directly into R, links each dataset to its replication project, and generates academic citations from repository metadata.">
+<meta property="og:description" content="A lightweight interface for discovering, downloading, and citing datasets from Insper Cidades, hosted on Insper's Dataverse repository. Lists datasets and their logical resources, downloads data directly into R, links each dataset to its replication project, and generates academic citations from repository metadata.">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
-    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+    <nav class="navbar navbar-expand-lg fixed-top " aria-label="Site navigation"><div class="container">
 
     <a class="navbar-brand me-2" href="index.html">inspercidados</a>
 
@@ -36,6 +38,7 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="articles/getting-started.html">Getting started with inspercidados</a></li>
+    <li><a class="dropdown-item" href="articles/mapping-spatial-data.html">Mapping spatial datasets</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
@@ -44,7 +47,15 @@
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="search.json">
 </form></li>
-<li class="nav-item"><a class="external-link nav-link" href="https://github.com/inspercidades/inspercidados/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/inspercidades/inspercidados" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-lightswitch" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true" aria-label="Light switch"><span class="fa fa-sun"></span></button>
+  <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdown-lightswitch">
+<li><button class="dropdown-item" data-bs-theme-value="light"><span class="fa fa-sun"></span> Light</button></li>
+    <li><button class="dropdown-item" data-bs-theme-value="dark"><span class="fa fa-moon"></span> Dark</button></li>
+    <li><button class="dropdown-item" data-bs-theme-value="auto"><span class="fa fa-adjust"></span> Auto</button></li>
+  </ul>
+</li>
       </ul>
 </div>
 
@@ -57,11 +68,11 @@
 </h1></div>
 <!-- badges: start -->
 
-<p><strong>inspercidados</strong> gives R users direct access to curated Brazilian urban research datasets hosted on <a href="https://dataverse.datascience.insper.edu.br" class="external-link">Insper’s Dataverse</a>. The package wraps <a href="https://github.com/IQSS/dataverse-client-r" class="external-link"><code>dataverse</code></a>, so you can find, download, and cite datasets with a few short commands.</p>
+<p><strong>inspercidados</strong> gives R users direct access to datasets from <a href="https://www.insper.edu.br/pt/pesquisa/centro-de-estudos-das-cidades" class="external-link">Insper Cidades</a>, hosted on <a href="https://dataverse.datascience.insper.edu.br" class="external-link">Insper’s Dataverse</a>. Insper Cidades is a multidisciplinary research center at Insper. The package wraps <a href="https://github.com/IQSS/dataverse-client-r" class="external-link"><code>dataverse</code></a> so you can find, download, and cite datasets in a few short commands.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>Install the package from R-universe:</p>
+<p>Install the release from R-universe.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span></span>
 <span>  <span class="st">"inspercidados"</span>,</span>
@@ -70,7 +81,7 @@
 <span>    <span class="st">"https://cloud.r-project.org"</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>Or install the development version from <a href="https://github.com/inspercidades/inspercidados" class="external-link">GitHub</a>:</p>
+<p>Or the development version from <a href="https://github.com/inspercidades/inspercidados" class="external-link">GitHub</a>.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("pak")</span></span>
 <span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"inspercidades/inspercidados"</span><span class="op">)</span></span></code></pre></div>
@@ -80,8 +91,8 @@
 </h2>
 <table class="table">
 <colgroup>
-<col width="50%">
-<col width="50%">
+<col width="28%">
+<col width="71%">
 </colgroup>
 <thead><tr>
 <th>Function</th>
@@ -102,7 +113,7 @@
 </tr>
 <tr>
 <td><code><a href="reference/get_dataverse.html">get_dataverse()</a></code></td>
-<td>Inspect or download an arbitrary Insper Dataverse deposit</td>
+<td>Inspect or download any Insper Dataverse deposit</td>
 </tr>
 <tr>
 <td><code><a href="reference/cite_dataset.html">cite_dataset()</a></code></td>
@@ -110,7 +121,7 @@
 </tr>
 <tr>
 <td><code><a href="reference/open_project.html">open_project()</a></code></td>
-<td>Open the repository of the study behind a dataset</td>
+<td>Open the study repository behind a dataset</td>
 </tr>
 </tbody>
 </table>
@@ -125,7 +136,7 @@
 <span><span class="fu"><a href="reference/list_datasets.html">list_datasets</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 22 × 11</span></span>
 <span><span class="co">#&gt;    alias        title description theme region project access is_spatial formats</span></span>
-<span><span class="co">#&gt;    &lt;chr&gt;        &lt;chr&gt; &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;   &lt;chr&gt;  &lt;lgl&gt;      &lt;chr&gt;</span></span>
+<span><span class="co">#&gt;    &lt;chr&gt;        &lt;chr&gt; &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;   &lt;chr&gt;  &lt;lgl&gt;      &lt;chr&gt;  </span></span>
 <span><span class="co">#&gt;  1 itbi_sp      Impo… "Registros… Habi… São P… itbi    downl… FALSE      csv, p…</span></span>
 <span><span class="co">#&gt;  2 iptu_sp      IPTU… "Informaçõ… Habi… São P… densid… downl… TRUE       geojso…</span></span>
 <span><span class="co">#&gt;  3 alvaras_sp   Alva… "Agregação… Habi… São P… alvaras downl… TRUE       geojso…</span></span>
@@ -138,12 +149,12 @@
 <span><span class="co">#&gt; 10 qualidade_a… Medi… "Estatísti… Clim… Rio d… mare    downl… TRUE       geojso…</span></span>
 <span><span class="co">#&gt; # ℹ 12 more rows</span></span>
 <span><span class="co">#&gt; # ℹ 2 more variables: keywords &lt;chr&gt;, doi &lt;chr&gt;</span></span></code></pre></div>
-<p>Filter by alias, title, theme, region, or keywords:</p>
+<p>Search by alias, title, theme, region, or keywords.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/list_datasets.html">list_datasets</a></span><span class="op">(</span><span class="st">"Mobilidade"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 12 × 11</span></span>
 <span><span class="co">#&gt;    alias        title description theme region project access is_spatial formats</span></span>
-<span><span class="co">#&gt;    &lt;chr&gt;        &lt;chr&gt; &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;   &lt;chr&gt;  &lt;lgl&gt;      &lt;chr&gt;</span></span>
+<span><span class="co">#&gt;    &lt;chr&gt;        &lt;chr&gt; &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;   &lt;chr&gt;  &lt;lgl&gt;      &lt;chr&gt;  </span></span>
 <span><span class="co">#&gt;  1 geoses_sp    Índi… Índice soc… Mult… São P… geoses  downl… TRUE       geojso…</span></span>
 <span><span class="co">#&gt;  2 pemob_anual  Pesq… Base anual… Mobi… Brasil pemob   downl… FALSE      parque…</span></span>
 <span><span class="co">#&gt;  3 pemob_harmo… Pesq… Base anual… Mobi… Brasil pemob   downl… FALSE      parque…</span></span>
@@ -161,7 +172,7 @@
 <div class="section level2">
 <h2 id="download-a-dataset">Download a dataset<a class="anchor" aria-label="anchor" href="#download-a-dataset"></a>
 </h2>
-<p>Identify a registered dataset by its short alias:</p>
+<p>Pass a short alias to download a registered dataset.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># By alias</span></span>
 <span><span class="va">embarques</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_dataset.html">get_dataset</a></span><span class="op">(</span><span class="st">"embarques_mensais"</span><span class="op">)</span></span>
@@ -175,16 +186,16 @@
 <span>  resource <span class="op">=</span> <span class="st">"pontos"</span>,</span>
 <span>  format <span class="op">=</span> <span class="st">"gpkg"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>Use <code><a href="reference/list_resources.html">list_resources()</a></code> to see the logical datasets and formats available inside a registered Dataverse deposit:</p>
+<p><code><a href="reference/list_resources.html">list_resources()</a></code> shows the logical datasets and formats inside a registered deposit.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/list_resources.html">list_resources</a></span><span class="op">(</span><span class="st">"qualidade_ar_mare"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 2 × 6</span></span>
 <span><span class="co">#&gt;   resource title                                is_spatial years formats default</span></span>
-<span><span class="co">#&gt;   &lt;chr&gt;    &lt;chr&gt;                                &lt;lgl&gt;      &lt;chr&gt; &lt;chr&gt;   &lt;lgl&gt;</span></span>
-<span><span class="co">#&gt; 1 dados    Medições de qualidade do ar          FALSE      &lt;NA&gt;  parque… TRUE</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;    &lt;chr&gt;                                &lt;lgl&gt;      &lt;chr&gt; &lt;chr&gt;   &lt;lgl&gt;  </span></span>
+<span><span class="co">#&gt; 1 dados    Medições de qualidade do ar          FALSE      &lt;NA&gt;  parque… TRUE   </span></span>
 <span><span class="co">#&gt; 2 pontos   Pontos das medições de qualidade do… TRUE       &lt;NA&gt;  geojso… FALSE</span></span></code></pre></div>
 <p>For an unregistered DOI or a physical filename, use <code><a href="reference/get_dataverse.html">get_dataverse()</a></code>.</p>
-<p>With <code>docs = TRUE</code>, the function returns the data together with its documentation:</p>
+<p>Set <code>docs = TRUE</code> to return the data alongside its documentation.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_dataset.html">get_dataset</a></span><span class="op">(</span><span class="st">"iptu_sp"</span>, docs <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">result</span><span class="op">$</span><span class="va">data</span></span>
@@ -193,7 +204,7 @@
 <div class="section level2">
 <h2 id="cite-a-dataset">Cite a dataset<a class="anchor" aria-label="anchor" href="#cite-a-dataset"></a>
 </h2>
-<p><code><a href="reference/cite_dataset.html">cite_dataset()</a></code> fetches metadata from Dataverse and returns a citation as plain text, BibTeX, or RIS:</p>
+<p><code><a href="reference/cite_dataset.html">cite_dataset()</a></code> fetches metadata from Dataverse and returns a citation in plain text, BibTeX, or RIS.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/cite_dataset.html">cite_dataset</a></span><span class="op">(</span><span class="st">"embarques_mensais"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/cite_dataset.html">cite_dataset</a></span><span class="op">(</span><span class="st">"embarques_mensais"</span>, format <span class="op">=</span> <span class="st">"bibtex"</span><span class="op">)</span></span>
@@ -202,7 +213,7 @@
 <div class="section level2">
 <h2 id="explore-the-study-behind-a-dataset">Explore the study behind a dataset<a class="anchor" aria-label="anchor" href="#explore-the-study-behind-a-dataset"></a>
 </h2>
-<p>Most datasets come from a research study whose pipeline lives in its own repository. <code><a href="reference/open_project.html">open_project()</a></code> prints the study, lists its datasets, and opens the repository:</p>
+<p>Most datasets come from a research study whose pipeline lives in its own repository. <code><a href="reference/open_project.html">open_project()</a></code> prints the study, lists its datasets, and opens the repository.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/open_project.html">open_project</a></span><span class="op">(</span><span class="st">"embarques_mensais"</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -244,7 +255,8 @@
 <div class="developers">
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li>Vinicius Oike <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0009-0005-8015-9189" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a>  </li>
+<li>
+<a href="https://github.com/viniciusoike" class="external-link">Vinicius Oike</a> <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0009-0005-8015-9189" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a>  </li>
 <li>Insper Cidades <br><small class="roles"> Copyright holder, funder </small>   </li>
 </ul>
 </div>
@@ -262,7 +274,7 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Vinicius Oike, Insper Cidades.</p>
+  <p>Developed by <a href="https://github.com/viniciusoike" class="external-link">Vinicius Oike</a>, Insper Cidades.</p>
 </div>
 
 <div class="pkgdown-footer-right">

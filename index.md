@@ -1,14 +1,16 @@
 # inspercidados
 
-**inspercidados** gives R users direct access to curated Brazilian urban
-research datasets hosted on [Insper’s
-Dataverse](https://dataverse.datascience.insper.edu.br). The package
-wraps [`dataverse`](https://github.com/IQSS/dataverse-client-r), so you
-can find, download, and cite datasets with a few short commands.
+**inspercidados** gives R users direct access to datasets from [Insper
+Cidades](https://www.insper.edu.br/pt/pesquisa/centro-de-estudos-das-cidades),
+hosted on [Insper’s
+Dataverse](https://dataverse.datascience.insper.edu.br). Insper Cidades
+is a multidisciplinary research center at Insper. The package wraps
+[`dataverse`](https://github.com/IQSS/dataverse-client-r) so you can
+find, download, and cite datasets in a few short commands.
 
 ## Installation
 
-Install the package from R-universe:
+Install the release from R-universe.
 
 ``` r
 
@@ -21,8 +23,8 @@ install.packages(
 )
 ```
 
-Or install the development version from
-[GitHub](https://github.com/inspercidades/inspercidados):
+Or the development version from
+[GitHub](https://github.com/inspercidades/inspercidados).
 
 ``` r
 
@@ -37,9 +39,9 @@ pak::pak("inspercidades/inspercidados")
 | [`list_datasets()`](https://inspercidades.github.io/inspercidados/reference/list_datasets.md) | List or search available datasets |
 | [`list_resources()`](https://inspercidades.github.io/inspercidados/reference/list_resources.md) | List logical resources within a dataset |
 | [`get_dataset()`](https://inspercidades.github.io/inspercidados/reference/get_dataset.md) | Download a dataset into R |
-| [`get_dataverse()`](https://inspercidades.github.io/inspercidados/reference/get_dataverse.md) | Inspect or download an arbitrary Insper Dataverse deposit |
+| [`get_dataverse()`](https://inspercidades.github.io/inspercidados/reference/get_dataverse.md) | Inspect or download any Insper Dataverse deposit |
 | [`cite_dataset()`](https://inspercidades.github.io/inspercidados/reference/cite_dataset.md) | Generate a citation for a dataset |
-| [`open_project()`](https://inspercidades.github.io/inspercidados/reference/open_project.md) | Open the repository of the study behind a dataset |
+| [`open_project()`](https://inspercidades.github.io/inspercidados/reference/open_project.md) | Open the study repository behind a dataset |
 
 ## Browse available datasets
 
@@ -54,7 +56,7 @@ library(inspercidados)
 list_datasets()
 #> # A tibble: 22 × 11
 #>    alias        title description theme region project access is_spatial formats
-#>    <chr>        <chr> <chr>       <chr> <chr>  <chr>   <chr>  <lgl>      <chr>
+#>    <chr>        <chr> <chr>       <chr> <chr>  <chr>   <chr>  <lgl>      <chr>  
 #>  1 itbi_sp      Impo… "Registros… Habi… São P… itbi    downl… FALSE      csv, p…
 #>  2 iptu_sp      IPTU… "Informaçõ… Habi… São P… densid… downl… TRUE       geojso…
 #>  3 alvaras_sp   Alva… "Agregação… Habi… São P… alvaras downl… TRUE       geojso…
@@ -69,14 +71,14 @@ list_datasets()
 #> # ℹ 2 more variables: keywords <chr>, doi <chr>
 ```
 
-Filter by alias, title, theme, region, or keywords:
+Search by alias, title, theme, region, or keywords.
 
 ``` r
 
 list_datasets("Mobilidade")
 #> # A tibble: 12 × 11
 #>    alias        title description theme region project access is_spatial formats
-#>    <chr>        <chr> <chr>       <chr> <chr>  <chr>   <chr>  <lgl>      <chr>
+#>    <chr>        <chr> <chr>       <chr> <chr>  <chr>   <chr>  <lgl>      <chr>  
 #>  1 geoses_sp    Índi… Índice soc… Mult… São P… geoses  downl… TRUE       geojso…
 #>  2 pemob_anual  Pesq… Base anual… Mobi… Brasil pemob   downl… FALSE      parque…
 #>  3 pemob_harmo… Pesq… Base anual… Mobi… Brasil pemob   downl… FALSE      parque…
@@ -94,7 +96,7 @@ list_datasets("Mobilidade")
 
 ## Download a dataset
 
-Identify a registered dataset by its short alias:
+Pass a short alias to download a registered dataset.
 
 ``` r
 
@@ -112,26 +114,23 @@ pontos <- get_dataset(
 )
 ```
 
-Use
 [`list_resources()`](https://inspercidades.github.io/inspercidados/reference/list_resources.md)
-to see the logical datasets and formats available inside a registered
-Dataverse deposit:
+shows the logical datasets and formats inside a registered deposit.
 
 ``` r
 
 list_resources("qualidade_ar_mare")
 #> # A tibble: 2 × 6
 #>   resource title                                is_spatial years formats default
-#>   <chr>    <chr>                                <lgl>      <chr> <chr>   <lgl>
-#> 1 dados    Medições de qualidade do ar          FALSE      <NA>  parque… TRUE
+#>   <chr>    <chr>                                <lgl>      <chr> <chr>   <lgl>  
+#> 1 dados    Medições de qualidade do ar          FALSE      <NA>  parque… TRUE   
 #> 2 pontos   Pontos das medições de qualidade do… TRUE       <NA>  geojso… FALSE
 ```
 
 For an unregistered DOI or a physical filename, use
 [`get_dataverse()`](https://inspercidades.github.io/inspercidados/reference/get_dataverse.md).
 
-With `docs = TRUE`, the function returns the data together with its
-documentation:
+Set `docs = TRUE` to return the data alongside its documentation.
 
 ``` r
 
@@ -143,8 +142,8 @@ result$docs
 ## Cite a dataset
 
 [`cite_dataset()`](https://inspercidades.github.io/inspercidados/reference/cite_dataset.md)
-fetches metadata from Dataverse and returns a citation as plain text,
-BibTeX, or RIS:
+fetches metadata from Dataverse and returns a citation in plain text,
+BibTeX, or RIS.
 
 ``` r
 
@@ -158,7 +157,7 @@ cite_dataset("embarques_mensais", format = "ris")
 Most datasets come from a research study whose pipeline lives in its own
 repository.
 [`open_project()`](https://inspercidades.github.io/inspercidados/reference/open_project.md)
-prints the study, lists its datasets, and opens the repository:
+prints the study, lists its datasets, and opens the repository.
 
 ``` r
 
