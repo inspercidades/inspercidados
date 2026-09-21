@@ -10,7 +10,7 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/inspercidades/inspercidados/blob/main/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/inspercidades/inspercidados/blob/v0.4.0/DESCRIPTION)
 
 Oike V (2026). *inspercidados: Access to Datasets from Insper Cidades*.
 R package version 0.4.0,
