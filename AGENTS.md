@@ -95,6 +95,13 @@ sheet stores the access value as "Disponível para download" or
 "Sala segura do Insper". A `secure_room` entry is catalog-only and will never
 be downloadable.
 
+**"Arquivado" is internal.** The sheet's access column also accepts
+"Arquivado" for rows kept as a record: an older deposit replaced by a newer one,
+or a withdrawn study. The validator accepts these rows, lets their link point
+outside the `10.60873` prefix, and ignores them when checking for shared DOIs.
+`prepare_catalog()` then drops them, so they never reach the registry. Two
+active rows sharing a DOI abort the build.
+
 Example registry entry:
 
 ```json
@@ -182,6 +189,9 @@ repos. It is in `.Rbuildignore` and should not be extended.
 - **Discontinued is not retired.** Delete a discontinued study from the sheet.
   Reserve `retired.csv` for deposits that were withdrawn or merged into a
   successor.
+- **Archived is not retired either.** "Arquivado" keeps a row in the sheet
+  for the curators and hides it from the package. `retired.csv` tombstones an
+  alias that users may still call. A withdrawn deposit can need both.
 - **One deposit, several aliases.** `pemob_anual` and `pemob_harmonizada` share
   a DOI, as do the three Maré aliases and the two Motiva ones. Each alias
   matches only its own files, so files owned by a sibling alias look uncovered
