@@ -19,11 +19,17 @@ allowed_themes <- c(
   "Educação",
   "Habitação e Mercado Imobiliário",
   "Mobilidade",
-  "Multidisciplinar e transversal",
+  "Multidisciplinar e Transversal",
   "Saúde",
-  "Trabalho e renda"
+  "Trabalho e Renda"
 )
-allowed_access <- c("Disponível para download", "Sala segura do Insper")
+# "Arquivado" is internal: archived rows are validated but never registered.
+archived_access <- "Arquivado"
+allowed_access <- c(
+  "Disponível para download",
+  "Sala segura do Insper",
+  archived_access
+)
 required_keyword_columns <- paste0("palavra_chave_", 1:5)
 required_catalog_columns <- c(
   "titulo_da_colecao",
@@ -239,14 +245,32 @@ catalog_validation_issues <- function(catalog) {
 
   doi <- extract_doi(catalog$link_da_base_de_dados_data_verse)
   link <- clean_text(catalog$link_da_base_de_dados_data_verse)
+  archived <- catalog$filtro_acesso %in% archived_access
   claims_dataverse <- grepl("dataverse|doi", link, ignore.case = TRUE)
   claims_dataverse[is.na(claims_dataverse)] <- FALSE
-  invalid_doi <- claims_dataverse & is.na(doi)
+  invalid_doi <- claims_dataverse & is.na(doi) & !archived
   for (index in which(invalid_doi)) {
     add_issue(
       index,
       "link_da_base_de_dados_data_verse",
       "links must contain a valid 10.60873 Dataverse DOI"
+    )
+  }
+
+  active_doi <- ifelse(archived, NA_character_, doi)
+  shared <- which(!is.na(active_doi) & duplicated(active_doi))
+  for (index in shared) {
+    first <- match(active_doi[index], active_doi)
+    add_issue(
+      index,
+      "link_da_base_de_dados_data_verse",
+      paste0(
+        "same DOI as row ",
+        sheet_rows[first],
+        "; mark the older row as '",
+        archived_access,
+        "' or remove it"
+      )
     )
   }
 
@@ -289,6 +313,13 @@ prepare_catalog <- function(catalog) {
   validate_catalog_schema(catalog)
   catalog <- drop_blank_catalog_rows(catalog)
   validate_catalog(catalog)
+  archived <- catalog$filtro_acesso %in% archived_access
+  if (any(archived)) {
+    cli::cli_inform(
+      "Skipping {sum(archived)} archived row{?s}: {catalog$.sheet_row[archived]}."
+    )
+  }
+  catalog <- catalog[!archived, , drop = FALSE]
   catalog$doi <- extract_doi(catalog$link_da_base_de_dados_data_verse)
   catalog$access <- ifelse(
     catalog$filtro_acesso == "Sala segura do Insper",

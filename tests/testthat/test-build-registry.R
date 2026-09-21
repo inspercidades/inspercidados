@@ -121,3 +121,42 @@ test_that("sheet aliases carry their resources when renamed", {
   expect_equal(out$aliases$alias, "novo")
   expect_equal(out$resources$alias, "novo")
 })
+
+test_that("archived entries may link outside the served prefix", {
+  catalog <- new_catalog_row()
+  catalog$filtro_acesso <- "Arquivado"
+  catalog$link_da_base_de_dados_data_verse <- paste0(
+    "https://example.org/?persistentId=",
+    "doi:10.48808/FK2/OLD"
+  )
+  expect_no_error(validate_catalog(catalog))
+})
+
+test_that("archived entries never reach the registry", {
+  catalog <- rbind(new_catalog_row(), new_catalog_row())
+  catalog$filtro_acesso[1] <- "Arquivado"
+  catalog$link_da_base_de_dados_data_verse[1] <- "arquivado"
+  catalog$link_da_base_de_dados_data_verse[2] <- NA_character_
+
+  prepared <- suppressMessages(prepare_catalog(catalog))
+
+  expect_equal(nrow(prepared), 1L)
+  expect_equal(prepared$access, "unpublished")
+  expect_equal(prepared$.sheet_row, 4L)
+})
+
+test_that("active entries may not share a DOI", {
+  catalog <- rbind(new_catalog_row(), new_catalog_row())
+
+  issues <- catalog_validation_issues(catalog)
+
+  expect_equal(issues$row, 4L)
+  expect_equal(issues$field, "link_da_base_de_dados_data_verse")
+  expect_match(issues$problem, "same DOI as row 3")
+})
+
+test_that("an archived row may share a DOI with an active row", {
+  catalog <- rbind(new_catalog_row(), new_catalog_row())
+  catalog$filtro_acesso[1] <- "Arquivado"
+  expect_no_error(validate_catalog(catalog))
+})
