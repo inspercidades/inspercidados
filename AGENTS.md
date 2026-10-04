@@ -174,8 +174,8 @@ produces three datasets, and some studies have no repository yet.
 `open_project()` prints the study and opens its repo; repos marked `private`
 are flagged before opening.
 
-`replication_scripts/` is a stale local copy of code that now lives in the org
-repos. It is in `.Rbuildignore` and should not be extended.
+Historical replication scripts live in the organization repositories. Do not
+reintroduce a local `replication_scripts/` mirror.
 
 ## Gotchas and idiosyncrasies
 
@@ -281,7 +281,6 @@ Deposit and catalog work that waits on other people lives in
 - `readxl` — Excel file support
 - `curl` — server check in `live_examples()`
 - `lifecycle` — deprecation badge on `get_script()`
-- `rstudioapi` — declared in Suggests, not currently referenced in `R/`
 - `googlesheets4`, `janitor` — used only by `data-raw/build_registry.R`
 - `knitr`, `rmarkdown`, `testthat`, `pkgdown` — vignettes, tests, website
 
