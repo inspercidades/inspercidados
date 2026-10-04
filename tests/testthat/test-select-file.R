@@ -13,6 +13,38 @@ test_that("effective_ext() looks through .gz", {
     effective_ext(c("a.csv.gz", "b.RDS", "c.gpkg")),
     c("csv", "rds", "gpkg")
   )
+  expect_equal(
+    effective_ext(c(first = "a.csv.gz", second = "b.RDS")),
+    c("csv", "rds")
+  )
+  expect_equal(effective_ext(character()), character())
+})
+
+test_that("binary readers keep extensions and remove temporary files", {
+  bytes <- charToRaw("test payload")
+  temporary_path <- NULL
+
+  testthat::local_mocked_bindings(
+    get_file_by_name = function(...) bytes,
+    .package = "dataverse"
+  )
+
+  result <- read_binary_dv_file(
+    "legacy.xls",
+    "https://doi.org/10.60873/FK2/TEST",
+    "dataverse.example",
+    function(path) {
+      temporary_path <<- path
+      list(
+        bytes = readBin(path, what = "raw", n = length(bytes)),
+        extension = tools::file_ext(path)
+      )
+    }
+  )
+
+  expect_equal(result$bytes, bytes)
+  expect_equal(result$extension, "xls")
+  expect_equal(file.exists(temporary_path), FALSE)
 })
 
 test_that("filter_dv_format() treats format as a strict selector", {

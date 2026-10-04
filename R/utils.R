@@ -228,23 +228,12 @@ detect_file_type <- function(filename) {
 
 # Vectorised: returns the effective (innermost) extension for each filename.
 effective_ext <- function(filenames) {
-  vapply(
+  return(unname(tolower(tools::file_ext(sub(
+    "[.]gz$",
+    "",
     filenames,
-    function(f) {
-      ext <- tolower(tools::file_ext(f))
-      if (ext == "gz") {
-        return(tolower(tools::file_ext(sub(
-          "\\.gz$",
-          "",
-          f,
-          ignore.case = TRUE
-        ))))
-      }
-      ext
-    },
-    character(1),
-    USE.NAMES = FALSE
-  )
+    ignore.case = TRUE
+  )))))
 }
 
 filter_dv_format <- function(file_names, format = NULL) {
@@ -400,17 +389,21 @@ select_dv_file <- function(
   candidates[[1]]
 }
 
+read_binary_dv_file <- function(filename, doi_url, server, reader) {
+  raw <- dataverse::get_file_by_name(
+    filename,
+    dataset = doi_url,
+    server = server
+  )
+  tmp <- tempfile(fileext = paste0(".", tools::file_ext(filename)))
+  on.exit(unlink(tmp), add = TRUE)
+  writeBin(raw, tmp)
+  return(reader(tmp))
+}
+
 .readers <- list(
   rds = function(filename, doi_url, server) {
-    raw <- dataverse::get_file_by_name(
-      filename,
-      dataset = doi_url,
-      server = server
-    )
-    tmp <- tempfile(fileext = ".rds")
-    on.exit(unlink(tmp), add = TRUE)
-    writeBin(raw, tmp)
-    readRDS(tmp)
+    read_binary_dv_file(filename, doi_url, server, readRDS)
   },
   csv = function(filename, doi_url, server) {
     dataverse::get_dataframe_by_name(
@@ -433,92 +426,53 @@ select_dv_file <- function(
     )
   },
   csv_gz = function(filename, doi_url, server) {
-    raw <- dataverse::get_file_by_name(
+    read_binary_dv_file(
       filename,
-      dataset = doi_url,
-      server = server
+      doi_url,
+      server,
+      function(path) {
+        readr::read_delim(path, delim = ",", show_col_types = FALSE)
+      }
     )
-    tmp <- tempfile(fileext = ".csv.gz")
-    on.exit(unlink(tmp), add = TRUE)
-    writeBin(raw, tmp)
-    readr::read_delim(tmp, delim = ",", show_col_types = FALSE)
   },
   tab_gz = function(filename, doi_url, server) {
-    raw <- dataverse::get_file_by_name(
+    read_binary_dv_file(
       filename,
-      dataset = doi_url,
-      server = server
+      doi_url,
+      server,
+      function(path) {
+        readr::read_delim(path, delim = "\t", show_col_types = FALSE)
+      }
     )
-    tmp <- tempfile(fileext = ".tsv.gz")
-    on.exit(unlink(tmp), add = TRUE)
-    writeBin(raw, tmp)
-    readr::read_delim(tmp, delim = "\t", show_col_types = FALSE)
   },
   parquet = function(filename, doi_url, server) {
     rlang::check_installed("arrow", reason = "to read Parquet (.parquet) files")
-    raw <- dataverse::get_file_by_name(
-      filename,
-      dataset = doi_url,
-      server = server
-    )
-    tmp <- tempfile(fileext = ".parquet")
-    on.exit(unlink(tmp), add = TRUE)
-    writeBin(raw, tmp)
-    arrow::read_parquet(tmp)
+    read_binary_dv_file(filename, doi_url, server, arrow::read_parquet)
   },
   geojson = function(filename, doi_url, server) {
     rlang::check_installed("sf", reason = "to read GeoJSON (.geojson) files")
-    raw <- dataverse::get_file_by_name(
+    read_binary_dv_file(
       filename,
-      dataset = doi_url,
-      server = server
+      doi_url,
+      server,
+      function(path) sf::st_read(path, quiet = TRUE)
     )
-    tmp <- tempfile(fileext = ".geojson")
-    on.exit(unlink(tmp), add = TRUE)
-    writeBin(raw, tmp)
-    sf::st_read(tmp, quiet = TRUE)
   },
   gpkg = function(filename, doi_url, server) {
     rlang::check_installed("sf", reason = "to read GeoPackage (.gpkg) files")
-    raw <- dataverse::get_file_by_name(
+    read_binary_dv_file(
       filename,
-      dataset = doi_url,
-      server = server
+      doi_url,
+      server,
+      function(path) sf::st_read(path, quiet = TRUE)
     )
-    tmp <- tempfile(fileext = ".gpkg")
-    on.exit(unlink(tmp), add = TRUE)
-    writeBin(raw, tmp)
-    sf::st_read(tmp, quiet = TRUE)
   },
   xlsx = function(filename, doi_url, server) {
     rlang::check_installed(
       "readxl",
       reason = "to read Excel (.xlsx/.xls) files"
     )
-    raw <- dataverse::get_file_by_name(
-      filename,
-      dataset = doi_url,
-      server = server
-    )
-    tmp <- tempfile(fileext = ".xlsx")
-    on.exit(unlink(tmp), add = TRUE)
-    writeBin(raw, tmp)
-    readxl::read_excel(tmp)
-  },
-  xls = function(filename, doi_url, server) {
-    rlang::check_installed(
-      "readxl",
-      reason = "to read Excel (.xlsx/.xls) files"
-    )
-    raw <- dataverse::get_file_by_name(
-      filename,
-      dataset = doi_url,
-      server = server
-    )
-    tmp <- tempfile(fileext = ".xls")
-    on.exit(unlink(tmp), add = TRUE)
-    writeBin(raw, tmp)
-    readxl::read_excel(tmp)
+    read_binary_dv_file(filename, doi_url, server, readxl::read_excel)
   }
 )
 
