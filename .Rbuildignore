@@ -8,14 +8,13 @@
 ^\.claude$
 ^data-raw$
 ^inspercidados\.Rproj$
-^replication_scripts$
 ^package-overview\.html$
 ^\.github$
 ^\.lintr$
+^\.omx$
 ^_pkgdown\.yml$
 ^doc$
 ^Meta$
-^design$
 ^docs$
 ^pkgdown$
 ^vignettes/articles$

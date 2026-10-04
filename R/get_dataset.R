@@ -159,16 +159,12 @@ get_dataset <- function(
       "i" = "Loading documentation from {.val {doc_file[[1]]}}"
     ))
     rlang::check_installed("readxl", reason = "to read documentation files")
-    raw <- dataverse::get_file_by_name(
+    docs_out <- read_binary_dv_file(
       doc_file[[1]],
-      dataset = doi_url,
-      server = server
+      doi_url,
+      server,
+      readxl::read_excel
     )
-    ext <- tools::file_ext(tolower(doc_file[[1]]))
-    tmp <- tempfile(fileext = paste0(".", ext))
-    on.exit(unlink(tmp), add = TRUE)
-    writeBin(raw, tmp)
-    docs_out <- readxl::read_excel(tmp)
   } else {
     cli::cli_inform(c("i" = "Fetching documentation from Dataverse metadata"))
     meta <- dataverse::get_dataset(doi_url, server = server)

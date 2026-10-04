@@ -34,11 +34,6 @@ jobs:
           extra-packages: any::pkgdown, local::.
           needs: website
 
-      # pkgdown renders every .md file in the package root and offers no way
-      # to exclude one, so AGENTS.md ships as AGENTS.html. Drop it from the
-      # checkout before building; the file is for agents, not for readers.
-      - name: Keep agent instructions out of the site
-        run: rm -f AGENTS.md
       # pkgdown renders every root-level .md into the published site, sitemap
       # and search index (r-lib/pkgdown#2959). Agent docs are internal, not
       # part of the package; the workflow checkout is discarded after the run.
