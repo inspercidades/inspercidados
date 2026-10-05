@@ -2,6 +2,9 @@
 
 ## inspercidados 0.4.0
 
+- Added validation for malformed
+  [`get_dataverse()`](https://inspercidades.github.io/inspercidados/reference/get_dataverse.md)
+  file selectors.
 - [`get_dataset()`](https://inspercidades.github.io/inspercidados/reference/get_dataset.md)
   now selects a logical `resource` before choosing a file `format`; raw
   `filename` and `file_pattern` selection moved to

@@ -1,8 +1,7 @@
 # inspercidados
 
-**inspercidados** gives R users direct access to datasets from [Insper
-Cidades](https://www.insper.edu.br/pt/pesquisa/centro-de-estudos-das-cidades),
-hosted on [Insper’s
+**inspercidados** gives R users direct access to datasets from Insper
+Cidades, hosted on [Insper’s
 Dataverse](https://dataverse.datascience.insper.edu.br). Insper Cidades
 is a multidisciplinary research center at Insper. The package wraps
 [`dataverse`](https://github.com/IQSS/dataverse-client-r) so you can
@@ -10,7 +9,14 @@ find, download, and cite datasets in a few short commands.
 
 ## Installation
 
-Install the release from R-universe.
+After the first CRAN release, install the package with:
+
+``` r
+
+install.packages("inspercidados")
+```
+
+Until then, install the release from R-universe.
 
 ``` r
 
@@ -58,13 +64,13 @@ list_datasets()
 #>    alias        title description theme region project access is_spatial formats
 #>    <chr>        <chr> <chr>       <chr> <chr>  <chr>   <chr>  <lgl>      <chr>  
 #>  1 itbi_sp      Impo… "Registros… Habi… São P… itbi    downl… FALSE      csv, p…
-#>  2 iptu_sp      IPTU… "Informaçõ… Habi… São P… densid… downl… TRUE       geojso…
-#>  3 alvaras_sp   Alva… "Agregação… Habi… São P… alvaras downl… TRUE       geojso…
+#>  2 iptu_sp      IPTU… "Dados do … Habi… São P… densid… downl… TRUE       geojso…
+#>  3 alvaras_sp   Alva… "Informaçõ… Habi… São P… alvaras downl… TRUE       geojso…
 #>  4 censo_setor… Popu… "Dados pro… Habi… São P… densid… downl… TRUE       geojso…
-#>  5 iptu_vertic… IPTU… "Dados dem… Habi… São P… densid… downl… TRUE       geojso…
+#>  5 iptu_vertic… Grad… "Dados dem… Habi… São P… densid… downl… TRUE       geojso…
 #>  6 densidade_i… Dens… "Cruzament… Habi… São P… densid… downl… TRUE       geojso…
 #>  7 geoses_sp    Índi… "Índice so… Mult… São P… geoses  downl… TRUE       geojso…
-#>  8 mortalidade… Mort… "Medidas d… Saúde São P… mortal… downl… TRUE       geojso…
+#>  8 mortalidade… Indi… "Indicador… Saúde São P… mortal… downl… TRUE       geojso…
 #>  9 ilhas_calor… Medi… "Estatísti… Clim… Rio d… mare    downl… TRUE       geojso…
 #> 10 qualidade_a… Medi… "Estatísti… Clim… Rio d… mare    downl… TRUE       geojso…
 #> # ℹ 12 more rows
@@ -166,5 +172,5 @@ open_project("embarques_mensais")
 
 ## Learn more
 
-- Full reference: <https://inspercidades.github.io/inspercidados>
+- Full reference: <https://inspercidades.github.io/inspercidados/>
 - Data source: <https://dataverse.datascience.insper.edu.br>

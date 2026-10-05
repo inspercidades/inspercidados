@@ -5,14 +5,12 @@
 library(inspercidados)
 ```
 
-`inspercidados` gives you direct access to datasets from [Insper
-Cidades](https://www.insper.edu.br/pt/pesquisa/centro-de-estudos-das-cidades),
+`inspercidados` gives you direct access to datasets from Insper Cidades,
 hosted on [Insper’s
 Dataverse](https://dataverse.datascience.insper.edu.br). Insper Cidades
 is a multidisciplinary research center at Insper, and the datasets come
-from publications by its authors. The [Cidados
-website](https://cidados.insper.edu.br) features these publications as
-data visualization narratives.
+from publications by its authors. The Cidados website features these
+publications as data visualization narratives.
 
 ## Open science
 
@@ -29,7 +27,14 @@ supports open and reproducible research in two ways.
 
 ## Installation
 
-Install the release from R-universe.
+After the first CRAN release, install the package with:
+
+``` r
+
+install.packages("inspercidados")
+```
+
+Until then, install the release from R-universe.
 
 ``` r
 
@@ -130,7 +135,7 @@ open_project("embarques_mensais")
 ## Next steps
 
 The full function reference is at
-<https://inspercidades.github.io/inspercidados>.
+<https://inspercidades.github.io/inspercidados/>.
 [`get_dataverse()`](https://inspercidades.github.io/inspercidados/reference/get_dataverse.md)
 downloads any Insper Dataverse deposit, registered or not, from a pasted
 DOI or URL.

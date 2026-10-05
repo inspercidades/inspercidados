@@ -328,4 +328,4 @@ open_project("faixa_azul", open = FALSE)
 ```
 
 The full package reference is at
-<https://inspercidades.github.io/inspercidados>.
+<https://inspercidades.github.io/inspercidados/>.

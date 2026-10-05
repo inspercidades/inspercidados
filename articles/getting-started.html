@@ -6,6 +6,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Getting started with inspercidados • inspercidados</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="icon" sizes="any" href="../favicon.ico">
+<link rel="manifest" href="../site.webmanifest">
 <script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/Inter-0.4.10/font.css" rel="stylesheet">
@@ -17,6 +22,7 @@
 ">
 <meta property="og:description" content="Find a dataset, download it into R, and cite it.
 ">
+<meta property="og:image" content="https://inspercidades.github.io/inspercidados/logo.png">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -70,8 +76,7 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-
-      <h1>Getting started with inspercidados</h1>
+      <img src="../logo.png" class="logo" alt=""><h1>Getting started with inspercidados</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/inspercidades/inspercidados/blob/main/vignettes/getting-started.Rmd" class="external-link"><code>vignettes/getting-started.Rmd</code></a></small>
@@ -83,11 +88,11 @@
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/inspercidades/inspercidados" class="external-link">inspercidados</a></span><span class="op">)</span></span></code></pre></div>
 <p><code>inspercidados</code> gives you direct access to datasets from
-<a href="https://www.insper.edu.br/pt/pesquisa/centro-de-estudos-das-cidades" class="external-link">Insper
-Cidades</a>, hosted on <a href="https://dataverse.datascience.insper.edu.br" class="external-link">Insper’s
+Insper Cidades, hosted on <a href="https://dataverse.datascience.insper.edu.br" class="external-link">Insper’s
 Dataverse</a>. Insper Cidades is a multidisciplinary research center at
-Insper, and the datasets come from publications by its authors. The <a href="https://cidados.insper.edu.br" class="external-link">Cidados website</a> features these
-publications as data visualization narratives.</p>
+Insper, and the datasets come from publications by its authors. The
+Cidados website features these publications as data visualization
+narratives.</p>
 <div class="section level2">
 <h2 id="open-science">Open science<a class="anchor" aria-label="anchor" href="#open-science"></a>
 </h2>
@@ -108,8 +113,11 @@ produced it.</li>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>Install the release from R-universe.</p>
+<p>After the first CRAN release, install the package with:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"inspercidados"</span><span class="op">)</span></span></code></pre></div>
+<p>Until then, install the release from R-universe.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span></span>
 <span>  <span class="st">"inspercidados"</span>,</span>
 <span>  repos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
@@ -118,7 +126,7 @@ produced it.</li>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>Or install the development version from GitHub.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("pak")</span></span>
 <span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"inspercidades/inspercidados"</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -127,11 +135,11 @@ produced it.</li>
 </h2>
 <p><code><a href="../reference/list_datasets.html">list_datasets()</a></code> reads the registry that ships with the
 package and makes no network calls.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/list_datasets.html">list_datasets</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>To search by alias, title, theme, region, or keywords, use the
 <code>search</code> argument of <code><a href="../reference/list_datasets.html">list_datasets()</a></code>.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/list_datasets.html">list_datasets</a></span><span class="op">(</span>search <span class="op">=</span> <span class="st">"Mobilidade"</span><span class="op">)</span></span></code></pre></div>
 <p>Each registered dataset has a short alias. Some aliases contain
 several logical resources. <code>qualidade_ar_mare</code>, for example,
@@ -139,12 +147,12 @@ ships its measurements and the coordinates of its measurement points as
 separate resources. Each resource may ship in several file formats or be
 split by year. Use <code><a href="../reference/list_resources.html">list_resources()</a></code> to inspect the
 resources of an alias without a network request.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/list_resources.html">list_resources</a></span><span class="op">(</span><span class="st">"qualidade_ar_mare"</span><span class="op">)</span></span></code></pre></div>
 <p>Use <code><a href="../reference/get_dataset.html">get_dataset()</a></code> to download a dataset by its alias.
 The <code>year</code>, <code>resource</code>, and <code>format</code>
 arguments narrow the download.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># By alias</span></span>
 <span><span class="va">embarques</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_dataset.html">get_dataset</a></span><span class="op">(</span><span class="st">"embarques_mensais"</span><span class="op">)</span></span>
 <span></span>
@@ -163,7 +171,7 @@ arguments narrow the download.</p>
 </h2>
 <p><code><a href="../reference/cite_dataset.html">cite_dataset()</a></code> fetches metadata from Dataverse and
 returns a citation in plain text, BibTeX, or RIS.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/cite_dataset.html">cite_dataset</a></span><span class="op">(</span><span class="st">"embarques_mensais"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/cite_dataset.html">cite_dataset</a></span><span class="op">(</span><span class="st">"embarques_mensais"</span>, format <span class="op">=</span> <span class="st">"bibtex"</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -173,13 +181,13 @@ returns a citation in plain text, BibTeX, or RIS.</p>
 <p><code><a href="../reference/open_project.html">open_project()</a></code> prints the study, lists its datasets, and
 opens the repository. Private repositories are flagged before they
 open.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/open_project.html">open_project</a></span><span class="op">(</span><span class="st">"embarques_mensais"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="next-steps">Next steps<a class="anchor" aria-label="anchor" href="#next-steps"></a>
 </h2>
-<p>The full function reference is at <a href="https://inspercidades.github.io/inspercidados" class="uri">https://inspercidades.github.io/inspercidados</a>.
+<p>The full function reference is at <a href="https://inspercidades.github.io/inspercidados/" class="uri">https://inspercidades.github.io/inspercidados/</a>.
 <code><a href="../reference/get_dataverse.html">get_dataverse()</a></code> downloads any Insper Dataverse deposit,
 registered or not, from a pasted DOI or URL.
 <code><a href="../reference/list_projects.html">list_projects()</a></code> lists the studies behind the datasets and
