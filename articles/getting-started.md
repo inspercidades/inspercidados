@@ -6,16 +6,16 @@ library(inspercidados)
 ```
 
 `inspercidados` gives you direct access to datasets from Insper Cidades,
-hosted on [Insper’s
+hosted on [Insper
 Dataverse](https://dataverse.datascience.insper.edu.br). Insper Cidades
 is a multidisciplinary research center at Insper, and the datasets come
-from publications by its authors. The Cidados website features these
+from publications by its authors. The
+[Cidados](https://cidados.insper.edu.br) website features these
 publications as data visualization narratives.
 
 ## Open science
 
-The package is part of a suite of open science initiatives at Insper. It
-supports open and reproducible research in two ways.
+The package supports open and reproducible research in two ways.
 
 - **Findable and accessible open data.** The package ships a registry
   that gives each dataset a stable alias and a DOI, so anyone can find
@@ -27,14 +27,15 @@ supports open and reproducible research in two ways.
 
 ## Installation
 
-After the first CRAN release, install the package with:
+Install the stable version from CRAN.
 
 ``` r
 
 install.packages("inspercidados")
 ```
 
-Until then, install the release from R-universe.
+Install the development version from
+[R-universe](https://inspercidades.r-universe.dev/inspercidados).
 
 ``` r
 
@@ -45,14 +46,6 @@ install.packages(
     "https://cloud.r-project.org"
   )
 )
-```
-
-Or install the development version from GitHub.
-
-``` r
-
-# install.packages("pak")
-pak::pak("inspercidades/inspercidados")
 ```
 
 ## Using the package
@@ -66,8 +59,8 @@ calls.
 list_datasets()
 ```
 
-To search by alias, title, theme, region, or keywords, use the `search`
-argument of
+To search by alias, title, description, theme, region, or keywords, use
+the `search` argument of
 [`list_datasets()`](https://inspercidades.github.io/inspercidados/reference/list_datasets.md).
 
 ``` r
@@ -76,9 +69,9 @@ list_datasets(search = "Mobilidade")
 ```
 
 Each registered dataset has a short alias. Some aliases contain several
-logical resources. `qualidade_ar_mare`, for example, ships its
+logical resources. `qualidade_ar_mare`, for example, holds its
 measurements and the coordinates of its measurement points as separate
-resources. Each resource may ship in several file formats or be split by
+resources. Each resource may come in several file formats or be split by
 year. Use
 [`list_resources()`](https://inspercidades.github.io/inspercidados/reference/list_resources.md)
 to inspect the resources of an alias without a network request.

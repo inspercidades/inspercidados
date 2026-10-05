@@ -15,8 +15,8 @@ cite_dataset(dataset, format = c("text", "bibtex", "ris"))
 - dataset:
 
   A dataset identifier: alias, bare DOI, or DOI URL (see
-  [`get_dataset()`](https://inspercidades.github.io/inspercidados/reference/get_dataset.md)
-  for details).
+  [`get_dataverse()`](https://inspercidades.github.io/inspercidados/reference/get_dataverse.md)
+  for the accepted DOI and URL forms).
 
 - format:
 

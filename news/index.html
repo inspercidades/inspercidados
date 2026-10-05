@@ -44,11 +44,13 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.4.0" id="inspercidados-040">inspercidados 0.4.0<a class="anchor" aria-label="anchor" href="#inspercidados-040"></a></h2>
-<ul><li>Added validation for malformed <code><a href="../reference/get_dataverse.html">get_dataverse()</a></code> file selectors.</li>
-<li>
-<code><a href="../reference/get_dataset.html">get_dataset()</a></code> now selects a logical <code>resource</code> before choosing a file <code>format</code>; raw <code>filename</code> and <code>file_pattern</code> selection moved to <code><a href="../reference/get_dataverse.html">get_dataverse()</a></code>, and unregistered DOIs must now use that lower-level function. This is a breaking change.</li>
-<li>
-<code><a href="../reference/list_resources.html">list_resources()</a></code> lists the logical datasets, years, formats, and defaults available within a registered Dataverse deposit.</li>
+<ul><li>Initial CRAN submission.</li>
+<li>Added <code><a href="../reference/list_resources.html">list_resources()</a></code>, which lists the logical datasets, years, formats, and defaults within a registered deposit.</li>
+<li>Added validation for malformed <code><a href="../reference/get_dataverse.html">get_dataverse()</a></code> file selectors.</li>
+<li>Changed <code><a href="../reference/get_dataset.html">get_dataset()</a></code> to select a logical <code>resource</code> before choosing a file <code>format</code>. This is a breaking change.</li>
+<li>Moved raw <code>filename</code> and <code>file_pattern</code> selection from <code><a href="../reference/get_dataset.html">get_dataset()</a></code> to <code><a href="../reference/get_dataverse.html">get_dataverse()</a></code>. Unregistered DOIs now go through <code><a href="../reference/get_dataverse.html">get_dataverse()</a></code>.</li>
+<li>Renamed <code><a href="../reference/browse_project.html">browse_project()</a></code> to <code><a href="../reference/open_project.html">open_project()</a></code> to avoid a conflict with <code>usethis::browse_project()</code>. <code><a href="../reference/browse_project.html">browse_project()</a></code> still works but warns.</li>
+<li>Deprecated <code><a href="../reference/get_script.html">get_script()</a></code> in favor of <code><a href="../reference/open_project.html">open_project()</a></code>, since pipelines are now published as repositories.</li>
 </ul></div>
   </main></div>
 

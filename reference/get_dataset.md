@@ -22,13 +22,13 @@ get_dataset(
 
 - dataset:
 
-  A dataset identifier. One of: A short alias, e.g. `"iptu_sp"`. See
+  A registered dataset alias, e.g. `"iptu_sp"`. See
   [`list_datasets()`](https://inspercidades.github.io/inspercidados/reference/list_datasets.md)
   for all aliases.
 
 - ...:
 
-  Reserved for future selectors. Must be empty.
+  Must be empty. Arguments after `...` must be named.
 
 - resource:
 
@@ -40,7 +40,7 @@ get_dataset(
 - year:
 
   An integer or character year used to filter files when a dataset
-  contains multiple annual files (e.g. `year = 2023`).
+  contains several annual files (e.g. `year = 2023`).
 
 - format:
 

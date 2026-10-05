@@ -67,12 +67,12 @@ the dataset by its short alias; use <code><a href="get_dataverse.html">get_datav
 
 
 <dl><dt id="arg-dataset">dataset<a class="anchor" aria-label="anchor" href="#arg-dataset"></a></dt>
-<dd><p>A dataset identifier. One of:
-A short alias, e.g. <code>"iptu_sp"</code>. See <code><a href="list_datasets.html">list_datasets()</a></code> for all aliases.</p></dd>
+<dd><p>A registered dataset alias, e.g. <code>"iptu_sp"</code>. See
+<code><a href="list_datasets.html">list_datasets()</a></code> for all aliases.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Reserved for future selectors. Must be empty.</p></dd>
+<dd><p>Must be empty. Arguments after <code>...</code> must be named.</p></dd>
 
 
 <dt id="arg-resource">resource<a class="anchor" aria-label="anchor" href="#arg-resource"></a></dt>
@@ -83,7 +83,7 @@ dataset. When <code>NULL</code>, the resource marked as the default is used. See
 
 <dt id="arg-year">year<a class="anchor" aria-label="anchor" href="#arg-year"></a></dt>
 <dd><p>An integer or character year used to filter files when a dataset
-contains multiple annual files (e.g. <code>year = 2023</code>).</p></dd>
+contains several annual files (e.g. <code>year = 2023</code>).</p></dd>
 
 
 <dt id="arg-format">format<a class="anchor" aria-label="anchor" href="#arg-format"></a></dt>

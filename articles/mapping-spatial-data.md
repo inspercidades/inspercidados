@@ -10,7 +10,7 @@ library(ggplot2)
 
 Between 2022 and 2025, São Paulo painted *faixas azuis*, lanes reserved
 for motorcyclists, along a set of arterial corridors. Insper Cidades
-studied the programme and deposited three datasets: a spatial layer,
+studied the program and deposited three datasets: a spatial layer,
 another spatial layer with crash counts, and a large plain table.
 Between them they cover most of what this package does. The article
 stops at describing the data. The findings belong to the study, and
@@ -88,7 +88,7 @@ Each row is one painted segment, with the street it sits on, the road
 attributes around it, and `data_implementacao`, the month the paint went
 down.
 
-`sinistros_via_sp` covers the road segments the study analysed. Its
+`sinistros_via_sp` covers the road segments the study analyzed. Its
 geometry makes a useful backdrop for the lanes.
 
 ``` r
@@ -118,10 +118,10 @@ ggplot() +
   theme_void()
 ```
 
-![Map of São Paulo showing the road segments in the study as faint grey
+![Map of São Paulo showing the road segments in the study as faint gray
 lines, with the motorcycle lanes drawn in blue on top. The blue
 corridors are scattered across the city, several of them radiating from
-the centre.](mapping-spatial-data_files/figure-html/map-1.png)
+the center.](mapping-spatial-data_files/figure-html/map-1.png)
 
 `data_implementacao` dates each segment, so the same layer doubles as a
 timeline.
@@ -164,10 +164,9 @@ ggplot() +
   theme_void()
 ```
 
-![The same map of motorcycle lanes, now coloured by the year each
-segment was painted, running from green in 2022 through blue and purple
-to black in
-2025.](mapping-spatial-data_files/figure-html/map-year-1.png)
+![The same map of motorcycle lanes, now colored by the year each segment
+was painted, running from green in 2022 through blue and purple to black
+in 2025.](mapping-spatial-data_files/figure-html/map-year-1.png)
 
 ## Read the attributes and the crash table
 

@@ -19,7 +19,7 @@ browse_project(x, open = TRUE)
 
 - x:
 
-  A study, dataset alias.
+  A dataset alias or project slug.
 
 - open:
 

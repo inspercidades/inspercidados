@@ -31,9 +31,9 @@ registered for the project.
 
 ## Details
 
-Pipelines are published as repositories rather than as single scripts,
-because one study normally produces several datasets across many files.
-Some repositories are private and open only for Insper Cidades members;
+One study normally produces several datasets, and its pipeline is
+published as one repository. Some repositories are private and open only
+for Insper Cidades members;
 [`list_projects()`](https://inspercidades.github.io/inspercidados/reference/list_projects.md)
 reports which.
 

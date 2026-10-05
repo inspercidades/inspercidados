@@ -1,9 +1,8 @@
 # List the studies behind the datasets
 
-Each dataset comes from a research project with its own processing
-pipeline. One project usually produces several datasets, so pipelines
-are published as whole repositories rather than as a single script per
-dataset.
+Most datasets come from a research project with its own processing
+pipeline. One project usually produces several datasets, and its
+pipeline is published as one repository.
 
 ## Usage
 

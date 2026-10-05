@@ -1,8 +1,7 @@
 # List available datasets
 
-Returns a tibble of datasets in the `inspercidados` registry. Data comes
-from the local registry (`inst/datasets.json`), so no network call is
-made.
+Returns a tibble of datasets in the `inspercidados` registry. The
+registry ships with the package, so no network call is made.
 
 ## Usage
 
