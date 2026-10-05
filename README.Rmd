@@ -20,11 +20,9 @@ knitr::opts_chunk$set(
 cat(badger::badge_runiverse())
 ```
 [![R-CMD-check](https://github.com/inspercidades/inspercidados/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/inspercidades/inspercidados/actions/workflows/R-CMD-check.yaml)
-[![Codecov test coverage](https://codecov.io/gh/inspercidades/inspercidados/graph/badge.svg)](https://app.codecov.io/gh/inspercidades/inspercidados)
 <!-- badges: end -->
 
-**inspercidados** gives R users direct access to datasets from
-[Insper Cidades](https://www.insper.edu.br/pt/pesquisa/centro-de-estudos-das-cidades),
+**inspercidados** gives R users direct access to datasets from Insper Cidades,
 hosted on [Insper's Dataverse](https://dataverse.datascience.insper.edu.br).
 Insper Cidades is a multidisciplinary research center at Insper. The package
 wraps [`dataverse`](https://github.com/IQSS/dataverse-client-r) so you can
@@ -32,7 +30,13 @@ find, download, and cite datasets in a few short commands.
 
 ## Installation
 
-Install the release from R-universe.
+After the first CRAN release, install the package with:
+
+``` r
+install.packages("inspercidados")
+```
+
+Until then, install the release from R-universe.
 
 ``` r
 install.packages(
@@ -139,5 +143,5 @@ open_project("embarques_mensais")
 
 ## Learn more
 
-- Full reference: <https://inspercidades.github.io/inspercidados>
+- Full reference: <https://inspercidades.github.io/inspercidados/>
 - Data source: <https://dataverse.datascience.insper.edu.br>

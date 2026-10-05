@@ -21,7 +21,11 @@ knitr::opts_chunk$set(
 library(inspercidados)
 ```
 
-`inspercidados` gives you direct access to datasets from [Insper Cidades](https://www.insper.edu.br/pt/pesquisa/centro-de-estudos-das-cidades), hosted on [Insper's Dataverse](https://dataverse.datascience.insper.edu.br). Insper Cidades is a multidisciplinary research center at Insper, and the datasets come from publications by its authors. The [Cidados website](https://cidados.insper.edu.br) features these publications as data visualization narratives.
+`inspercidados` gives you direct access to datasets from Insper Cidades, hosted
+on [Insper's Dataverse](https://dataverse.datascience.insper.edu.br). Insper
+Cidades is a multidisciplinary research center at Insper, and the datasets come
+from publications by its authors. The Cidados website features these
+publications as data visualization narratives.
 
 ## Open science
 
@@ -36,7 +40,13 @@ The package is part of a suite of open science initiatives at Insper. It support
 
 ## Installation
 
-Install the release from R-universe.
+After the first CRAN release, install the package with:
+
+```r
+install.packages("inspercidados")
+```
+
+Until then, install the release from R-universe.
 
 ```r
 install.packages(
@@ -121,7 +131,7 @@ open_project("embarques_mensais")
 
 ## Next steps
 
-The full function reference is at <https://inspercidades.github.io/inspercidados>.
+The full function reference is at <https://inspercidades.github.io/inspercidados/>.
 `get_dataverse()` downloads any Insper Dataverse deposit, registered or not,
 from a pasted DOI or URL. `list_projects()` lists the studies behind the
 datasets and their repositories.

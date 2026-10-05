@@ -129,3 +129,60 @@ test_that("select_dv_file() never returns a documentation workbook", {
 test_that("select_dv_file() errors when no data files exist", {
   expect_error(select_dv_file(c("README.txt", "notes.pdf")), "No data files")
 })
+
+test_that("file selection remains deterministic for large deposits", {
+  years <- rep(2000:2024, each = 200)
+  file_names <- sprintf(
+    "table_%d_%04d.%s",
+    years,
+    seq_along(years),
+    rep(c("csv", "parquet"), length.out = length(years))
+  )
+  target <- "table_2024_4999.csv"
+
+  expect_equal(
+    select_dv_file(
+      file_names,
+      filename = target,
+      prefer = c("parquet", "csv")
+    ),
+    target
+  )
+  expect_equal(
+    select_dv_file(
+      file_names,
+      year = 2024,
+      file_pattern = "4999[.]csv$",
+      prefer = c("parquet", "csv")
+    ),
+    target
+  )
+})
+
+test_that("extension detection handles large mixed-case file lists", {
+  file_names <- rep(
+    c("table.CSV.GZ", "data.PARQUET", "map.GPKG", "book.XLSX"),
+    2500
+  )
+
+  expect_length(effective_ext(file_names), 10000)
+  expect_equal(
+    table(effective_ext(file_names)),
+    table(rep(c("csv", "parquet", "gpkg", "xlsx"), 2500))
+  )
+})
+
+test_that("select_dv_file() rejects malformed selectors", {
+  expect_snapshot(error = TRUE, {
+    select_dv_file(files, filename = c("a.csv", "b.csv"))
+  })
+  expect_snapshot(error = TRUE, {
+    select_dv_file(files, file_pattern = NA_character_)
+  })
+  expect_snapshot(error = TRUE, {
+    select_dv_file(files, file_pattern = "[")
+  })
+  expect_snapshot(error = TRUE, {
+    select_dv_file(files, year = c(2022, 2023))
+  })
+})
