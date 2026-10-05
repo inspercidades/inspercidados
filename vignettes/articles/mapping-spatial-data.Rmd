@@ -48,7 +48,7 @@ fetch <- function(alias, fallback, ...) {
 
 Between 2022 and 2025, São Paulo painted *faixas azuis*, lanes reserved for
 motorcyclists, along a set of arterial corridors. Insper Cidades studied the
-programme and deposited three datasets: a spatial layer, another spatial layer
+program and deposited three datasets: a spatial layer, another spatial layer
 with crash counts, and a large plain table. Between them they cover most of what
 this package does. The article stops at describing the data. The findings belong
 to the study, and `open_project()` at the end takes you there.
@@ -84,7 +84,7 @@ glimpse(st_drop_geometry(lanes))
 Each row is one painted segment, with the street it sits on, the road attributes
 around it, and `data_implementacao`, the month the paint went down.
 
-`sinistros_via_sp` covers the road segments the study analysed. Its geometry makes
+`sinistros_via_sp` covers the road segments the study analyzed. Its geometry makes
 a useful backdrop for the lanes.
 
 ```{r roads}
@@ -97,7 +97,7 @@ roads <- fetch(
 
 Drawing one layer over the other shows where the lanes run.
 
-```{r map, fig.alt = "Map of São Paulo showing the road segments in the study as faint grey lines, with the motorcycle lanes drawn in blue on top. The blue corridors are scattered across the city, several of them radiating from the centre."}
+```{r map, fig.alt = "Map of São Paulo showing the road segments in the study as faint gray lines, with the motorcycle lanes drawn in blue on top. The blue corridors are scattered across the city, several of them radiating from the center."}
 ggplot() +
   geom_sf(data = roads, colour = "grey80", linewidth = 0.25) +
   geom_sf(data = lanes, colour = "#1D4ED8", linewidth = 0.8) +
@@ -125,7 +125,7 @@ lanes |>
   arrange(year)
 ```
 
-```{r map-year, fig.alt = "The same map of motorcycle lanes, now coloured by the year each segment was painted, running from green in 2022 through blue and purple to black in 2025."}
+```{r map-year, fig.alt = "The same map of motorcycle lanes, now colored by the year each segment was painted, running from green in 2022 through blue and purple to black in 2025."}
 ggplot() +
   geom_sf(data = roads, colour = "grey85", linewidth = 0.2) +
   geom_sf(data = lanes, aes(colour = year), linewidth = 0.8) +

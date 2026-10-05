@@ -14,17 +14,17 @@ get_dataset(
 )
 }
 \arguments{
-\item{dataset}{A dataset identifier. One of:
-A short alias, e.g. \code{"iptu_sp"}. See \code{\link[=list_datasets]{list_datasets()}} for all aliases.}
+\item{dataset}{A registered dataset alias, e.g. \code{"iptu_sp"}. See
+\code{\link[=list_datasets]{list_datasets()}} for all aliases.}
 
-\item{...}{Reserved for future selectors. Must be empty.}
+\item{...}{Must be empty. Arguments after \code{...} must be named.}
 
 \item{resource}{The name of a logical resource within the registered
 dataset. When \code{NULL}, the resource marked as the default is used. See
 \code{\link[=list_resources]{list_resources()}} for the available names.}
 
 \item{year}{An integer or character year used to filter files when a dataset
-contains multiple annual files (e.g. \code{year = 2023}).}
+contains several annual files (e.g. \code{year = 2023}).}
 
 \item{format}{An optional file format, such as \code{"parquet"}, \code{"gpkg"}, or
 \code{"xlsx"}. The format must be available for the selected resource.}

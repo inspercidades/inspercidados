@@ -22,14 +22,14 @@ library(inspercidados)
 ```
 
 `inspercidados` gives you direct access to datasets from Insper Cidades, hosted
-on [Insper's Dataverse](https://dataverse.datascience.insper.edu.br). Insper
+on [Insper Dataverse](https://dataverse.datascience.insper.edu.br). Insper
 Cidades is a multidisciplinary research center at Insper, and the datasets come
-from publications by its authors. The Cidados website features these
-publications as data visualization narratives.
+from publications by its authors. The [Cidados](https://cidados.insper.edu.br)
+website features these publications as data visualization narratives.
 
 ## Open science
 
-The package is part of a suite of open science initiatives at Insper. It supports open and reproducible research in two ways.
+The package supports open and reproducible research in two ways.
 
 - **Findable and accessible open data.** The package ships a registry that
   gives each dataset a stable alias and a DOI, so anyone can find and download
@@ -40,13 +40,14 @@ The package is part of a suite of open science initiatives at Insper. It support
 
 ## Installation
 
-After the first CRAN release, install the package with:
+Install the stable version from CRAN.
 
 ```r
 install.packages("inspercidados")
 ```
 
-Until then, install the release from R-universe.
+Install the development version from
+[R-universe](https://inspercidades.r-universe.dev/inspercidados).
 
 ```r
 install.packages(
@@ -58,13 +59,6 @@ install.packages(
 )
 ```
 
-Or install the development version from GitHub.
-
-```r
-# install.packages("pak")
-pak::pak("inspercidades/inspercidados")
-```
-
 ## Using the package
 
 `list_datasets()` reads the registry that ships with the package and makes no
@@ -74,7 +68,7 @@ network calls.
 list_datasets()
 ```
 
-To search by alias, title, theme, region, or keywords, use the `search`
+To search by alias, title, description, theme, region, or keywords, use the `search`
 argument of `list_datasets()`.
 
 ```{r search}
@@ -82,9 +76,9 @@ list_datasets(search = "Mobilidade")
 ```
 
 Each registered dataset has a short alias. Some aliases contain several
-logical resources. `qualidade_ar_mare`, for example, ships its measurements
+logical resources. `qualidade_ar_mare`, for example, holds its measurements
 and the coordinates of its measurement points as separate resources. Each
-resource may ship in several file formats or be split by year. Use
+resource may come in several file formats or be split by year. Use
 `list_resources()` to inspect the resources of an alias without a network
 request.
 
@@ -95,7 +89,7 @@ list_resources("qualidade_ar_mare")
 Use `get_dataset()` to download a dataset by its alias. The `year`,
 `resource`, and `format` arguments narrow the download.
 
-```{r download, eval = FALSE}
+```{r download}
 # By alias
 embarques <- get_dataset("embarques_mensais")
 
@@ -115,7 +109,7 @@ pontos <- get_dataset(
 `cite_dataset()` fetches metadata from Dataverse and returns a citation in
 plain text, BibTeX, or RIS.
 
-```{r cite, eval = FALSE}
+```{r cite}
 cite_dataset("embarques_mensais")
 cite_dataset("embarques_mensais", format = "bibtex")
 ```
@@ -125,7 +119,7 @@ cite_dataset("embarques_mensais", format = "bibtex")
 `open_project()` prints the study, lists its datasets, and opens the repository.
 Private repositories are flagged before they open.
 
-```{r project, eval = FALSE}
+```{r project}
 open_project("embarques_mensais")
 ```
 

@@ -12,14 +12,14 @@
 #' other resources prefer RDS, Parquet, delimited text, and Excel. Formats that
 #' need an uninstalled suggested package are skipped.
 #'
-#' @param dataset A dataset identifier. One of:
-#'   A short alias, e.g. `"iptu_sp"`. See [list_datasets()] for all aliases.
-#' @param ... Reserved for future selectors. Must be empty.
+#' @param dataset A registered dataset alias, e.g. `"iptu_sp"`. See
+#'   [list_datasets()] for all aliases.
+#' @param ... Must be empty. Arguments after `...` must be named.
 #' @param resource The name of a logical resource within the registered
 #'   dataset. When `NULL`, the resource marked as the default is used. See
 #'   [list_resources()] for the available names.
 #' @param year An integer or character year used to filter files when a dataset
-#'   contains multiple annual files (e.g. `year = 2023`).
+#'   contains several annual files (e.g. `year = 2023`).
 #' @param format An optional file format, such as `"parquet"`, `"gpkg"`, or
 #'   `"xlsx"`. The format must be available for the selected resource.
 #' @param docs Logical. If `TRUE`, returns a named list with two elements:

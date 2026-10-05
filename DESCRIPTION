@@ -6,8 +6,8 @@ Authors@R: c(
            comment = c(ORCID = "0009-0005-8015-9189")),
     person("Insper Cidades", role = c("cph", "fnd"))
   )
-Description: A lightweight interface for discovering, downloading, and citing
-    datasets from Insper Cidades, hosted on Insper's Dataverse repository.
+Description: Provides tools to discover, download, and cite datasets from
+    Insper Cidades, hosted on the Insper Dataverse repository.
     Lists datasets and their logical resources, downloads data directly into
     R, links each dataset to its replication project, and generates academic
     citations from repository metadata.

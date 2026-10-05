@@ -7,7 +7,7 @@
 browse_project(x, open = TRUE)
 }
 \arguments{
-\item{x}{A study, dataset alias.}
+\item{x}{A dataset alias or project slug.}
 
 \item{open}{Passed to \code{\link[=open_project]{open_project()}}.}
 }

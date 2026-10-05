@@ -4,10 +4,9 @@
 #' the repository holding its processing code, then opens that repository in a
 #' browser.
 #'
-#' Pipelines are published as repositories rather than as single scripts,
-#' because one study normally produces several datasets across many files.
-#' Some repositories are private and open only for Insper Cidades members;
-#' [list_projects()] reports which.
+#' One study normally produces several datasets, and its pipeline is published
+#' as one repository. Some repositories are private and open only for Insper
+#' Cidades members; [list_projects()] reports which.
 #'
 #' @param x A dataset alias (see [list_datasets()]) or a project slug (see
 #'   [list_projects()]).
@@ -72,11 +71,9 @@ open_project <- function(x, open = TRUE) {
   cli::cli_text("{.strong Repository}: {.url {repo}}")
 
   if (identical(entry[["visibility"]], "private")) {
-    cli::cli_alert_warning(c(
-      paste0(
-        "This repository is private. Opening it needs an Insper Cidades ",
-        "GitHub account."
-      )
+    cli::cli_alert_warning(paste0(
+      "This repository is private. Opening it needs an Insper Cidades ",
+      "GitHub account."
     ))
   }
 

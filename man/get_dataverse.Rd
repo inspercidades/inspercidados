@@ -28,8 +28,8 @@ A \link[tibble:tibble]{tibble} or \code{sf} object with the \code{"doi"} attribu
 set. When \code{files = TRUE}, a character vector of filenames.
 }
 \description{
-Downloads a deposit that has no alias in the package registry. Copy the DOI
-or the landing-page URL from Insper's Dataverse and paste it straight into R.
+Downloads any deposit on Insper Dataverse, registered or not. Copy the DOI
+or the landing-page URL from Insper Dataverse and paste it straight into R.
 }
 \details{
 Registered datasets are better served by \code{\link[=get_dataset]{get_dataset()}}, which knows which
@@ -38,8 +38,7 @@ and applies the same format preference to whatever it finds. Deposits with an
 unusual file layout may need \code{filename} or \code{file_pattern} to resolve, and
 formats the package cannot read will raise an error naming the file.
 
-Only DOIs under the \code{10.60873} prefix are served, since the package always
-talks to Insper's Dataverse.
+Only DOIs under the \code{10.60873} prefix are served.
 }
 \examples{
 \dontshow{if (live_examples()) withAutoprint(\{ # examplesIf}

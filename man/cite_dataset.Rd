@@ -8,7 +8,7 @@ cite_dataset(dataset, format = c("text", "bibtex", "ris"))
 }
 \arguments{
 \item{dataset}{A dataset identifier: alias, bare DOI, or DOI URL
-(see \code{\link[=get_dataset]{get_dataset()}} for details).}
+(see \code{\link[=get_dataverse]{get_dataverse()}} for the accepted DOI and URL forms).}
 
 \item{format}{Citation format. One of \code{"text"} (default), \code{"bibtex"},
 or \code{"ris"}.}

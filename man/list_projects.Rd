@@ -16,9 +16,9 @@ for projects whose code has not been published yet, and \code{visibility} is
 \code{"private"} for repositories that only Insper Cidades members can open.
 }
 \description{
-Each dataset comes from a research project with its own processing pipeline.
-One project usually produces several datasets, so pipelines are published as
-whole repositories rather than as a single script per dataset.
+Most datasets come from a research project with its own processing
+pipeline. One project usually produces several datasets, and its pipeline is
+published as one repository.
 }
 \examples{
 list_projects()

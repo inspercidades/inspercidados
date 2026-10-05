@@ -23,10 +23,9 @@ the repository holding its processing code, then opens that repository in a
 browser.
 }
 \details{
-Pipelines are published as repositories rather than as single scripts,
-because one study normally produces several datasets across many files.
-Some repositories are private and open only for Insper Cidades members;
-\code{\link[=list_projects]{list_projects()}} reports which.
+One study normally produces several datasets, and its pipeline is published
+as one repository. Some repositories are private and open only for Insper
+Cidades members; \code{\link[=list_projects]{list_projects()}} reports which.
 }
 \examples{
 # By dataset alias
