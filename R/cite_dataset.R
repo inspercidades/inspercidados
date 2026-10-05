@@ -5,7 +5,7 @@
 #' string.
 #'
 #' @param dataset A dataset identifier: alias, bare DOI, or DOI URL
-#'   (see [get_dataset()] for details).
+#'   (see [get_dataverse()] for the accepted DOI and URL forms).
 #' @param format Citation format. One of `"text"` (default), `"bibtex"`,
 #'   or `"ris"`.
 #'

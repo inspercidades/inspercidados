@@ -105,7 +105,7 @@ resolve_resource_name <- function(
     if (length(defaults) != 1) {
       cli::cli_abort(
         c(
-          "Dataset {.val {dataset}} contains multiple resources.",
+          "Dataset {.val {dataset}} contains several resources.",
           "i" = "Choose one with {.arg resource}: {.val {resource_names}}.",
           "i" = "Run {.run list_resources(\"{dataset}\")} for details."
         ),
@@ -332,7 +332,7 @@ select_dv_file <- function(
   if (!is.null(filename)) {
     if (!filename %in% file_names) {
       cli::cli_abort(c(
-        "File {.val {filename}} not found in this dataset.",
+        "File {.val {filename}} not found in this deposit.",
         "i" = "Available files: {.val {file_names}}"
       ))
     }
@@ -343,7 +343,7 @@ select_dv_file <- function(
 
   if (length(candidates) == 0) {
     cli::cli_abort(c(
-      "No data files found in this dataset.",
+      "No data files found in this deposit.",
       "i" = "All files: {.val {file_names}}"
     ))
   }
@@ -527,7 +527,7 @@ read_dv_file <- function(filename, doi_url, server, ftype) {
   if (is.null(reader)) {
     cli::cli_abort(c(
       "Unsupported file type {.val {ftype}} for {.val {filename}}.",
-      "i" = "Supported types: rds, csv, tab/tsv, parquet, gpkg, geojson, xlsx."
+      "i" = "Supported types: {.val {names(.readers)}}."
     ))
   }
   reader(filename, doi_url, server)

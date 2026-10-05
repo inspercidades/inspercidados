@@ -1,7 +1,7 @@
 #' Download any Insper Dataverse dataset from a DOI or URL
 #'
-#' Downloads a deposit that has no alias in the package registry. Copy the DOI
-#' or the landing-page URL from Insper's Dataverse and paste it straight into R.
+#' Downloads any deposit on Insper Dataverse, registered or not. Copy the DOI
+#' or the landing-page URL from Insper Dataverse and paste it straight into R.
 #'
 #' Registered datasets are better served by [get_dataset()], which knows which
 #' file to pick. This function has no such knowledge, so it lists the deposit
@@ -9,8 +9,7 @@
 #' unusual file layout may need `filename` or `file_pattern` to resolve, and
 #' formats the package cannot read will raise an error naming the file.
 #'
-#' Only DOIs under the `10.60873` prefix are served, since the package always
-#' talks to Insper's Dataverse.
+#' Only DOIs under the `10.60873` prefix are served.
 #'
 #' @param x A DOI (`"10.60873/FK2/AOLEOI"`), a DOI URL, or a Dataverse
 #'   landing-page URL containing `persistentId=doi:...`.

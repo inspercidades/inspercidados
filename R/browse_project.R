@@ -7,7 +7,7 @@
 #' conflict with `usethis::browse_project()`. It now forwards to
 #' [open_project()] and will be removed in a future release.
 #'
-#' @param x A study, dataset alias.
+#' @param x A dataset alias or project slug.
 #' @param open Passed to [open_project()].
 #'
 #' @return The repository URL, invisibly.

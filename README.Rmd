@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# inspercidados
+# Curated datasets from Insper Cidades
 
 <!-- badges: start -->
 ```{r, echo = FALSE, results = 'asis', eval = requireNamespace("badger", quietly = TRUE)}
@@ -23,20 +23,21 @@ cat(badger::badge_runiverse())
 <!-- badges: end -->
 
 **inspercidados** gives R users direct access to datasets from Insper Cidades,
-hosted on [Insper's Dataverse](https://dataverse.datascience.insper.edu.br).
+hosted on [Insper Dataverse](https://dataverse.datascience.insper.edu.br).
 Insper Cidades is a multidisciplinary research center at Insper. The package
 wraps [`dataverse`](https://github.com/IQSS/dataverse-client-r) so you can
 find, download, and cite datasets in a few short commands.
 
 ## Installation
 
-After the first CRAN release, install the package with:
+The stable version of the package is available on CRAN.
 
 ``` r
 install.packages("inspercidados")
 ```
 
-Until then, install the release from R-universe.
+The development version of the package is available on
+[R-universe](https://inspercidades.r-universe.dev/inspercidados).
 
 ``` r
 install.packages(
@@ -46,14 +47,6 @@ install.packages(
     "https://cloud.r-project.org"
   )
 )
-```
-
-Or the development version from
-[GitHub](https://github.com/inspercidades/inspercidados).
-
-``` r
-# install.packages("pak")
-pak::pak("inspercidades/inspercidados")
 ```
 
 ## Core functions
@@ -78,7 +71,7 @@ library(inspercidados)
 list_datasets()
 ```
 
-Search by alias, title, theme, region, or keywords.
+Search by alias, title, description, theme, region, or keywords.
 
 ```{r search}
 list_datasets("Mobilidade")
@@ -110,8 +103,6 @@ registered deposit.
 list_resources("qualidade_ar_mare")
 ```
 
-For an unregistered DOI or a physical filename, use `get_dataverse()`.
-
 Set `docs = TRUE` to return the data alongside its documentation.
 
 ```{r docs, eval = FALSE}
@@ -138,10 +129,9 @@ repository. `open_project()` prints the study, lists its datasets, and opens
 the repository.
 
 ```{r project, eval = FALSE}
-open_project("embarques_mensais")
+open_project("faixa_azul")
 ```
 
 ## Learn more
 
-- Full reference: <https://inspercidades.github.io/inspercidados/>
-- Data source: <https://dataverse.datascience.insper.edu.br>
+To learn more about the package, check <https://inspercidades.github.io/inspercidados/>

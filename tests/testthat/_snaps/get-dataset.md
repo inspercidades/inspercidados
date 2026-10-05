@@ -32,7 +32,7 @@
       resolve_resource_name(entry, "exemplo")
     Condition
       Error:
-      ! Dataset "exemplo" contains multiple resources.
+      ! Dataset "exemplo" contains several resources.
       i Choose one with `resource`: "dados" and "pontos".
       i Run `list_resources("exemplo")` for details.
 
