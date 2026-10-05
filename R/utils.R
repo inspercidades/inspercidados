@@ -291,9 +291,9 @@ select_dv_file <- function(
   if (
     !is.null(filename) &&
       (!is.character(filename) ||
-        length(filename) != 1 ||
-        is.na(filename) ||
-        !nzchar(filename))
+         length(filename) != 1 ||
+         is.na(filename) ||
+         !nzchar(filename))
   ) {
     cli::cli_abort(
       "{.arg filename} must be a single non-empty string or {.code NULL}."
@@ -302,9 +302,9 @@ select_dv_file <- function(
   if (
     !is.null(file_pattern) &&
       (!is.character(file_pattern) ||
-        length(file_pattern) != 1 ||
-        is.na(file_pattern) ||
-        !nzchar(file_pattern))
+         length(file_pattern) != 1 ||
+         is.na(file_pattern) ||
+         !nzchar(file_pattern))
   ) {
     cli::cli_abort(
       "{.arg file_pattern} must be a single non-empty string or {.code NULL}."
