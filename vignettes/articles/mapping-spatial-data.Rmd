@@ -26,10 +26,12 @@ library(ggplot2)
 
 ```{r fixture, include = FALSE}
 # The article renders on CI, where Dataverse sometimes rejects downloads. Each
-# live call falls back to a snapshot bundled in inst/extdata so the build never
-# breaks; tables and figures then reflect the snapshot's date, 2026-09-20.
+# live call falls back to a website-only snapshot, so the build does not depend
+# on Dataverse; tables and figures then reflect the snapshot's date, 2026-09-20.
+article_dir <- dirname(knitr::current_input(dir = TRUE))
+
 ext_file <- function(...) {
-  system.file("extdata", "faixa-azul", ..., package = "inspercidados")
+  file.path(article_dir, "data", "faixa-azul", ...)
 }
 
 fetch <- function(alias, fallback, ...) {
@@ -203,4 +205,4 @@ open_project("faixa_azul", open = FALSE)
 ```
 
 The full package reference is at
-<https://inspercidades.github.io/inspercidados>.
+<https://inspercidades.github.io/inspercidados/>.

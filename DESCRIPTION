@@ -13,7 +13,7 @@ Description: A lightweight interface for discovering, downloading, and citing
     citations from repository metadata.
 License: MIT + file LICENSE
 URL: https://github.com/inspercidades/inspercidados,
-    https://inspercidades.github.io/inspercidados
+    https://inspercidades.github.io/inspercidados/
 BugReports: https://github.com/inspercidades/inspercidados/issues
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

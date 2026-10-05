@@ -17,3 +17,35 @@
       i Use `year`, `resource`, or `format` to be more specific.
       i Matched files: "pemob_2022.tab" and "pemob_2023.tab"
 
+# select_dv_file() rejects malformed selectors
+
+    Code
+      select_dv_file(files, filename = c("a.csv", "b.csv"))
+    Condition
+      Error in `select_dv_file()`:
+      ! `filename` must be a single non-empty string or `NULL`.
+
+---
+
+    Code
+      select_dv_file(files, file_pattern = NA_character_)
+    Condition
+      Error in `select_dv_file()`:
+      ! `file_pattern` must be a single non-empty string or `NULL`.
+
+---
+
+    Code
+      select_dv_file(files, file_pattern = "[")
+    Condition
+      Error in `select_dv_file()`:
+      ! `file_pattern` must be a valid regular expression.
+
+---
+
+    Code
+      select_dv_file(files, year = c(2022, 2023))
+    Condition
+      Error in `select_dv_file()`:
+      ! `year` must be a single value or `NULL`.
+

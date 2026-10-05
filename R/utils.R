@@ -283,6 +283,52 @@ select_dv_file <- function(
   prefer = NULL,
   strict = FALSE
 ) {
+  if (!is.character(file_names) || anyNA(file_names)) {
+    cli::cli_abort(
+      "{.arg file_names} must be a character vector without missing values."
+    )
+  }
+  if (
+    !is.null(filename) &&
+      (!is.character(filename) ||
+         length(filename) != 1 ||
+         is.na(filename) ||
+         !nzchar(filename))
+  ) {
+    cli::cli_abort(
+      "{.arg filename} must be a single non-empty string or {.code NULL}."
+    )
+  }
+  if (
+    !is.null(file_pattern) &&
+      (!is.character(file_pattern) ||
+         length(file_pattern) != 1 ||
+         is.na(file_pattern) ||
+         !nzchar(file_pattern))
+  ) {
+    cli::cli_abort(
+      "{.arg file_pattern} must be a single non-empty string or {.code NULL}."
+    )
+  }
+  if (!is.null(file_pattern)) {
+    valid_pattern <- tryCatch(
+      {
+        suppressWarnings(grepl(file_pattern, "", perl = TRUE))
+        TRUE
+      },
+      error = function(e) FALSE
+    )
+    if (!valid_pattern) {
+      cli::cli_abort("{.arg file_pattern} must be a valid regular expression.")
+    }
+  }
+  if (
+    !is.null(year) &&
+      (!is.atomic(year) || length(year) != 1 || is.na(year))
+  ) {
+    cli::cli_abort("{.arg year} must be a single value or {.code NULL}.")
+  }
+
   if (!is.null(filename)) {
     if (!filename %in% file_names) {
       cli::cli_abort(c(
