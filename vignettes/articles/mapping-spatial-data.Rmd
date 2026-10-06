@@ -24,26 +24,20 @@ library(sf)
 library(ggplot2)
 ```
 
-```{r fixture, include = FALSE}
-# The article renders on CI, where Dataverse sometimes rejects downloads. Each
-# live call falls back to a website-only snapshot, so the build does not depend
-# on Dataverse; tables and figures then reflect the snapshot's date, 2026-09-20.
-article_dir <- dirname(knitr::current_input(dir = TRUE))
-
-ext_file <- function(...) {
-  file.path(article_dir, "data", "faixa-azul", ...)
+```{r snapshot, include = FALSE}
+# The article renders on CI, where Dataverse sometimes rejects downloads. The
+# data load here from a website-only snapshot taken on 2026-09-20; the download
+# chunks below show the real calls with eval = FALSE.
+snapshot <- function(file) {
+  article_dir <- dirname(knitr::current_input(dir = TRUE))
+  file.path(article_dir, "data", "faixa-azul", file)
 }
 
-fetch <- function(alias, fallback, ...) {
-  live <- tryCatch(
-    get_dataset(alias, ...),
-    error = function(e) {
-      cli::cli_inform("Dataverse unreachable; using the bundled snapshot.")
-      fallback()
-    }
-  )
-  return(live)
-}
+lanes <- st_read(snapshot("lanes.gpkg"), quiet = TRUE)
+roads <- st_read(snapshot("roads.gpkg"), quiet = TRUE)
+crashes <- readRDS(snapshot("crashes.rds"))
+deposit <- list(data = lanes, docs = readRDS(snapshot("docs.rds")))
+citation <- readr::read_lines(snapshot("citation.txt"))
 ```
 
 Between 2022 and 2025, São Paulo painted *faixas azuis*, lanes reserved for
@@ -72,12 +66,11 @@ list_resources("faixa_azul_sp")
 `get_dataset()` downloads it. Spatial resources come back as `sf` objects, so the
 layer arrives ready to map.
 
-```{r lanes}
-lanes <- fetch(
-  "faixa_azul_sp",
-  fallback = function() st_read(ext_file("lanes.gpkg"), quiet = TRUE),
-  format = "gpkg"
-)
+```{r lanes, eval = FALSE}
+lanes <- get_dataset("faixa_azul_sp", format = "gpkg")
+```
+
+```{r lanes-glimpse}
 glimpse(st_drop_geometry(lanes))
 ```
 
@@ -87,12 +80,8 @@ around it, and `data_implementacao`, the month the paint went down.
 `sinistros_via_sp` covers the road segments the study analyzed. Its geometry makes
 a useful backdrop for the lanes.
 
-```{r roads}
-roads <- fetch(
-  "sinistros_via_sp",
-  fallback = function() st_read(ext_file("roads.gpkg"), quiet = TRUE),
-  format = "gpkg"
-)
+```{r roads, eval = FALSE}
+roads <- get_dataset("sinistros_via_sp", format = "gpkg")
 ```
 
 Drawing one layer over the other shows where the lanes run.
@@ -150,11 +139,11 @@ glimpse(st_drop_geometry(roads))
 
 `sinistros_sp` is the plain table behind those counts, with one row per crash.
 
-```{r crashes}
-crashes <- fetch(
-  "sinistros_sp",
-  fallback = function() readRDS(ext_file("crashes.rds"))
-)
+```{r crashes, eval = FALSE}
+crashes <- get_dataset("sinistros_sp")
+```
+
+```{r crashes-glimpse}
 glimpse(crashes)
 ```
 
@@ -177,23 +166,21 @@ crashes |>
 deposit ships a documentation workbook the package reads it; otherwise the `docs`
 element carries the Dataverse metadata.
 
-```{r docs}
-deposit <- fetch("faixa_azul_sp", docs = TRUE, fallback = function() {
-  list(data = lanes, docs = readRDS(ext_file("docs.rds")))
-})
+```{r docs, eval = FALSE}
+deposit <- get_dataset("faixa_azul_sp", docs = TRUE)
+```
+
+```{r docs-str}
 str(deposit$docs)
 ```
 
 `cite_dataset()` pulls the citation from Dataverse in plain text, BibTeX, or RIS.
 
-```{r cite}
-citation <- tryCatch(
-  cite_dataset("faixa_azul_sp"),
-  error = function(e) {
-    cli::cli_inform("Dataverse unreachable; using the bundled snapshot.")
-    readr::read_lines(ext_file("citation.txt"))
-  }
-)
+```{r cite, eval = FALSE}
+citation <- cite_dataset("faixa_azul_sp")
+```
+
+```{r cite-print}
 citation
 ```
 
