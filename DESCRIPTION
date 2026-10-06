@@ -41,7 +41,8 @@ Suggests:
     googlesheets4,
     janitor,
     lifecycle,
-    stringr
+    stringr,
+    withr
 VignetteBuilder: knitr
 Config/Needs/website:
     dplyr,

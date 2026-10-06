@@ -601,15 +601,21 @@ build_project_registry <- function(projects, aliases, registry) {
 
 # Output and entry point ------------------------------------------------------
 
-write_registry <- function(registry, projects) {
-  writeLines(
-    jsonlite::toJSON(registry, pretty = TRUE, auto_unbox = TRUE, null = "null"),
-    "inst/datasets.json"
-  )
-  writeLines(
-    jsonlite::toJSON(projects, pretty = TRUE, auto_unbox = TRUE, null = "null"),
-    "inst/projects.json"
-  )
+# Keep in sync with registry_schema_version in R/utils.R. Bump it only when
+# older package versions would misread the files.
+registry_schema_version <- 1L
+
+write_registry <- function(registry, projects, dir = "inst") {
+  write_json_file <- function(field, entries) {
+    out <- list(schema_version = registry_schema_version)
+    out[[field]] <- entries
+    writeLines(
+      jsonlite::toJSON(out, pretty = TRUE, auto_unbox = TRUE, null = "null"),
+      file.path(dir, paste0(field, ".json"))
+    )
+  }
+  write_json_file("datasets", registry)
+  write_json_file("projects", projects)
   return(invisible(NULL))
 }
 

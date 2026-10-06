@@ -63,7 +63,9 @@ install.packages(
 ## Browse available datasets
 
 `list_datasets()` returns a tibble of every dataset in the registry. The
-registry ships with the package, so no network call is needed.
+registry is read from GitHub once per session, so datasets added after a
+release appear without reinstalling. Offline, the package uses the copy it
+shipped with.
 
 ```{r list}
 library(inspercidados)

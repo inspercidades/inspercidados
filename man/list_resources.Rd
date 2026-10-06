@@ -16,8 +16,8 @@ A \link[tibble:tibble]{tibble} with one row per resource and columns
 \description{
 Returns the logical resources registered within a dataset. A resource is one
 dataset that may be distributed in several file formats or split by a
-declared dimension such as year. The information comes from the local
-registry, so no network call is made.
+declared dimension such as year. The information comes from the registry
+(see \code{\link[=list_datasets]{list_datasets()}}), so Dataverse is not queried.
 }
 \examples{
 list_resources("qualidade_ar_mare")
