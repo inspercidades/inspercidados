@@ -51,8 +51,10 @@ install.packages(
 ## Using the package
 
 [`list_datasets()`](https://inspercidades.github.io/inspercidados/reference/list_datasets.md)
-reads the registry that ships with the package and makes no network
-calls.
+reads the registry from GitHub once per session, so datasets added after
+a release appear without reinstalling. Offline, it uses the copy shipped
+with the package. Set `options(inspercidados.registry = "bundled")` to
+always use that copy.
 
 ``` r
 
@@ -74,7 +76,7 @@ measurements and the coordinates of its measurement points as separate
 resources. Each resource may come in several file formats or be split by
 year. Use
 [`list_resources()`](https://inspercidades.github.io/inspercidados/reference/list_resources.md)
-to inspect the resources of an alias without a network request.
+to inspect the resources of an alias without querying Dataverse.
 
 ``` r
 

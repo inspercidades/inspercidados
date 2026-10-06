@@ -44,8 +44,10 @@ install.packages(
 ## Browse available datasets
 
 [`list_datasets()`](https://inspercidades.github.io/inspercidados/reference/list_datasets.md)
-returns a tibble of every dataset in the registry. The registry ships
-with the package, so no network call is needed.
+returns a tibble of every dataset in the registry. The registry is read
+from GitHub once per session, so datasets added after a release appear
+without reinstalling. Offline, the package uses the copy it shipped
+with.
 
 ``` r
 

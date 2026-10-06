@@ -1,8 +1,14 @@
 # Changelog
 
+## inspercidados 0.5.0
+
+- Changed the registry to load from GitHub once per session, so datasets
+  added after a release appear without reinstalling. The package falls
+  back to its shipped copy when GitHub cannot be reached, and
+  `options(inspercidados.registry = "bundled")` forces the shipped copy.
+
 ## inspercidados 0.4.0
 
-- Initial CRAN submission.
 - Added
   [`list_resources()`](https://inspercidades.github.io/inspercidados/reference/list_resources.md),
   which lists the logical datasets, years, formats, and defaults within

@@ -2,8 +2,10 @@
 
 Returns the logical resources registered within a dataset. A resource is
 one dataset that may be distributed in several file formats or split by
-a declared dimension such as year. The information comes from the local
-registry, so no network call is made.
+a declared dimension such as year. The information comes from the
+registry (see
+[`list_datasets()`](https://inspercidades.github.io/inspercidados/reference/list_datasets.md)),
+so Dataverse is not queried.
 
 ## Usage
 

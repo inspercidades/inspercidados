@@ -1,7 +1,6 @@
 # List available datasets
 
-Returns a tibble of datasets in the `inspercidados` registry. The
-registry ships with the package, so no network call is made.
+Returns a tibble of datasets in the `inspercidados` registry.
 
 ## Usage
 
@@ -47,6 +46,15 @@ A [tibble](https://tibble.tidyverse.org/reference/tibble.html) with one
 row per dataset and columns `alias`, `title`, `description`, `theme`,
 `region`, `project`, `access`, `is_spatial`, `formats`, `keywords`, and
 `doi`.
+
+## Registry updates
+
+The registry is read from the package's GitHub repository once per
+session, so datasets added after a release appear without reinstalling.
+When GitHub cannot be reached, or the online registry needs a newer
+version of the package, the copy shipped with the package is used
+instead. Set `options(inspercidados.registry = "bundled")` to always use
+the shipped copy, for example to keep a script's catalog fixed.
 
 ## See also
 
