@@ -1,6 +1,6 @@
 Package: inspercidados
 Title: Access to Datasets from Insper Cidades
-Version: 0.4.0
+Version: 0.5.0
 Authors@R: c(
     person("Vinicius", "Oike", , "viniciusoike@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0009-0005-8015-9189")),
