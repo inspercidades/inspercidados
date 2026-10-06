@@ -54,15 +54,11 @@ arrives ready to map.
 
 ``` r
 
-lanes <- fetch(
-  "faixa_azul_sp",
-  fallback = function() st_read(ext_file("lanes.gpkg"), quiet = TRUE),
-  format = "gpkg"
-)
-#> ℹ Fetching file list for "10.60873/FK2/A4AC1I"
-#> No encoding supplied: defaulting to UTF-8.
-#> 
-#> Dataverse unreachable; using the bundled snapshot.
+lanes <- get_dataset("faixa_azul_sp", format = "gpkg")
+```
+
+``` r
+
 glimpse(st_drop_geometry(lanes))
 #> Rows: 1,047
 #> Columns: 16
@@ -93,15 +89,7 @@ geometry makes a useful backdrop for the lanes.
 
 ``` r
 
-roads <- fetch(
-  "sinistros_via_sp",
-  fallback = function() st_read(ext_file("roads.gpkg"), quiet = TRUE),
-  format = "gpkg"
-)
-#> ℹ Fetching file list for "10.60873/FK2/XA5PFG"
-#> No encoding supplied: defaulting to UTF-8.
-#> 
-#> Dataverse unreachable; using the bundled snapshot.
+roads <- get_dataset("sinistros_via_sp", format = "gpkg")
 ```
 
 Drawing one layer over the other shows where the lanes run.
@@ -211,14 +199,11 @@ crash.
 
 ``` r
 
-crashes <- fetch(
-  "sinistros_sp",
-  fallback = function() readRDS(ext_file("crashes.rds"))
-)
-#> ℹ Fetching file list for "10.60873/FK2/IRGJPX"
-#> No encoding supplied: defaulting to UTF-8.
-#> 
-#> Dataverse unreachable; using the bundled snapshot.
+crashes <- get_dataset("sinistros_sp")
+```
+
+``` r
+
 glimpse(crashes)
 #> Rows: 153,404
 #> Columns: 22
@@ -275,13 +260,11 @@ otherwise the `docs` element carries the Dataverse metadata.
 
 ``` r
 
-deposit <- fetch("faixa_azul_sp", docs = TRUE, fallback = function() {
-  list(data = lanes, docs = readRDS(ext_file("docs.rds")))
-})
-#> ℹ Fetching file list for "10.60873/FK2/A4AC1I"
-#> No encoding supplied: defaulting to UTF-8.
-#> 
-#> Dataverse unreachable; using the bundled snapshot.
+deposit <- get_dataset("faixa_azul_sp", docs = TRUE)
+```
+
+``` r
+
 str(deposit$docs)
 #> List of 6
 #>  $ title      : chr "Faixa Azul, São Paulo [2022-2025]"
@@ -297,17 +280,11 @@ pulls the citation from Dataverse in plain text, BibTeX, or RIS.
 
 ``` r
 
-citation <- tryCatch(
-  cite_dataset("faixa_azul_sp"),
-  error = function(e) {
-    cli::cli_inform("Dataverse unreachable; using the bundled snapshot.")
-    readr::read_lines(ext_file("citation.txt"))
-  }
-)
-#> ℹ Fetching metadata for "10.60873/FK2/A4AC1I"
-#> No encoding supplied: defaulting to UTF-8.
-#> 
-#> Dataverse unreachable; using the bundled snapshot.
+citation <- cite_dataset("faixa_azul_sp")
+```
+
+``` r
+
 citation
 #> [1] "Costa, Adriano Borges Ferreira da; Dutra, Adriano; Theil, Gustavo; Mugnol, Júlio (2025). Faixa Azul, São Paulo [2022-2025]. Insper Dataverse. https://doi.org/10.60873/FK2/A4AC1I"
 ```

@@ -123,16 +123,9 @@ three formats.</p>
 <p><code><a href="../reference/get_dataset.html">get_dataset()</a></code> downloads it. Spatial resources come back
 as <code>sf</code> objects, so the layer arrives ready to map.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">lanes</span> <span class="op">&lt;-</span> <span class="fu">fetch</span><span class="op">(</span></span>
-<span>  <span class="st">"faixa_azul_sp"</span>,</span>
-<span>  fallback <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">st_read</a></span><span class="op">(</span><span class="fu">ext_file</span><span class="op">(</span><span class="st">"lanes.gpkg"</span><span class="op">)</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
-<span>  format <span class="op">=</span> <span class="st">"gpkg"</span></span>
-<span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Fetching file list for <span style="color: #0000BB;">"10.60873/FK2/A4AC1I"</span></span></span>
-<span><span class="co">#&gt; No encoding supplied: defaulting to UTF-8.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Dataverse unreachable; using the bundled snapshot.</span></span>
-<span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_drop_geometry</a></span><span class="op">(</span><span class="va">lanes</span><span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">lanes</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_dataset.html">get_dataset</a></span><span class="op">(</span><span class="st">"faixa_azul_sp"</span>, format <span class="op">=</span> <span class="st">"gpkg"</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_drop_geometry</a></span><span class="op">(</span><span class="va">lanes</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Rows: 1,047</span></span>
 <span><span class="co">#&gt; Columns: 16</span></span>
 <span><span class="co">#&gt; $ id_osm                    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "4328549"<span style="color: #949494;">, </span>"4330744"<span style="color: #949494;">, </span>"4331361"<span style="color: #949494;">, </span>"4331371"<span style="color: #949494;">, </span>…</span></span>
@@ -156,18 +149,10 @@ attributes around it, and <code>data_implementacao</code>, the month the
 paint went down.</p>
 <p><code>sinistros_via_sp</code> covers the road segments the study
 analyzed. Its geometry makes a useful backdrop for the lanes.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">roads</span> <span class="op">&lt;-</span> <span class="fu">fetch</span><span class="op">(</span></span>
-<span>  <span class="st">"sinistros_via_sp"</span>,</span>
-<span>  fallback <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">st_read</a></span><span class="op">(</span><span class="fu">ext_file</span><span class="op">(</span><span class="st">"roads.gpkg"</span><span class="op">)</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
-<span>  format <span class="op">=</span> <span class="st">"gpkg"</span></span>
-<span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Fetching file list for <span style="color: #0000BB;">"10.60873/FK2/XA5PFG"</span></span></span>
-<span><span class="co">#&gt; No encoding supplied: defaulting to UTF-8.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Dataverse unreachable; using the bundled snapshot.</span></span></code></pre></div>
-<p>Drawing one layer over the other shows where the lanes run.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">roads</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_dataset.html">get_dataset</a></span><span class="op">(</span><span class="st">"sinistros_via_sp"</span>, format <span class="op">=</span> <span class="st">"gpkg"</span><span class="op">)</span></span></code></pre></div>
+<p>Drawing one layer over the other shows where the lanes run.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">roads</span>, colour <span class="op">=</span> <span class="st">"grey80"</span>, linewidth <span class="op">=</span> <span class="fl">0.25</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">lanes</span>, colour <span class="op">=</span> <span class="st">"#1D4ED8"</span>, linewidth <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span> <span class="op">+</span></span>
@@ -179,7 +164,7 @@ analyzed. Its geometry makes a useful backdrop for the lanes.</p>
 <p><img src="mapping-spatial-data_files/figure-html/map-1.png" class="r-plt" alt="Map of São Paulo showing the road segments in the study as faint gray lines, with the motorcycle lanes drawn in blue on top. The blue corridors are scattered across the city, several of them radiating from the center." width="2100"></p>
 <p><code>data_implementacao</code> dates each segment, so the same layer
 doubles as a timeline.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">lanes</span> <span class="op">&lt;-</span> <span class="va">lanes</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="va">data_implementacao</span>, <span class="st">"%Y"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
@@ -199,7 +184,7 @@ doubles as a timeline.</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 2023       363  71.2 </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 2024       571 120.  </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 2025        11   2.01</span></span></code></pre></div>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">roads</span>, colour <span class="op">=</span> <span class="st">"grey85"</span>, linewidth <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">lanes</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>colour <span class="op">=</span> <span class="va">year</span><span class="op">)</span>, linewidth <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span> <span class="op">+</span></span>
@@ -218,7 +203,7 @@ doubles as a timeline.</p>
 </h2>
 <p><code>sinistros_via_sp</code> is the same kind of object as the
 lanes, with crash counts attached to each segment.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html" class="external-link">st_drop_geometry</a></span><span class="op">(</span><span class="va">roads</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Rows: 5,068</span></span>
 <span><span class="co">#&gt; Columns: 26</span></span>
@@ -250,16 +235,10 @@ lanes, with crash counts attached to each segment.</p>
 <span><span class="co">#&gt; $ total_vitimas_leves  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0<span style="color: #949494;">, </span>0<span style="color: #949494;">, </span>8<span style="color: #949494;">, </span>6<span style="color: #949494;">, </span>6<span style="color: #949494;">, </span>0<span style="color: #949494;">, </span>3<span style="color: #949494;">, </span>6<span style="color: #949494;">, </span>10<span style="color: #949494;">, </span>48<span style="color: #949494;">, </span>7<span style="color: #949494;">, </span>0<span style="color: #949494;">, </span>2<span style="color: #949494;">, </span>2<span style="color: #949494;">, </span>3<span style="color: #949494;">, </span>5<span style="color: #949494;">,</span>…</span></span></code></pre></div>
 <p><code>sinistros_sp</code> is the plain table behind those counts,
 with one row per crash.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">crashes</span> <span class="op">&lt;-</span> <span class="fu">fetch</span><span class="op">(</span></span>
-<span>  <span class="st">"sinistros_sp"</span>,</span>
-<span>  fallback <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu">ext_file</span><span class="op">(</span><span class="st">"crashes.rds"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Fetching file list for <span style="color: #0000BB;">"10.60873/FK2/IRGJPX"</span></span></span>
-<span><span class="co">#&gt; No encoding supplied: defaulting to UTF-8.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Dataverse unreachable; using the bundled snapshot.</span></span>
-<span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="va">crashes</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">crashes</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_dataset.html">get_dataset</a></span><span class="op">(</span><span class="st">"sinistros_sp"</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="va">crashes</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Rows: 153,404</span></span>
 <span><span class="co">#&gt; Columns: 22</span></span>
 <span><span class="co">#&gt; $ id_infosiga               <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 2464210<span style="color: #949494;">, </span>2464234<span style="color: #949494;">, </span>2466426<span style="color: #949494;">, </span>1768156<span style="color: #949494;">, </span>2477534<span style="color: #949494;">,</span>…</span></span>
@@ -286,7 +265,7 @@ with one row per crash.</p>
 <span><span class="co">#&gt; $ gravidade_fatal           <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> 1<span style="color: #949494;">, </span>1<span style="color: #949494;">, </span>1<span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span>1<span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span><span style="color: #BB0000;">NA</span><span style="color: #949494;">, </span>…</span></span></code></pre></div>
 <p>The last year is partial, so check coverage before comparing
 years.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">crashes</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span></span>
 <span>    crashes <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span>,</span>
@@ -310,15 +289,10 @@ years.</p>
 documentation. When a deposit ships a documentation workbook the package
 reads it; otherwise the <code>docs</code> element carries the Dataverse
 metadata.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">deposit</span> <span class="op">&lt;-</span> <span class="fu">fetch</span><span class="op">(</span><span class="st">"faixa_azul_sp"</span>, docs <span class="op">=</span> <span class="cn">TRUE</span>, fallback <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">lanes</span>, docs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu">ext_file</span><span class="op">(</span><span class="st">"docs.rds"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="op">}</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Fetching file list for <span style="color: #0000BB;">"10.60873/FK2/A4AC1I"</span></span></span>
-<span><span class="co">#&gt; No encoding supplied: defaulting to UTF-8.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Dataverse unreachable; using the bundled snapshot.</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">deposit</span><span class="op">$</span><span class="va">docs</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">deposit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_dataset.html">get_dataset</a></span><span class="op">(</span><span class="st">"faixa_azul_sp"</span>, docs <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">deposit</span><span class="op">$</span><span class="va">docs</span><span class="op">)</span></span>
 <span><span class="co">#&gt; List of 6</span></span>
 <span><span class="co">#&gt;  $ title      : chr "Faixa Azul, São Paulo [2022-2025]"</span></span>
 <span><span class="co">#&gt;  $ description: chr "Base georreferenciada de vias com faixas de trânsito dedicadas a motociclistas, i.e., vias com faixa azul, impl"| __truncated__</span></span>
@@ -328,24 +302,15 @@ metadata.</p>
 <span><span class="co">#&gt;  $ year       : chr "2025"</span></span></code></pre></div>
 <p><code><a href="../reference/cite_dataset.html">cite_dataset()</a></code> pulls the citation from Dataverse in
 plain text, BibTeX, or RIS.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">citation</span> <span class="op">&lt;-</span> <span class="kw"><a href="https://rdrr.io/r/base/conditions.html" class="external-link">tryCatch</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="../reference/cite_dataset.html">cite_dataset</a></span><span class="op">(</span><span class="st">"faixa_azul_sp"</span><span class="op">)</span>,</span>
-<span>  error <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">e</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="fu">cli</span><span class="fu">::</span><span class="fu"><a href="https://cli.r-lib.org/reference/cli_abort.html" class="external-link">cli_inform</a></span><span class="op">(</span><span class="st">"Dataverse unreachable; using the bundled snapshot."</span><span class="op">)</span></span>
-<span>    <span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/read_lines.html" class="external-link">read_lines</a></span><span class="op">(</span><span class="fu">ext_file</span><span class="op">(</span><span class="st">"citation.txt"</span><span class="op">)</span><span class="op">)</span></span>
-<span>  <span class="op">}</span></span>
-<span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Fetching metadata for <span style="color: #0000BB;">"10.60873/FK2/A4AC1I"</span></span></span>
-<span><span class="co">#&gt; No encoding supplied: defaulting to UTF-8.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Dataverse unreachable; using the bundled snapshot.</span></span>
-<span><span class="va">citation</span></span>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">citation</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cite_dataset.html">cite_dataset</a></span><span class="op">(</span><span class="st">"faixa_azul_sp"</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">citation</span></span>
 <span><span class="co">#&gt; [1] "Costa, Adriano Borges Ferreira da; Dutra, Adriano; Theil, Gustavo; Mugnol, Júlio (2025). Faixa Azul, São Paulo [2022-2025]. Insper Dataverse. https://doi.org/10.60873/FK2/A4AC1I"</span></span></code></pre></div>
 <p><code><a href="../reference/open_project.html">open_project()</a></code> prints the study behind the datasets and
 opens its pipeline repository, where the cleaning, aggregation, and
 analysis steps live.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/open_project.html">open_project</a></span><span class="op">(</span><span class="st">"faixa_azul"</span>, open <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Faixa Azul e sinistros de trânsito</span> <span style="color: #00BBBB;">──────────────────────────────────────────</span></span></span>
