@@ -102,7 +102,19 @@ outside the `10.60873` prefix, and ignores them when checking for shared DOIs.
 `prepare_catalog()` then drops them, so they never reach the registry. Two
 active rows sharing a DOI abort the build.
 
-Example registry entry:
+**The registry updates without a release.** `read_registry()` and
+`read_projects()` fetch both files from `inst/` on GitHub `main` once per
+session and fall back to the copies shipped with the package. Merging a
+registry PR therefore publishes it to every installed version. Both files
+wrap their entries as `{"schema_version": 1, "datasets": {...}}` (and
+`"projects"`). An installed version ignores a remote file whose
+`schema_version` is newer than `registry_schema_version` in `R/utils.R`, so
+bump it (and the copy in `build_registry.R`) only when older code would
+misread an entry. Additive fields need no bump. `R CMD check` and the test
+suite always use the shipped copy; `options(inspercidados.registry =
+"bundled")` does the same for users.
+
+Example registry entry (shown unwrapped):
 
 ```json
 {

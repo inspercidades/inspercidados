@@ -21,36 +21,138 @@ insper_server <- function() {
   "dataverse.datascience.insper.edu.br"
 }
 
+# Registry -------------------------------------------------------------------
+
+# The registry is read from GitHub so datasets added after a release reach
+# users without reinstalling. The copy shipped in inst/ is the fallback.
+# Bump the schema version only when older code would misread the files;
+# data-raw/build_registry.R writes the same number.
+registry_schema_version <- 1L
+
+# File name -> field that holds its entries.
+.registry_fields <- c(
+  "datasets.json" = "datasets",
+  "projects.json" = "projects"
+)
+
 .registry_cache <- new.env(parent = emptyenv())
 
+registry_url <- function(file) {
+  paste0(
+    "https://raw.githubusercontent.com/inspercidades/inspercidados/main/inst/",
+    file
+  )
+}
+
+# "remote" unless the user opts out or R CMD check is running, so checks,
+# tests, and CRAN examples stay offline.
+registry_source <- function() {
+  source <- getOption("inspercidados.registry")
+  if (!is.null(source)) {
+    return(rlang::arg_match0(
+      source,
+      c("remote", "bundled"),
+      arg_nm = "inspercidados.registry"
+    ))
+  }
+  if (nzchar(Sys.getenv("_R_CHECK_PACKAGE_NAME_"))) {
+    return("bundled")
+  }
+  return("remote")
+}
+
 read_json_asset <- function(file) {
-  cached <- .registry_cache[[file]]
+  return(registry_files(registry_source())[[file]])
+}
+
+registry_files <- function(source) {
+  cached <- .registry_cache[[source]]
   if (!is.null(cached)) {
     return(cached)
   }
-  path <- system.file(file, package = "inspercidados")
-  if (!nzchar(path)) {
-    cli::cli_abort(paste0(
-      "Package data registry {.file {file}} not found. ",
-      "Try reinstalling the package."
-    ))
+  out <- NULL
+  if (identical(source, "remote")) {
+    out <- read_remote_registry()
   }
-  reg <- jsonlite::read_json(path)
-  # jsonlite decodes \uXXXX escapes but leaves strings marked "unknown".
-  # Tag each string as UTF-8 so R displays it correctly in any locale.
-  mark_utf8 <- function(x) {
-    if (is.character(x)) {
-      Encoding(x) <- "UTF-8"
-      return(x)
+  out <- out %||% read_bundled_registry()
+  assign(source, out, envir = .registry_cache)
+  return(out)
+}
+
+# Both files or neither, so projects never point at aliases the datasets file
+# lacks.
+read_remote_registry <- function() {
+  out <- list()
+  for (file in names(.registry_fields)) {
+    entries <- unwrap_registry(fetch_registry_file(file), file)
+    if (is.null(entries)) {
+      return(NULL)
     }
-    if (is.list(x)) {
-      return(lapply(x, mark_utf8))
+    out[[file]] <- entries
+  }
+  return(out)
+}
+
+read_bundled_registry <- function() {
+  out <- list()
+  for (file in names(.registry_fields)) {
+    path <- system.file(file, package = "inspercidados")
+    entries <- if (nzchar(path)) {
+      unwrap_registry(jsonlite::read_json(path), file)
     }
+    if (is.null(entries)) {
+      cli::cli_abort(paste0(
+        "Package data registry {.file {file}} is missing or unreadable. ",
+        "Try reinstalling the package."
+      ))
+    }
+    out[[file]] <- entries
+  }
+  return(out)
+}
+
+fetch_registry_file <- function(file, timeout = 3) {
+  if (!requireNamespace("curl", quietly = TRUE)) {
+    return(NULL)
+  }
+  handle <- curl::new_handle(timeout = timeout, connecttimeout = timeout)
+  tryCatch(
+    {
+      res <- curl::curl_fetch_memory(registry_url(file), handle = handle)
+      if (res$status_code == 200) {
+        jsonlite::parse_json(rawToChar(res$content))
+      }
+    },
+    error = function(e) NULL
+  )
+}
+
+# Entries of a parsed registry file, or NULL when the file is malformed or
+# uses a schema this version does not know.
+unwrap_registry <- function(x, file) {
+  version <- if (is.list(x)) x[["schema_version"]]
+  entries <- if (is.list(x)) x[[.registry_fields[[file]]]]
+  valid <- is.numeric(version) &&
+    length(version) == 1 &&
+    version <= registry_schema_version &&
+    is.list(entries)
+  if (!valid) {
+    return(NULL)
+  }
+  return(mark_utf8(entries))
+}
+
+# jsonlite decodes \uXXXX escapes but leaves strings marked "unknown".
+# Tag each string as UTF-8 so R displays it correctly in any locale.
+mark_utf8 <- function(x) {
+  if (is.character(x)) {
+    Encoding(x) <- "UTF-8"
     return(x)
   }
-  out <- lapply(reg, mark_utf8)
-  assign(file, out, envir = .registry_cache)
-  out
+  if (is.list(x)) {
+    return(lapply(x, mark_utf8))
+  }
+  return(x)
 }
 
 read_registry <- function() {
@@ -291,9 +393,9 @@ select_dv_file <- function(
   if (
     !is.null(filename) &&
       (!is.character(filename) ||
-         length(filename) != 1 ||
-         is.na(filename) ||
-         !nzchar(filename))
+        length(filename) != 1 ||
+        is.na(filename) ||
+        !nzchar(filename))
   ) {
     cli::cli_abort(
       "{.arg filename} must be a single non-empty string or {.code NULL}."
@@ -302,9 +404,9 @@ select_dv_file <- function(
   if (
     !is.null(file_pattern) &&
       (!is.character(file_pattern) ||
-         length(file_pattern) != 1 ||
-         is.na(file_pattern) ||
-         !nzchar(file_pattern))
+        length(file_pattern) != 1 ||
+        is.na(file_pattern) ||
+        !nzchar(file_pattern))
   ) {
     cli::cli_abort(
       "{.arg file_pattern} must be a single non-empty string or {.code NULL}."

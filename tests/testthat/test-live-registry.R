@@ -117,3 +117,13 @@ test_that("resource spatial flags match the presence of spatial files", {
 
   expect_equal(broken, character(0))
 })
+
+test_that("the registry on GitHub is readable by this version", {
+  skip_if_no_dataverse()
+  skip_if_not_installed("curl")
+
+  for (file in names(.registry_fields)) {
+    remote <- unwrap_registry(fetch_registry_file(file), file)
+    expect_false(is.null(remote), label = paste("remote", file))
+  }
+})

@@ -1,672 +1,675 @@
 {
-  "itbi_sp": {
-    "doi": "10.60873/FK2/AOLEOI",
-    "title": "Imposto sobre Transmissão de Bens Imóveis (ITBI) [2006-2025]",
-    "description": "Registros de arrecadação e valores de transferências de imóveis no município de São Paulo. Conjunto de dados tratados e enriquecidos pelo Centro de Estudos das Cidades.",
-    "theme": "Habitação e Mercado Imobiliário",
-    "region": "São Paulo",
-    "keywords": "Residências; Imóveis; Preço do solo; Transações imobiliárias; Imposto",
-    "collection": "Imposto sobre Transmissão de Bens Imóveis (ITBI) [2006-2025]",
-    "project": "itbi",
-    "access": "download",
-    "resources": {
-      "dados": {
-        "title": "Transações de ITBI",
-        "file_pattern": "^itbi[.]",
-        "documentation_pattern": null,
-        "formats": ["csv", "parquet", "rds"],
-        "is_spatial": false,
-        "years": [],
-        "default": true
-      }
-    },
-    "formats": ["csv", "parquet", "rds"],
-    "is_spatial": false,
-    "status": "active"
-  },
-  "iptu_sp": {
-    "doi": "10.60873/FK2/TOXCRF",
-    "title": "IPTU e Verticalização, São Paulo [2024]",
-    "description": "Dados do IPTU agregados por lote para o município de São Paulo, com métricas de potencial construtivo e índice de verticalização. Conjunto de dados tratados e enriquecidos pelo Centro de Estudos das Cidades.",
-    "theme": "Habitação e Mercado Imobiliário",
-    "region": "São Paulo",
-    "keywords": "Residências; Imóveis; Cadastro imobiliário; Valor venal; Imposto",
-    "collection": "Densidade Populacional e Verticalização [2022,2024]",
-    "project": "densidade",
-    "access": "download",
-    "resources": {
-      "dados": {
-        "title": "IPTU residencial",
-        "file_pattern": "^iptu_residencial[.]",
-        "documentation_pattern": null,
-        "formats": ["geojson", "gpkg", "parquet"],
-        "is_spatial": true,
-        "years": [],
-        "default": true
-      }
-    },
-    "formats": ["geojson", "gpkg", "parquet"],
-    "is_spatial": true,
-    "status": "active"
-  },
-  "alvaras_sp": {
-    "doi": "10.60873/FK2/FPCIDI",
-    "title": "Alvarás de licenciamento de novas edificações [2010-2024]",
-    "description": "Informações sobre novas edificações formais a partir de dados dos alvarás de licenciamento. Conjunto de dados tratados e enriquecidos pelo Centro de Estudos das Cidades.",
-    "theme": "Habitação e Mercado Imobiliário",
-    "region": "São Paulo",
-    "keywords": "Residências; Imóveis; Licenciamento; Novas edificações; Incorporação imobiliária",
-    "collection": "Alvarás de licenciamento de novas edificações [2004-2024]",
-    "project": "alvaras",
-    "access": "download",
-    "resources": {
-      "dados": {
-        "title": "Alvarás de construção",
-        "file_pattern": "^alvaras[.]",
-        "documentation_pattern": null,
-        "formats": ["geojson", "gpkg", "parquet"],
-        "is_spatial": true,
-        "years": [],
-        "default": true
-      }
-    },
-    "formats": ["geojson", "gpkg", "parquet"],
-    "is_spatial": true,
-    "status": "active"
-  },
-  "censo_setores_sp": {
-    "doi": "10.60873/FK2/GTO7DD",
-    "title": "População, Domicílios e Densidade Populacional por Setor Censitário [2022]",
-    "description": "Dados provisórios do Censo (2022) em formato GeoPackage (gpkg), agregados por setor censitário para o município de São Paulo. Conjunto de dados preparado para o estudo \"Para o bem ou para o mal: análise da capacidade que o governo tem de controlar a densidade habitacional\" (Theil, Gustavo).",
-    "theme": "Habitação e Mercado Imobiliário",
-    "region": "São Paulo",
-    "keywords": "Censo; IBGE; Densidade populacional; Demografia; População",
-    "collection": "Densidade Populacional e Verticalização [2022,2024]",
-    "project": "densidade",
-    "access": "download",
-    "resources": {
-      "dados": {
-        "title": "Densidade dos setores censitários",
-        "file_pattern": "^censo_densidade[.]",
-        "documentation_pattern": null,
-        "formats": ["geojson", "gpkg", "parquet"],
-        "is_spatial": true,
-        "years": [],
-        "default": true
-      }
-    },
-    "formats": ["geojson", "gpkg", "parquet"],
-    "is_spatial": true,
-    "status": "active"
-  },
-  "iptu_verticalizacao_sp": {
-    "doi": "10.60873/FK2/4QNTOT",
-    "title": "Grade de densidade populacional e habitacional, São Paulo [2022, 2024]",
-    "description": "Dados demográficos e habitacionais agregados em um raster de 800x800m, resultado de interpolação (por área) de informações do Censo (2022) e do IPTU de São Paulo. Contém medidas de densidade populacional e de informalidade dos imóveis. Conjunto de dados preparado para o estudo \"Para o bem ou para o mal: análise da capacidade que o governo tem de controlar a densidade habitacional\" (Theil, Gustavo).",
-    "theme": "Habitação e Mercado Imobiliário",
-    "region": "São Paulo",
-    "keywords": "Habitação; Moradia; Densidade populacional; Verticalização; IPTU São Paulo",
-    "collection": "Densidade Populacional e Verticalização [2022,2024]",
-    "project": "densidade",
-    "access": "download",
-    "resources": {
-      "dados": {
-        "title": "Densidade populacional",
-        "file_pattern": "^densidade_populacional[.]",
-        "documentation_pattern": null,
-        "formats": ["geojson", "gpkg", "parquet"],
-        "is_spatial": true,
-        "years": [],
-        "default": true
-      }
-    },
-    "formats": ["geojson", "gpkg", "parquet"],
-    "is_spatial": true,
-    "status": "active"
-  },
-  "densidade_imoveis_sp": {
-    "doi": "10.60873/FK2/90SSHM",
-    "title": "Densidade Populacional e Verticalização de Imóveis em São Paulo [2022,2024]",
-    "description": "Cruzamento entre os lotes do IPTU de São Paulo com dados do Censo, via interpolação de área, agregado por setor censitário. Conjunto de dados preparado para o estudo \"Para o bem ou para o mal: análise da capacidade que o governo tem de controlar a densidade habitacional\" (Theil, Gustavo).",
-    "theme": "Habitação e Mercado Imobiliário",
-    "region": "São Paulo",
-    "keywords": "Habitação; Moradia; Densidade populacional; Verticalização; IPTU São Paulo",
-    "collection": "Densidade Populacional e Verticalização [2022,2024]",
-    "project": "densidade",
-    "access": "download",
-    "resources": {
-      "dados": {
-        "title": "Densidade de imoveis",
-        "file_pattern": "^iptu_censo[.]",
-        "documentation_pattern": null,
-        "formats": ["geojson", "gpkg", "parquet"],
-        "is_spatial": true,
-        "years": [],
-        "default": true
-      }
-    },
-    "formats": ["geojson", "gpkg", "parquet"],
-    "is_spatial": true,
-    "status": "active"
-  },
-  "geoses_sp": {
-    "doi": "10.60873/FK2/7IXFPX",
-    "title": "Índice GeoSES [2010]",
-    "description": "Índice socioeconômico espacial GeoSES calculado por área de ponderação no município de São Paulo. O índice pondera dimensões de educação, mobilidade, pobreza, privação material, riqueza, renda e segregação, usando dados da Amostra do Censo Demográfico de 2010.",
-    "theme": "Multidisciplinar e Transversal",
-    "region": "São Paulo",
-    "keywords": "Índice socioeconômico; Desigualdade urbana; Estrutura socioeconômica urbana; Vulnerabilidade social",
-    "collection": "Índice GeoSES [2010]",
-    "project": "geoses",
-    "access": "download",
-    "resources": {
-      "dados": {
-        "title": "Índice GeoSES",
-        "file_pattern": "^geoses[.]",
-        "documentation_pattern": null,
-        "formats": ["geojson", "gpkg", "parquet", "tab", "xlsx"],
-        "is_spatial": true,
-        "years": [],
-        "default": true
-      }
-    },
-    "formats": ["geojson", "gpkg", "parquet", "tab", "xlsx"],
-    "is_spatial": true,
-    "status": "active"
-  },
-  "mortalidade_sp": {
-    "doi": "10.60873/FK2/CDXI9B",
-    "title": "Indicadores de mortalidade por distrito [2010-2019]",
-    "description": "Indicadores de mortalidade (óbitos observados, esperados e risco relativo) por distrito administrativo de São Paulo, de 2010 a 2019. Considera quatro causas: diabetes, doenças cerebrovasculares, doenças isquêmicas do coração e mortalidade materna.",
-    "theme": "Saúde",
-    "region": "São Paulo",
-    "keywords": "Mortalidade prematura; Mortalidade; Desigualdade urbana; Saúde pública; Mortalidade materna",
-    "collection": "Indicadores de mortalidade por distrito [2010-2019]",
-    "project": "mortalidade",
-    "access": "download",
-    "resources": {
-      "distritos": {
-        "title": "Distritos com indicadores de mortalidade",
-        "file_pattern": "^distritos_sp[.]",
-        "documentation_pattern": null,
-        "formats": ["geojson", "gpkg", "parquet"],
-        "is_spatial": true,
-        "years": [],
-        "default": true
-      }
-    },
-    "formats": ["geojson", "gpkg", "parquet"],
-    "is_spatial": true,
-    "status": "active"
-  },
-  "ilhas_calor_mare": {
-    "doi": "10.60873/FK2/TONMVQ",
-    "title": "Medições de ilhas de calor e qualidade do ar, Favela da Maré-RJ [2023]",
-    "description": "Estatísticas sobre ilhas de calor e qualidade do ar na Favela da Maré. Informações incluem: temperatura, umidade, dióxido de carbono, formaldeído (HCHO) e material particulado. Temperatura e umidade foram coletadas em diferentes turnos e dias da semana; a qualidade do ar, na última semana de cada mês (de segunda a sexta). Coletas feitas de março a setembro de 2023.",
-    "theme": "Clima e Meio Ambiente",
-    "region": "Rio de Janeiro",
-    "keywords": "Qualidade do ar; Desigualdade urbana; Urbanismo; Ilhas de calor; Habitação",
-    "collection": "Medições de ilhas de calor e qualidade do ar, Favela da Maré-RJ [2023]",
-    "project": "mare",
-    "access": "download",
-    "resources": {
-      "dados": {
-        "title": "Medições de ilhas de calor",
-        "file_pattern": "^ilhas_de_calor[.](parquet|tab|xlsx)$",
-        "documentation_pattern": null,
-        "formats": ["parquet", "tab", "xlsx"],
-        "is_spatial": false,
-        "years": [],
-        "default": true
+  "schema_version": 1,
+  "datasets": {
+    "itbi_sp": {
+      "doi": "10.60873/FK2/AOLEOI",
+      "title": "Imposto sobre Transmissão de Bens Imóveis (ITBI) [2006-2025]",
+      "description": "Registros de arrecadação e valores de transferências de imóveis no município de São Paulo. Conjunto de dados tratados e enriquecidos pelo Centro de Estudos das Cidades.",
+      "theme": "Habitação e Mercado Imobiliário",
+      "region": "São Paulo",
+      "keywords": "Residências; Imóveis; Preço do solo; Transações imobiliárias; Imposto",
+      "collection": "Imposto sobre Transmissão de Bens Imóveis (ITBI) [2006-2025]",
+      "project": "itbi",
+      "access": "download",
+      "resources": {
+        "dados": {
+          "title": "Transações de ITBI",
+          "file_pattern": "^itbi[.]",
+          "documentation_pattern": null,
+          "formats": ["csv", "parquet", "rds"],
+          "is_spatial": false,
+          "years": [],
+          "default": true
+        }
       },
-      "pontos": {
-        "title": "Pontos das medições de ilhas de calor",
-        "file_pattern": "^ilhas_de_calor_pontos[.]",
-        "documentation_pattern": null,
-        "formats": ["geojson", "gpkg", "parquet"],
-        "is_spatial": true,
-        "years": [],
-        "default": false
-      }
+      "formats": ["csv", "parquet", "rds"],
+      "is_spatial": false,
+      "status": "active"
     },
-    "formats": ["geojson", "gpkg", "parquet", "tab", "xlsx"],
-    "is_spatial": true,
-    "status": "active"
-  },
-  "qualidade_ar_mare": {
-    "doi": "10.60873/FK2/TONMVQ",
-    "title": "Medições de ilhas de calor e qualidade do ar, Favela da Maré-RJ [2023]",
-    "description": "Estatísticas sobre ilhas de calor e qualidade do ar na Favela da Maré. Informações incluem: temperatura, umidade, dióxido de carbono, formaldeído (HCHO) e material particulado. Temperatura e umidade foram coletadas em diferentes turnos e dias da semana; a qualidade do ar, na última semana de cada mês (de segunda a sexta). Coletas feitas de março a setembro de 2023.",
-    "theme": "Clima e Meio Ambiente",
-    "region": "Rio de Janeiro",
-    "keywords": "Qualidade do ar; Desigualdade urbana; Urbanismo; Ilhas de calor; Habitação",
-    "collection": "Medições de ilhas de calor e qualidade do ar, Favela da Maré-RJ [2023]",
-    "project": "mare",
-    "access": "download",
-    "resources": {
-      "dados": {
-        "title": "Medições de qualidade do ar",
-        "file_pattern": "^qualidade_do_ar[.](parquet|tab|xlsx)$",
-        "documentation_pattern": null,
-        "formats": ["parquet", "tab", "xlsx"],
-        "is_spatial": false,
-        "years": [],
-        "default": true
+    "iptu_sp": {
+      "doi": "10.60873/FK2/TOXCRF",
+      "title": "IPTU e Verticalização, São Paulo [2024]",
+      "description": "Dados do IPTU agregados por lote para o município de São Paulo, com métricas de potencial construtivo e índice de verticalização. Conjunto de dados tratados e enriquecidos pelo Centro de Estudos das Cidades.",
+      "theme": "Habitação e Mercado Imobiliário",
+      "region": "São Paulo",
+      "keywords": "Residências; Imóveis; Cadastro imobiliário; Valor venal; Imposto",
+      "collection": "Densidade Populacional e Verticalização [2022,2024]",
+      "project": "densidade",
+      "access": "download",
+      "resources": {
+        "dados": {
+          "title": "IPTU residencial",
+          "file_pattern": "^iptu_residencial[.]",
+          "documentation_pattern": null,
+          "formats": ["geojson", "gpkg", "parquet"],
+          "is_spatial": true,
+          "years": [],
+          "default": true
+        }
       },
-      "pontos": {
-        "title": "Pontos das medições de qualidade do ar",
-        "file_pattern": "^qualidade_do_ar_pontos[.]",
-        "documentation_pattern": null,
-        "formats": ["geojson", "gpkg", "parquet"],
-        "is_spatial": true,
-        "years": [],
-        "default": false
-      }
+      "formats": ["geojson", "gpkg", "parquet"],
+      "is_spatial": true,
+      "status": "active"
     },
-    "formats": ["geojson", "gpkg", "parquet", "tab", "xlsx"],
-    "is_spatial": true,
-    "status": "active"
-  },
-  "areas_coleta_mare": {
-    "doi": "10.60873/FK2/TONMVQ",
-    "title": "Medições de ilhas de calor e qualidade do ar, Favela da Maré-RJ [2023]",
-    "description": "Estatísticas sobre ilhas de calor e qualidade do ar na Favela da Maré. Informações incluem: temperatura, umidade, dióxido de carbono, formaldeído (HCHO) e material particulado. Temperatura e umidade foram coletadas em diferentes turnos e dias da semana; a qualidade do ar, na última semana de cada mês (de segunda a sexta). Coletas feitas de março a setembro de 2023.",
-    "theme": "Clima e Meio Ambiente",
-    "region": "Rio de Janeiro",
-    "keywords": "Qualidade do ar; Desigualdade urbana; Urbanismo; Ilhas de calor; Habitação",
-    "collection": "Medições de ilhas de calor e qualidade do ar, Favela da Maré-RJ [2023]",
-    "project": "mare",
-    "access": "download",
-    "resources": {
-      "dados": {
-        "title": "Areas de coleta",
-        "file_pattern": "^areas_coleta[.]",
-        "documentation_pattern": null,
-        "formats": ["geojson", "gpkg", "parquet"],
-        "is_spatial": true,
-        "years": [],
-        "default": true
-      }
+    "alvaras_sp": {
+      "doi": "10.60873/FK2/FPCIDI",
+      "title": "Alvarás de licenciamento de novas edificações [2010-2024]",
+      "description": "Informações sobre novas edificações formais a partir de dados dos alvarás de licenciamento. Conjunto de dados tratados e enriquecidos pelo Centro de Estudos das Cidades.",
+      "theme": "Habitação e Mercado Imobiliário",
+      "region": "São Paulo",
+      "keywords": "Residências; Imóveis; Licenciamento; Novas edificações; Incorporação imobiliária",
+      "collection": "Alvarás de licenciamento de novas edificações [2004-2024]",
+      "project": "alvaras",
+      "access": "download",
+      "resources": {
+        "dados": {
+          "title": "Alvarás de construção",
+          "file_pattern": "^alvaras[.]",
+          "documentation_pattern": null,
+          "formats": ["geojson", "gpkg", "parquet"],
+          "is_spatial": true,
+          "years": [],
+          "default": true
+        }
+      },
+      "formats": ["geojson", "gpkg", "parquet"],
+      "is_spatial": true,
+      "status": "active"
     },
-    "formats": ["geojson", "gpkg", "parquet"],
-    "is_spatial": true,
-    "status": "active"
-  },
-  "pemob_anual": {
-    "doi": "10.60873/FK2/5XUNNW",
-    "title": "Pesquisa Nacional de Mobilidade Urbana (PEMOB) [2019-2024]",
-    "description": "Base anual e harmonizada (formato de painel) da PEMOB entre os anos de 2019 a 2024.",
-    "theme": "Mobilidade",
-    "region": "Brasil",
-    "keywords": "Mobilidade urbana; Gestão de transportes; Transporte público; SIMU; Políticas de mobilidade",
-    "collection": "Pesquisa Nacional de Mobilidade Urbana (PEMOB) [2019-2024]",
-    "project": "pemob",
-    "access": "download",
-    "resources": {
-      "dados": {
-        "title": "Bases anuais da PEMOB",
-        "file_pattern": "^pemob_[0-9]{4}[.]",
-        "documentation_pattern": null,
-        "formats": ["parquet", "tab", "xlsx"],
-        "is_spatial": false,
-        "years": ["2019", "2020", "2021", "2022", "2023", "2024"],
-        "default": true
-      }
+    "censo_setores_sp": {
+      "doi": "10.60873/FK2/GTO7DD",
+      "title": "População, Domicílios e Densidade Populacional por Setor Censitário [2022]",
+      "description": "Dados provisórios do Censo (2022) em formato GeoPackage (gpkg), agregados por setor censitário para o município de São Paulo. Conjunto de dados preparado para o estudo \"Para o bem ou para o mal: análise da capacidade que o governo tem de controlar a densidade habitacional\" (Theil, Gustavo).",
+      "theme": "Habitação e Mercado Imobiliário",
+      "region": "São Paulo",
+      "keywords": "Censo; IBGE; Densidade populacional; Demografia; População",
+      "collection": "Densidade Populacional e Verticalização [2022,2024]",
+      "project": "densidade",
+      "access": "download",
+      "resources": {
+        "dados": {
+          "title": "Densidade dos setores censitários",
+          "file_pattern": "^censo_densidade[.]",
+          "documentation_pattern": null,
+          "formats": ["geojson", "gpkg", "parquet"],
+          "is_spatial": true,
+          "years": [],
+          "default": true
+        }
+      },
+      "formats": ["geojson", "gpkg", "parquet"],
+      "is_spatial": true,
+      "status": "active"
     },
-    "formats": ["parquet", "tab", "xlsx"],
-    "is_spatial": false,
-    "status": "active"
-  },
-  "pemob_harmonizada": {
-    "doi": "10.60873/FK2/5XUNNW",
-    "title": "Pesquisa Nacional de Mobilidade Urbana (PEMOB) [2019-2024]",
-    "description": "Base anual e harmonizada (formato de painel) da PEMOB entre os anos de 2019 a 2024.",
-    "theme": "Mobilidade",
-    "region": "Brasil",
-    "keywords": "Mobilidade urbana; Gestão de transportes; Transporte público; SIMU; Políticas de mobilidade",
-    "collection": "Pesquisa Nacional de Mobilidade Urbana (PEMOB) [2019-2024]",
-    "project": "pemob",
-    "access": "download",
-    "resources": {
-      "dados": {
-        "title": "Painel harmonizado da PEMOB",
-        "file_pattern": "^pemob_harmonizada[.]",
-        "documentation_pattern": null,
-        "formats": ["parquet", "tab", "xlsx"],
-        "is_spatial": false,
-        "years": [],
-        "default": true
-      }
+    "iptu_verticalizacao_sp": {
+      "doi": "10.60873/FK2/4QNTOT",
+      "title": "Grade de densidade populacional e habitacional, São Paulo [2022, 2024]",
+      "description": "Dados demográficos e habitacionais agregados em um raster de 800x800m, resultado de interpolação (por área) de informações do Censo (2022) e do IPTU de São Paulo. Contém medidas de densidade populacional e de informalidade dos imóveis. Conjunto de dados preparado para o estudo \"Para o bem ou para o mal: análise da capacidade que o governo tem de controlar a densidade habitacional\" (Theil, Gustavo).",
+      "theme": "Habitação e Mercado Imobiliário",
+      "region": "São Paulo",
+      "keywords": "Habitação; Moradia; Densidade populacional; Verticalização; IPTU São Paulo",
+      "collection": "Densidade Populacional e Verticalização [2022,2024]",
+      "project": "densidade",
+      "access": "download",
+      "resources": {
+        "dados": {
+          "title": "Densidade populacional",
+          "file_pattern": "^densidade_populacional[.]",
+          "documentation_pattern": null,
+          "formats": ["geojson", "gpkg", "parquet"],
+          "is_spatial": true,
+          "years": [],
+          "default": true
+        }
+      },
+      "formats": ["geojson", "gpkg", "parquet"],
+      "is_spatial": true,
+      "status": "active"
     },
-    "formats": ["parquet", "tab", "xlsx"],
-    "is_spatial": false,
-    "status": "active"
-  },
-  "embarques_hora": {
-    "doi": "10.60873/FK2/9MZGJL",
-    "title": "Embarques por hora nas estações [2012-2026]",
-    "description": "Embarques diários por hora do dia e estação de trem/metrô dos sistemas operados pela Motiva. Dados incluem Metrô Bahia, ViaQuatro e VLT Carioca.",
-    "theme": "Mobilidade",
-    "region": "Brasil",
-    "keywords": "Transporte público; Demanda de passageiros; Sistemas metroferroviários; Metrô; VLT",
-    "collection": "Embarques nas Estações de Trem/Metrô operados pela Motiva [2012-2026]",
-    "project": "motiva",
-    "access": "download",
-    "resources": {
-      "dados": {
-        "title": "Embarques por horário",
-        "file_pattern": "^emb_horarios[.]",
-        "documentation_pattern": null,
-        "formats": ["csv", "parquet", "rds"],
-        "is_spatial": false,
-        "years": [],
-        "default": true
-      }
+    "densidade_imoveis_sp": {
+      "doi": "10.60873/FK2/90SSHM",
+      "title": "Densidade Populacional e Verticalização de Imóveis em São Paulo [2022,2024]",
+      "description": "Cruzamento entre os lotes do IPTU de São Paulo com dados do Censo, via interpolação de área, agregado por setor censitário. Conjunto de dados preparado para o estudo \"Para o bem ou para o mal: análise da capacidade que o governo tem de controlar a densidade habitacional\" (Theil, Gustavo).",
+      "theme": "Habitação e Mercado Imobiliário",
+      "region": "São Paulo",
+      "keywords": "Habitação; Moradia; Densidade populacional; Verticalização; IPTU São Paulo",
+      "collection": "Densidade Populacional e Verticalização [2022,2024]",
+      "project": "densidade",
+      "access": "download",
+      "resources": {
+        "dados": {
+          "title": "Densidade de imoveis",
+          "file_pattern": "^iptu_censo[.]",
+          "documentation_pattern": null,
+          "formats": ["geojson", "gpkg", "parquet"],
+          "is_spatial": true,
+          "years": [],
+          "default": true
+        }
+      },
+      "formats": ["geojson", "gpkg", "parquet"],
+      "is_spatial": true,
+      "status": "active"
     },
-    "formats": ["csv", "parquet", "rds"],
-    "is_spatial": false,
-    "status": "active"
-  },
-  "embarques_diarios": {
-    "doi": "10.60873/FK2/UTGQ0I",
-    "title": "Embarques diários nas estações [2012-2026]",
-    "description": "Total de embarques diários por estação de trem/metrô dos sistemas operados pela Motiva. Dados incluem Metrô Bahia, ViaQuatro, ViaMobilidade (Linhas 5, 8 e 9) e VLT Carioca.",
-    "theme": "Mobilidade",
-    "region": "Brasil",
-    "keywords": "Transporte público; Demanda de passageiros; Sistemas metroferroviários; Metrô; VLT",
-    "collection": "Embarques nas Estações de Trem/Metrô operados pela Motiva [2012-2026]",
-    "project": "motiva",
-    "access": "download",
-    "resources": {
-      "dados": {
-        "title": "Embarques diarios",
-        "file_pattern": "^emb_diarios[.]",
-        "documentation_pattern": null,
-        "formats": ["parquet", "rds", "tab"],
-        "is_spatial": false,
-        "years": [],
-        "default": true
-      }
+    "geoses_sp": {
+      "doi": "10.60873/FK2/7IXFPX",
+      "title": "Índice GeoSES [2010]",
+      "description": "Índice socioeconômico espacial GeoSES calculado por área de ponderação no município de São Paulo. O índice pondera dimensões de educação, mobilidade, pobreza, privação material, riqueza, renda e segregação, usando dados da Amostra do Censo Demográfico de 2010.",
+      "theme": "Multidisciplinar e Transversal",
+      "region": "São Paulo",
+      "keywords": "Índice socioeconômico; Desigualdade urbana; Estrutura socioeconômica urbana; Vulnerabilidade social",
+      "collection": "Índice GeoSES [2010]",
+      "project": "geoses",
+      "access": "download",
+      "resources": {
+        "dados": {
+          "title": "Índice GeoSES",
+          "file_pattern": "^geoses[.]",
+          "documentation_pattern": null,
+          "formats": ["geojson", "gpkg", "parquet", "tab", "xlsx"],
+          "is_spatial": true,
+          "years": [],
+          "default": true
+        }
+      },
+      "formats": ["geojson", "gpkg", "parquet", "tab", "xlsx"],
+      "is_spatial": true,
+      "status": "active"
     },
-    "formats": ["parquet", "rds", "tab"],
-    "is_spatial": false,
-    "status": "active"
-  },
-  "embarques_mensais": {
-    "doi": "10.60873/FK2/BPYHFB",
-    "title": "Médias mensais de embarques diários [2012-2026]",
-    "description": "Média de embarques diários por mês e tipo do dia (dia útil, sábado e domingo) dos sistemas operados pela Motiva. Dados incluem Metrô Bahia, ViaQuatro, ViaMobilidade (Linhas 5, 8 e 9) e VLT Carioca.",
-    "theme": "Mobilidade",
-    "region": "Brasil",
-    "keywords": "Transporte público; Demanda de passageiros; Sistemas metroferroviários; Metrô; VLT",
-    "collection": "Embarques nas Estações de Trem/Metrô operados pela Motiva [2012-2026]",
-    "project": "motiva",
-    "access": "download",
-    "resources": {
-      "dados": {
-        "title": "Media diaria de embarques",
-        "file_pattern": "^emb_media[.]",
-        "documentation_pattern": null,
-        "formats": ["rds", "tab", "xlsx"],
-        "is_spatial": false,
-        "years": [],
-        "default": true
-      }
+    "mortalidade_sp": {
+      "doi": "10.60873/FK2/CDXI9B",
+      "title": "Indicadores de mortalidade por distrito [2010-2019]",
+      "description": "Indicadores de mortalidade (óbitos observados, esperados e risco relativo) por distrito administrativo de São Paulo, de 2010 a 2019. Considera quatro causas: diabetes, doenças cerebrovasculares, doenças isquêmicas do coração e mortalidade materna.",
+      "theme": "Saúde",
+      "region": "São Paulo",
+      "keywords": "Mortalidade prematura; Mortalidade; Desigualdade urbana; Saúde pública; Mortalidade materna",
+      "collection": "Indicadores de mortalidade por distrito [2010-2019]",
+      "project": "mortalidade",
+      "access": "download",
+      "resources": {
+        "distritos": {
+          "title": "Distritos com indicadores de mortalidade",
+          "file_pattern": "^distritos_sp[.]",
+          "documentation_pattern": null,
+          "formats": ["geojson", "gpkg", "parquet"],
+          "is_spatial": true,
+          "years": [],
+          "default": true
+        }
+      },
+      "formats": ["geojson", "gpkg", "parquet"],
+      "is_spatial": true,
+      "status": "active"
     },
-    "formats": ["rds", "tab", "xlsx"],
-    "is_spatial": false,
-    "status": "active"
-  },
-  "embarques_integracao": {
-    "doi": "10.60873/FK2/UOKFMF",
-    "title": "Embarques mensais por modo de integração [2019-2026]",
-    "description": "Embarques mensais por modo de integração do Metrô Bahia.",
-    "theme": "Mobilidade",
-    "region": "Brasil",
-    "keywords": "Transporte público; Demanda de passageiros; Sistemas metroferroviários; Integração de modais; Metrô",
-    "collection": "Embarques nas Estações de Trem/Metrô operados pela Motiva [2012-2026]",
-    "project": "motiva",
-    "access": "download",
-    "resources": {
-      "dados": {
-        "title": "Embarques por modo",
-        "file_pattern": "^emb_modo[.]",
-        "documentation_pattern": null,
-        "formats": ["parquet", "rds", "tab", "xlsx"],
-        "is_spatial": false,
-        "years": [],
-        "default": true
-      }
+    "ilhas_calor_mare": {
+      "doi": "10.60873/FK2/TONMVQ",
+      "title": "Medições de ilhas de calor e qualidade do ar, Favela da Maré-RJ [2023]",
+      "description": "Estatísticas sobre ilhas de calor e qualidade do ar na Favela da Maré. Informações incluem: temperatura, umidade, dióxido de carbono, formaldeído (HCHO) e material particulado. Temperatura e umidade foram coletadas em diferentes turnos e dias da semana; a qualidade do ar, na última semana de cada mês (de segunda a sexta). Coletas feitas de março a setembro de 2023.",
+      "theme": "Clima e Meio Ambiente",
+      "region": "Rio de Janeiro",
+      "keywords": "Qualidade do ar; Desigualdade urbana; Urbanismo; Ilhas de calor; Habitação",
+      "collection": "Medições de ilhas de calor e qualidade do ar, Favela da Maré-RJ [2023]",
+      "project": "mare",
+      "access": "download",
+      "resources": {
+        "dados": {
+          "title": "Medições de ilhas de calor",
+          "file_pattern": "^ilhas_de_calor[.](parquet|tab|xlsx)$",
+          "documentation_pattern": null,
+          "formats": ["parquet", "tab", "xlsx"],
+          "is_spatial": false,
+          "years": [],
+          "default": true
+        },
+        "pontos": {
+          "title": "Pontos das medições de ilhas de calor",
+          "file_pattern": "^ilhas_de_calor_pontos[.]",
+          "documentation_pattern": null,
+          "formats": ["geojson", "gpkg", "parquet"],
+          "is_spatial": true,
+          "years": [],
+          "default": false
+        }
+      },
+      "formats": ["geojson", "gpkg", "parquet", "tab", "xlsx"],
+      "is_spatial": true,
+      "status": "active"
     },
-    "formats": ["parquet", "rds", "tab", "xlsx"],
-    "is_spatial": false,
-    "status": "active"
-  },
-  "linhas_motiva": {
-    "doi": "10.60873/FK2/YWXLQS",
-    "title": "Linhas e Estações Metroferroviárias (Motiva) [2026]",
-    "description": "Tabela de linhas e estações de trem/metrô dos sistemas operados pela Motiva. Dados incluem Metrô Bahia, ViaQuatro, ViaMobilidade (Linhas 5, 8 e 9) e VLT Carioca.",
-    "theme": "Mobilidade",
-    "region": "Brasil",
-    "keywords": "Transporte público; Sistemas metroferroviários; Metrô; VLT",
-    "collection": "Embarques nas Estações de Trem/Metrô operados pela Motiva [2012-2026]",
-    "project": "motiva",
-    "access": "download",
-    "resources": {
-      "dados": {
-        "title": "Linhas",
-        "file_pattern": "^dim_line[.]",
-        "documentation_pattern": "^documentacao_linhas[.]",
-        "formats": ["rds", "tab", "xlsx"],
-        "is_spatial": false,
-        "years": [],
-        "default": true
-      }
+    "qualidade_ar_mare": {
+      "doi": "10.60873/FK2/TONMVQ",
+      "title": "Medições de ilhas de calor e qualidade do ar, Favela da Maré-RJ [2023]",
+      "description": "Estatísticas sobre ilhas de calor e qualidade do ar na Favela da Maré. Informações incluem: temperatura, umidade, dióxido de carbono, formaldeído (HCHO) e material particulado. Temperatura e umidade foram coletadas em diferentes turnos e dias da semana; a qualidade do ar, na última semana de cada mês (de segunda a sexta). Coletas feitas de março a setembro de 2023.",
+      "theme": "Clima e Meio Ambiente",
+      "region": "Rio de Janeiro",
+      "keywords": "Qualidade do ar; Desigualdade urbana; Urbanismo; Ilhas de calor; Habitação",
+      "collection": "Medições de ilhas de calor e qualidade do ar, Favela da Maré-RJ [2023]",
+      "project": "mare",
+      "access": "download",
+      "resources": {
+        "dados": {
+          "title": "Medições de qualidade do ar",
+          "file_pattern": "^qualidade_do_ar[.](parquet|tab|xlsx)$",
+          "documentation_pattern": null,
+          "formats": ["parquet", "tab", "xlsx"],
+          "is_spatial": false,
+          "years": [],
+          "default": true
+        },
+        "pontos": {
+          "title": "Pontos das medições de qualidade do ar",
+          "file_pattern": "^qualidade_do_ar_pontos[.]",
+          "documentation_pattern": null,
+          "formats": ["geojson", "gpkg", "parquet"],
+          "is_spatial": true,
+          "years": [],
+          "default": false
+        }
+      },
+      "formats": ["geojson", "gpkg", "parquet", "tab", "xlsx"],
+      "is_spatial": true,
+      "status": "active"
     },
-    "formats": ["rds", "tab", "xlsx"],
-    "is_spatial": false,
-    "status": "active"
-  },
-  "estacoes_motiva": {
-    "doi": "10.60873/FK2/YWXLQS",
-    "title": "Linhas e Estações Metroferroviárias (Motiva) [2026]",
-    "description": "Tabela de linhas e estações de trem/metrô dos sistemas operados pela Motiva. Dados incluem Metrô Bahia, ViaQuatro, ViaMobilidade (Linhas 5, 8 e 9) e VLT Carioca.",
-    "theme": "Mobilidade",
-    "region": "Brasil",
-    "keywords": "Transporte público; Sistemas metroferroviários; Metrô; VLT",
-    "collection": "Embarques nas Estações de Trem/Metrô operados pela Motiva [2012-2026]",
-    "project": "motiva",
-    "access": "download",
-    "resources": {
-      "dados": {
-        "title": "Estações",
-        "file_pattern": "^dim_station[.]",
-        "documentation_pattern": "^documentacao_estacaoes[.]",
-        "formats": ["rds", "tab", "xlsx"],
-        "is_spatial": false,
-        "years": [],
-        "default": true
-      }
+    "areas_coleta_mare": {
+      "doi": "10.60873/FK2/TONMVQ",
+      "title": "Medições de ilhas de calor e qualidade do ar, Favela da Maré-RJ [2023]",
+      "description": "Estatísticas sobre ilhas de calor e qualidade do ar na Favela da Maré. Informações incluem: temperatura, umidade, dióxido de carbono, formaldeído (HCHO) e material particulado. Temperatura e umidade foram coletadas em diferentes turnos e dias da semana; a qualidade do ar, na última semana de cada mês (de segunda a sexta). Coletas feitas de março a setembro de 2023.",
+      "theme": "Clima e Meio Ambiente",
+      "region": "Rio de Janeiro",
+      "keywords": "Qualidade do ar; Desigualdade urbana; Urbanismo; Ilhas de calor; Habitação",
+      "collection": "Medições de ilhas de calor e qualidade do ar, Favela da Maré-RJ [2023]",
+      "project": "mare",
+      "access": "download",
+      "resources": {
+        "dados": {
+          "title": "Areas de coleta",
+          "file_pattern": "^areas_coleta[.]",
+          "documentation_pattern": null,
+          "formats": ["geojson", "gpkg", "parquet"],
+          "is_spatial": true,
+          "years": [],
+          "default": true
+        }
+      },
+      "formats": ["geojson", "gpkg", "parquet"],
+      "is_spatial": true,
+      "status": "active"
     },
-    "formats": ["rds", "tab", "xlsx"],
-    "is_spatial": false,
-    "status": "active"
-  },
-  "faixa_azul_sp": {
-    "doi": "10.60873/FK2/A4AC1I",
-    "title": "Trechos com Faixas Dedicadas a Motociclistas (Faixa Azul) [2022-2025]",
-    "description": "Localização dos trechos com faixas de trânsito dedicadas a motociclistas (Faixa Azul) implementadas em São Paulo no período de 2022 a 2025.",
-    "theme": "Mobilidade",
-    "region": "São Paulo",
-    "keywords": "Mobilidade urbana; Motociclistas; Faixa Azul; Políticas de mobilidade",
-    "collection": "Trechos com Faixas Dedicadas a Motociclistas (Faixa Azul) [2022-2025]",
-    "project": "faixa_azul",
-    "access": "download",
-    "resources": {
-      "dados": {
-        "title": "Faixa Azul",
-        "file_pattern": "^faixa_azul[.]",
-        "documentation_pattern": null,
-        "formats": ["geojson", "gpkg", "parquet"],
-        "is_spatial": true,
-        "years": [],
-        "default": true
-      }
+    "pemob_anual": {
+      "doi": "10.60873/FK2/5XUNNW",
+      "title": "Pesquisa Nacional de Mobilidade Urbana (PEMOB) [2019-2024]",
+      "description": "Base anual e harmonizada (formato de painel) da PEMOB entre os anos de 2019 a 2024.",
+      "theme": "Mobilidade",
+      "region": "Brasil",
+      "keywords": "Mobilidade urbana; Gestão de transportes; Transporte público; SIMU; Políticas de mobilidade",
+      "collection": "Pesquisa Nacional de Mobilidade Urbana (PEMOB) [2019-2024]",
+      "project": "pemob",
+      "access": "download",
+      "resources": {
+        "dados": {
+          "title": "Bases anuais da PEMOB",
+          "file_pattern": "^pemob_[0-9]{4}[.]",
+          "documentation_pattern": null,
+          "formats": ["parquet", "tab", "xlsx"],
+          "is_spatial": false,
+          "years": ["2019", "2020", "2021", "2022", "2023", "2024"],
+          "default": true
+        }
+      },
+      "formats": ["parquet", "tab", "xlsx"],
+      "is_spatial": false,
+      "status": "active"
     },
-    "formats": ["geojson", "gpkg", "parquet"],
-    "is_spatial": true,
-    "status": "active"
-  },
-  "sinistros_sp": {
-    "doi": "10.60873/FK2/IRGJPX",
-    "title": "Sinistros de Trânsito [2022-2025]",
-    "description": "Sinistros de trânsito em São Paulo (SP) no período de 2022 a 2025, extraídos do InfoSiga.",
-    "theme": "Mobilidade",
-    "region": "São Paulo",
-    "keywords": "Sinistros de trânsito; Segurança viária; Mobilidade urbana",
-    "collection": "Sinistros de Trânsito [2022-2025]",
-    "project": "faixa_azul",
-    "access": "download",
-    "resources": {
-      "dados": {
-        "title": "Sinistros",
-        "file_pattern": "^sinistros[.]",
-        "documentation_pattern": null,
-        "formats": ["parquet", "tab", "xlsx"],
-        "is_spatial": false,
-        "years": [],
-        "default": true
-      }
+    "pemob_harmonizada": {
+      "doi": "10.60873/FK2/5XUNNW",
+      "title": "Pesquisa Nacional de Mobilidade Urbana (PEMOB) [2019-2024]",
+      "description": "Base anual e harmonizada (formato de painel) da PEMOB entre os anos de 2019 a 2024.",
+      "theme": "Mobilidade",
+      "region": "Brasil",
+      "keywords": "Mobilidade urbana; Gestão de transportes; Transporte público; SIMU; Políticas de mobilidade",
+      "collection": "Pesquisa Nacional de Mobilidade Urbana (PEMOB) [2019-2024]",
+      "project": "pemob",
+      "access": "download",
+      "resources": {
+        "dados": {
+          "title": "Painel harmonizado da PEMOB",
+          "file_pattern": "^pemob_harmonizada[.]",
+          "documentation_pattern": null,
+          "formats": ["parquet", "tab", "xlsx"],
+          "is_spatial": false,
+          "years": [],
+          "default": true
+        }
+      },
+      "formats": ["parquet", "tab", "xlsx"],
+      "is_spatial": false,
+      "status": "active"
     },
-    "formats": ["parquet", "tab", "xlsx"],
-    "is_spatial": false,
-    "status": "active"
-  },
-  "sinistros_via_sp": {
-    "doi": "10.60873/FK2/XA5PFG",
-    "title": "Sinistros de Trânsito Agregados por Via [2022-2025]",
-    "description": "Localização de trechos com sinistros de trânsito entre 2022 e 2025. Sinistros individuais foram agregados em trechos de vias.",
-    "theme": "Mobilidade",
-    "region": "São Paulo",
-    "keywords": "Sinistros de trânsito; Segurança viária; Mobilidade urbana; Faixa Azul",
-    "collection": "Sinistros de Trânsito [2022-2025]",
-    "project": "faixa_azul",
-    "access": "download",
-    "resources": {
-      "dados": {
-        "title": "Sinistros agregados por trecho",
-        "file_pattern": "^trechos_agregados_sinistros[.]",
-        "documentation_pattern": null,
-        "formats": ["geojson", "gpkg", "parquet", "tab", "xlsx"],
-        "is_spatial": true,
-        "years": [],
-        "default": true
-      }
+    "embarques_hora": {
+      "doi": "10.60873/FK2/9MZGJL",
+      "title": "Embarques por hora nas estações [2012-2026]",
+      "description": "Embarques diários por hora do dia e estação de trem/metrô dos sistemas operados pela Motiva. Dados incluem Metrô Bahia, ViaQuatro e VLT Carioca.",
+      "theme": "Mobilidade",
+      "region": "Brasil",
+      "keywords": "Transporte público; Demanda de passageiros; Sistemas metroferroviários; Metrô; VLT",
+      "collection": "Embarques nas Estações de Trem/Metrô operados pela Motiva [2012-2026]",
+      "project": "motiva",
+      "access": "download",
+      "resources": {
+        "dados": {
+          "title": "Embarques por horário",
+          "file_pattern": "^emb_horarios[.]",
+          "documentation_pattern": null,
+          "formats": ["csv", "parquet", "rds"],
+          "is_spatial": false,
+          "years": [],
+          "default": true
+        }
+      },
+      "formats": ["csv", "parquet", "rds"],
+      "is_spatial": false,
+      "status": "active"
     },
-    "formats": ["geojson", "gpkg", "parquet", "tab", "xlsx"],
-    "is_spatial": true,
-    "status": "active"
-  },
-  "_unpublished_2": {
-    "doi": null,
-    "title": "Rotas dos entregadores parceiros do iFood [2022-2026]",
-    "description": "Registros de velocidade e fluxo das rotas de entregas feitas pelos entregadores parceiros do iFood nas vias principais. Conjunto de dados disponibilizados a partir da parceria do CDIA com o iFood.",
-    "theme": "Mobilidade",
-    "region": "São Paulo",
-    "collection": "Rotas dos entregadores parceiros do iFood [2022-2026]",
-    "access": "secure_room",
-    "formats": [],
-    "is_spatial": false,
-    "status": "unpublished"
-  },
-  "_unpublished_3": {
-    "doi": null,
-    "title": "Programas educacionais do iFood [2022-2026]",
-    "description": "Informações sobre participação dos entregadores parceiros do iFood nos programas Decola e Meu Diploma do Ensino Médio (MDEM). Conjunto de dados disponibilizados a partir da parceria do CDIA com o iFood.",
-    "theme": "Educação",
-    "region": "São Paulo",
-    "collection": "Programas educacionais do iFood [2022-2026]",
-    "access": "secure_room",
-    "formats": [],
-    "is_spatial": false,
-    "status": "unpublished"
-  },
-  "_unpublished_4": {
-    "doi": null,
-    "title": "Ganhos e horas trabalhadas dos entregadores parceiros do iFood [2022-2026]",
-    "description": "Informações sobre horas trabalhadas e ganhos dos entregadores parceiros do iFood. Conjunto de dados disponibilizados a partir da parceria do CDIA com o iFood.",
-    "theme": "Trabalho e Renda",
-    "region": "São Paulo",
-    "collection": "Ganhos e horas trabalhadas dos entregadores parceiros do iFood [2022-2026]",
-    "access": "secure_room",
-    "formats": [],
-    "is_spatial": false,
-    "status": "unpublished"
-  },
-  "_unpublished_22": {
-    "doi": null,
-    "title": "Contratos e Anúncios Imobiliários, Loft [2019-2026]",
-    "description": "Dados detalhados sobre anúncios e contratos imobiliários, incluindo características dos imóveis e dos condomínios, nas cidades com atuação da Loft.",
-    "theme": "Habitação e Mercado Imobiliário",
-    "region": "Brasil",
-    "collection": "Loft [2019-2026]",
-    "access": "secure_room",
-    "formats": [],
-    "is_spatial": false,
-    "status": "unpublished"
-  },
-  "_unpublished_23": {
-    "doi": null,
-    "title": "Contratos e Anúncios Imobiliários, QuintoAndar [2011-2025]",
-    "description": "Dados detalhados sobre anúncios e contratos imobiliários, incluindo características dos imóveis e dos condomínios, nas cidades com atuação do QuintoAndar.",
-    "theme": "Habitação e Mercado Imobiliário",
-    "region": "Brasil",
-    "collection": "QuintoAndar [2011-2025]",
-    "access": "secure_room",
-    "formats": [],
-    "is_spatial": false,
-    "status": "unpublished"
-  },
-  "densidade_vertical_sp": {
-    "doi": "10.60873/FK2/HEK6TH",
-    "superseded_by": null,
-    "reason": "Deposito removido do Dataverse",
-    "status": "retired"
-  },
-  "ubs_sp": {
-    "doi": "10.60873/FK2/YZBSBF",
-    "superseded_by": null,
-    "reason": "Deposito removido do Dataverse",
-    "status": "retired"
-  },
-  "temperatura_ar_mare": {
-    "doi": "10.60873/FK2/NQA7LY",
-    "superseded_by": "ilhas_calor_mare",
-    "reason": "Renomeado e incorporado ao deposito TONMVQ",
-    "status": "retired"
-  },
-  "qualidade_ar_mare_old": {
-    "doi": "10.60873/FK2/OICDGN",
-    "superseded_by": "qualidade_ar_mare",
-    "reason": "Incorporado ao deposito TONMVQ",
-    "status": "retired"
-  },
-  "pemob_anual_old": {
-    "doi": "10.60873/FK2/CNEBWU",
-    "superseded_by": "pemob_anual",
-    "reason": "Incorporado ao deposito 5XUNNW",
-    "status": "retired"
-  },
-  "pemob_harmonizada_old": {
-    "doi": "10.60873/FK2/LE4FRB",
-    "superseded_by": "pemob_harmonizada",
-    "reason": "Incorporado ao deposito 5XUNNW",
-    "status": "retired"
-  },
-  "mortalidade_sp_old": {
-    "doi": "10.60873/FK2/JJ8JIN",
-    "superseded_by": "mortalidade_sp",
-    "reason": "Substituido pelo DOI CDXI9B",
-    "status": "retired"
+    "embarques_diarios": {
+      "doi": "10.60873/FK2/UTGQ0I",
+      "title": "Embarques diários nas estações [2012-2026]",
+      "description": "Total de embarques diários por estação de trem/metrô dos sistemas operados pela Motiva. Dados incluem Metrô Bahia, ViaQuatro, ViaMobilidade (Linhas 5, 8 e 9) e VLT Carioca.",
+      "theme": "Mobilidade",
+      "region": "Brasil",
+      "keywords": "Transporte público; Demanda de passageiros; Sistemas metroferroviários; Metrô; VLT",
+      "collection": "Embarques nas Estações de Trem/Metrô operados pela Motiva [2012-2026]",
+      "project": "motiva",
+      "access": "download",
+      "resources": {
+        "dados": {
+          "title": "Embarques diarios",
+          "file_pattern": "^emb_diarios[.]",
+          "documentation_pattern": null,
+          "formats": ["parquet", "rds", "tab"],
+          "is_spatial": false,
+          "years": [],
+          "default": true
+        }
+      },
+      "formats": ["parquet", "rds", "tab"],
+      "is_spatial": false,
+      "status": "active"
+    },
+    "embarques_mensais": {
+      "doi": "10.60873/FK2/BPYHFB",
+      "title": "Médias mensais de embarques diários [2012-2026]",
+      "description": "Média de embarques diários por mês e tipo do dia (dia útil, sábado e domingo) dos sistemas operados pela Motiva. Dados incluem Metrô Bahia, ViaQuatro, ViaMobilidade (Linhas 5, 8 e 9) e VLT Carioca.",
+      "theme": "Mobilidade",
+      "region": "Brasil",
+      "keywords": "Transporte público; Demanda de passageiros; Sistemas metroferroviários; Metrô; VLT",
+      "collection": "Embarques nas Estações de Trem/Metrô operados pela Motiva [2012-2026]",
+      "project": "motiva",
+      "access": "download",
+      "resources": {
+        "dados": {
+          "title": "Media diaria de embarques",
+          "file_pattern": "^emb_media[.]",
+          "documentation_pattern": null,
+          "formats": ["rds", "tab", "xlsx"],
+          "is_spatial": false,
+          "years": [],
+          "default": true
+        }
+      },
+      "formats": ["rds", "tab", "xlsx"],
+      "is_spatial": false,
+      "status": "active"
+    },
+    "embarques_integracao": {
+      "doi": "10.60873/FK2/UOKFMF",
+      "title": "Embarques mensais por modo de integração [2019-2026]",
+      "description": "Embarques mensais por modo de integração do Metrô Bahia.",
+      "theme": "Mobilidade",
+      "region": "Brasil",
+      "keywords": "Transporte público; Demanda de passageiros; Sistemas metroferroviários; Integração de modais; Metrô",
+      "collection": "Embarques nas Estações de Trem/Metrô operados pela Motiva [2012-2026]",
+      "project": "motiva",
+      "access": "download",
+      "resources": {
+        "dados": {
+          "title": "Embarques por modo",
+          "file_pattern": "^emb_modo[.]",
+          "documentation_pattern": null,
+          "formats": ["parquet", "rds", "tab", "xlsx"],
+          "is_spatial": false,
+          "years": [],
+          "default": true
+        }
+      },
+      "formats": ["parquet", "rds", "tab", "xlsx"],
+      "is_spatial": false,
+      "status": "active"
+    },
+    "linhas_motiva": {
+      "doi": "10.60873/FK2/YWXLQS",
+      "title": "Linhas e Estações Metroferroviárias (Motiva) [2026]",
+      "description": "Tabela de linhas e estações de trem/metrô dos sistemas operados pela Motiva. Dados incluem Metrô Bahia, ViaQuatro, ViaMobilidade (Linhas 5, 8 e 9) e VLT Carioca.",
+      "theme": "Mobilidade",
+      "region": "Brasil",
+      "keywords": "Transporte público; Sistemas metroferroviários; Metrô; VLT",
+      "collection": "Embarques nas Estações de Trem/Metrô operados pela Motiva [2012-2026]",
+      "project": "motiva",
+      "access": "download",
+      "resources": {
+        "dados": {
+          "title": "Linhas",
+          "file_pattern": "^dim_line[.]",
+          "documentation_pattern": "^documentacao_linhas[.]",
+          "formats": ["rds", "tab", "xlsx"],
+          "is_spatial": false,
+          "years": [],
+          "default": true
+        }
+      },
+      "formats": ["rds", "tab", "xlsx"],
+      "is_spatial": false,
+      "status": "active"
+    },
+    "estacoes_motiva": {
+      "doi": "10.60873/FK2/YWXLQS",
+      "title": "Linhas e Estações Metroferroviárias (Motiva) [2026]",
+      "description": "Tabela de linhas e estações de trem/metrô dos sistemas operados pela Motiva. Dados incluem Metrô Bahia, ViaQuatro, ViaMobilidade (Linhas 5, 8 e 9) e VLT Carioca.",
+      "theme": "Mobilidade",
+      "region": "Brasil",
+      "keywords": "Transporte público; Sistemas metroferroviários; Metrô; VLT",
+      "collection": "Embarques nas Estações de Trem/Metrô operados pela Motiva [2012-2026]",
+      "project": "motiva",
+      "access": "download",
+      "resources": {
+        "dados": {
+          "title": "Estações",
+          "file_pattern": "^dim_station[.]",
+          "documentation_pattern": "^documentacao_estacaoes[.]",
+          "formats": ["rds", "tab", "xlsx"],
+          "is_spatial": false,
+          "years": [],
+          "default": true
+        }
+      },
+      "formats": ["rds", "tab", "xlsx"],
+      "is_spatial": false,
+      "status": "active"
+    },
+    "faixa_azul_sp": {
+      "doi": "10.60873/FK2/A4AC1I",
+      "title": "Trechos com Faixas Dedicadas a Motociclistas (Faixa Azul) [2022-2025]",
+      "description": "Localização dos trechos com faixas de trânsito dedicadas a motociclistas (Faixa Azul) implementadas em São Paulo no período de 2022 a 2025.",
+      "theme": "Mobilidade",
+      "region": "São Paulo",
+      "keywords": "Mobilidade urbana; Motociclistas; Faixa Azul; Políticas de mobilidade",
+      "collection": "Trechos com Faixas Dedicadas a Motociclistas (Faixa Azul) [2022-2025]",
+      "project": "faixa_azul",
+      "access": "download",
+      "resources": {
+        "dados": {
+          "title": "Faixa Azul",
+          "file_pattern": "^faixa_azul[.]",
+          "documentation_pattern": null,
+          "formats": ["geojson", "gpkg", "parquet"],
+          "is_spatial": true,
+          "years": [],
+          "default": true
+        }
+      },
+      "formats": ["geojson", "gpkg", "parquet"],
+      "is_spatial": true,
+      "status": "active"
+    },
+    "sinistros_sp": {
+      "doi": "10.60873/FK2/IRGJPX",
+      "title": "Sinistros de Trânsito [2022-2025]",
+      "description": "Sinistros de trânsito em São Paulo (SP) no período de 2022 a 2025, extraídos do InfoSiga.",
+      "theme": "Mobilidade",
+      "region": "São Paulo",
+      "keywords": "Sinistros de trânsito; Segurança viária; Mobilidade urbana",
+      "collection": "Sinistros de Trânsito [2022-2025]",
+      "project": "faixa_azul",
+      "access": "download",
+      "resources": {
+        "dados": {
+          "title": "Sinistros",
+          "file_pattern": "^sinistros[.]",
+          "documentation_pattern": null,
+          "formats": ["parquet", "tab", "xlsx"],
+          "is_spatial": false,
+          "years": [],
+          "default": true
+        }
+      },
+      "formats": ["parquet", "tab", "xlsx"],
+      "is_spatial": false,
+      "status": "active"
+    },
+    "sinistros_via_sp": {
+      "doi": "10.60873/FK2/XA5PFG",
+      "title": "Sinistros de Trânsito Agregados por Via [2022-2025]",
+      "description": "Localização de trechos com sinistros de trânsito entre 2022 e 2025. Sinistros individuais foram agregados em trechos de vias.",
+      "theme": "Mobilidade",
+      "region": "São Paulo",
+      "keywords": "Sinistros de trânsito; Segurança viária; Mobilidade urbana; Faixa Azul",
+      "collection": "Sinistros de Trânsito [2022-2025]",
+      "project": "faixa_azul",
+      "access": "download",
+      "resources": {
+        "dados": {
+          "title": "Sinistros agregados por trecho",
+          "file_pattern": "^trechos_agregados_sinistros[.]",
+          "documentation_pattern": null,
+          "formats": ["geojson", "gpkg", "parquet", "tab", "xlsx"],
+          "is_spatial": true,
+          "years": [],
+          "default": true
+        }
+      },
+      "formats": ["geojson", "gpkg", "parquet", "tab", "xlsx"],
+      "is_spatial": true,
+      "status": "active"
+    },
+    "_unpublished_2": {
+      "doi": null,
+      "title": "Rotas dos entregadores parceiros do iFood [2022-2026]",
+      "description": "Registros de velocidade e fluxo das rotas de entregas feitas pelos entregadores parceiros do iFood nas vias principais. Conjunto de dados disponibilizados a partir da parceria do CDIA com o iFood.",
+      "theme": "Mobilidade",
+      "region": "São Paulo",
+      "collection": "Rotas dos entregadores parceiros do iFood [2022-2026]",
+      "access": "secure_room",
+      "formats": [],
+      "is_spatial": false,
+      "status": "unpublished"
+    },
+    "_unpublished_3": {
+      "doi": null,
+      "title": "Programas educacionais do iFood [2022-2026]",
+      "description": "Informações sobre participação dos entregadores parceiros do iFood nos programas Decola e Meu Diploma do Ensino Médio (MDEM). Conjunto de dados disponibilizados a partir da parceria do CDIA com o iFood.",
+      "theme": "Educação",
+      "region": "São Paulo",
+      "collection": "Programas educacionais do iFood [2022-2026]",
+      "access": "secure_room",
+      "formats": [],
+      "is_spatial": false,
+      "status": "unpublished"
+    },
+    "_unpublished_4": {
+      "doi": null,
+      "title": "Ganhos e horas trabalhadas dos entregadores parceiros do iFood [2022-2026]",
+      "description": "Informações sobre horas trabalhadas e ganhos dos entregadores parceiros do iFood. Conjunto de dados disponibilizados a partir da parceria do CDIA com o iFood.",
+      "theme": "Trabalho e Renda",
+      "region": "São Paulo",
+      "collection": "Ganhos e horas trabalhadas dos entregadores parceiros do iFood [2022-2026]",
+      "access": "secure_room",
+      "formats": [],
+      "is_spatial": false,
+      "status": "unpublished"
+    },
+    "_unpublished_22": {
+      "doi": null,
+      "title": "Contratos e Anúncios Imobiliários, Loft [2019-2026]",
+      "description": "Dados detalhados sobre anúncios e contratos imobiliários, incluindo características dos imóveis e dos condomínios, nas cidades com atuação da Loft.",
+      "theme": "Habitação e Mercado Imobiliário",
+      "region": "Brasil",
+      "collection": "Loft [2019-2026]",
+      "access": "secure_room",
+      "formats": [],
+      "is_spatial": false,
+      "status": "unpublished"
+    },
+    "_unpublished_23": {
+      "doi": null,
+      "title": "Contratos e Anúncios Imobiliários, QuintoAndar [2011-2025]",
+      "description": "Dados detalhados sobre anúncios e contratos imobiliários, incluindo características dos imóveis e dos condomínios, nas cidades com atuação do QuintoAndar.",
+      "theme": "Habitação e Mercado Imobiliário",
+      "region": "Brasil",
+      "collection": "QuintoAndar [2011-2025]",
+      "access": "secure_room",
+      "formats": [],
+      "is_spatial": false,
+      "status": "unpublished"
+    },
+    "densidade_vertical_sp": {
+      "doi": "10.60873/FK2/HEK6TH",
+      "superseded_by": null,
+      "reason": "Deposito removido do Dataverse",
+      "status": "retired"
+    },
+    "ubs_sp": {
+      "doi": "10.60873/FK2/YZBSBF",
+      "superseded_by": null,
+      "reason": "Deposito removido do Dataverse",
+      "status": "retired"
+    },
+    "temperatura_ar_mare": {
+      "doi": "10.60873/FK2/NQA7LY",
+      "superseded_by": "ilhas_calor_mare",
+      "reason": "Renomeado e incorporado ao deposito TONMVQ",
+      "status": "retired"
+    },
+    "qualidade_ar_mare_old": {
+      "doi": "10.60873/FK2/OICDGN",
+      "superseded_by": "qualidade_ar_mare",
+      "reason": "Incorporado ao deposito TONMVQ",
+      "status": "retired"
+    },
+    "pemob_anual_old": {
+      "doi": "10.60873/FK2/CNEBWU",
+      "superseded_by": "pemob_anual",
+      "reason": "Incorporado ao deposito 5XUNNW",
+      "status": "retired"
+    },
+    "pemob_harmonizada_old": {
+      "doi": "10.60873/FK2/LE4FRB",
+      "superseded_by": "pemob_harmonizada",
+      "reason": "Incorporado ao deposito 5XUNNW",
+      "status": "retired"
+    },
+    "mortalidade_sp_old": {
+      "doi": "10.60873/FK2/JJ8JIN",
+      "superseded_by": "mortalidade_sp",
+      "reason": "Substituido pelo DOI CDXI9B",
+      "status": "retired"
+    }
   }
 }

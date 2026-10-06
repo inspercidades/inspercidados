@@ -160,3 +160,21 @@ test_that("an archived row may share a DOI with an active row", {
   catalog$filtro_acesso[1] <- "Arquivado"
   expect_no_error(validate_catalog(catalog))
 })
+
+test_that("written registries carry a schema version", {
+  dir <- withr::local_tempdir()
+  write_registry(
+    list(alias = list(status = "active")),
+    list(project = list(datasets = list("alias"))),
+    dir = dir
+  )
+
+  datasets <- jsonlite::read_json(file.path(dir, "datasets.json"))
+  projects <- jsonlite::read_json(file.path(dir, "projects.json"))
+  expect_equal(
+    datasets[["schema_version"]],
+    asNamespace("inspercidados")$registry_schema_version
+  )
+  expect_named(datasets[["datasets"]], "alias")
+  expect_named(projects[["projects"]], "project")
+})
