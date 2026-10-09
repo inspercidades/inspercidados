@@ -19,6 +19,7 @@ The package website is built with **pkgdown**.
 | `list_datasets()`  | List datasets; `search`, `theme`, `region`, `project`, and `spatial` filters; `include` switches between active, catalogued (secure room), and all entries |
 | `list_projects()`  | List the studies behind the datasets, with their repos                                                                                                     |
 | `get_dataset()`    | Download a registered dataset into R                                                                                                                       |
+| `query_dataset()`  | Query a registered parquet dataset lazily with DuckDB, without downloading it |
 | `get_dataverse()`  | Download any Insper Dataverse deposit from a pasted DOI/URL                                                                                                |
 | `open_project()` | Print a study, its datasets, and open its repository                                                                                                       |
 | `cite_dataset()`   | Generate a citation for a dataset                                                                                                                          |
@@ -42,6 +43,7 @@ R/list_datasets.R           <- list_datasets()
 R/list_projects.R           <- list_projects()
 R/get_dataset.R             <- get_dataset()
 R/get_dataverse.R           <- get_dataverse()
+R/query_dataset.R           <- query_dataset()
 R/open_project.R          <- open_project()
 R/cite_dataset.R            <- cite_dataset()
 R/get_script.R              <- deprecated shim
@@ -292,6 +294,7 @@ Deposit and catalog work that waits on other people lives in
 - `sf` — spatial GeoPackage and GeoJSON support
 - `readxl` — Excel file support
 - `curl` — server check in `live_examples()`
+- `duckdb` (>= 1.5.5), `DBI`, `dbplyr`, `dplyr` — lazy queries in `query_dataset()`
 - `lifecycle` — deprecation badge on `get_script()`
 - `googlesheets4`, `janitor` — used only by `data-raw/build_registry.R`
 - `knitr`, `rmarkdown`, `testthat`, `pkgdown` — vignettes, tests, website
