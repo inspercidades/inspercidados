@@ -32,6 +32,10 @@ Imports:
 Suggests:
     arrow (>= 8.0.0),
     curl,
+    DBI,
+    dbplyr,
+    dplyr,
+    duckdb (>= 1.5.5),
     sf,
     readxl,
     knitr,

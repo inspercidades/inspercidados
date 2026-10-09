@@ -1,5 +1,6 @@
 # inspercidados 0.5.0
 
+- Added `query_dataset()`, which opens a parquet dataset as a lazy DuckDB table that reads from Dataverse without downloading the whole file.
 - Changed the registry to load from GitHub once per session, so datasets added after a release appear without reinstalling. The package falls back to its shipped copy when GitHub cannot be reached, and `options(inspercidados.registry = "bundled")` forces the shipped copy.
 
 # inspercidados 0.4.0

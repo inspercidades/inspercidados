@@ -642,3 +642,73 @@ read_dv_file <- function(filename, doi_url, server, ftype) {
 # traverse, so declare the import explicitly.
 #' @importFrom readr read_delim
 NULL
+
+# DuckDB ---------------------------------------------------------------------
+
+# Dataverse access URLs for the parquet files of one resource. Dataverse
+# redirects each URL to a signed S3 link that DuckDB can range-read.
+parquet_file_urls <- function(
+  files,
+  file_pattern,
+  year = NULL,
+  server = insper_server()
+) {
+  labels <- vapply(files, function(f) f[["label"]], character(1))
+  keep <- grepl(file_pattern, labels, perl = TRUE) &
+    effective_ext(labels) %in% c("parquet", "pq")
+  if (!is.null(year)) {
+    keep <- keep & grepl(as.character(year), labels, fixed = TRUE)
+  }
+  if (!any(keep)) {
+    msg <- if (is.null(year)) {
+      "No parquet file matched this resource."
+    } else {
+      "No parquet file matched this resource for {.arg year} {.val {year}}."
+    }
+    cli::cli_abort(c(msg, "i" = "Files present: {.val {labels}}"))
+  }
+  ids <- vapply(files[keep], function(f) f[["dataFile"]][["id"]], numeric(1))
+  return(paste0("https://", server, "/api/access/datafile/", ids))
+}
+
+read_parquet_sql <- function(urls) {
+  quoted <- DBI::dbQuoteString(DBI::ANSI(), urls)
+  return(paste0(
+    "SELECT * FROM read_parquet([",
+    paste(quoted, collapse = ", "),
+    "], union_by_name = true)"
+  ))
+}
+
+.duckdb_cache <- new.env(parent = emptyenv())
+
+# One in-memory DuckDB connection per session. The shared extension cache
+# lets httpfs load when its download server is unavailable.
+duckdb_connection <- function() {
+  con <- .duckdb_cache$con
+  if (!is.null(con) && DBI::dbIsValid(con)) {
+    return(con)
+  }
+  con <- DBI::dbConnect(duckdb::duckdb(shared_home = TRUE))
+  ready <- FALSE
+  on.exit(if (!ready) DBI::dbDisconnect(con, shutdown = TRUE), add = TRUE)
+  tryCatch(
+    DBI::dbExecute(con, "LOAD httpfs"),
+    error = function(e) {
+      DBI::dbExecute(con, "INSTALL httpfs")
+      DBI::dbExecute(con, "LOAD httpfs")
+    }
+  )
+  .duckdb_cache$con <- con
+  reg.finalizer(
+    .duckdb_cache,
+    function(e) {
+      if (!is.null(e$con) && DBI::dbIsValid(e$con)) {
+        DBI::dbDisconnect(e$con, shutdown = TRUE)
+      }
+    },
+    onexit = TRUE
+  )
+  ready <- TRUE
+  return(con)
+}
