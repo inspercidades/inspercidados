@@ -647,6 +647,8 @@ NULL
 
 # Dataverse access URLs for the parquet files of one resource. Dataverse
 # redirects each URL to a signed S3 link that DuckDB can range-read.
+# `gbrecs=true` keeps DuckDB's repeated range requests out of the deposit's
+# download counts.
 parquet_file_urls <- function(
   files,
   file_pattern,
@@ -667,8 +669,14 @@ parquet_file_urls <- function(
     }
     cli::cli_abort(c(msg, "i" = "Files present: {.val {labels}}"))
   }
-  ids <- vapply(files[keep], function(f) f[["dataFile"]][["id"]], numeric(1))
-  return(paste0("https://", server, "/api/access/datafile/", ids))
+  ids <- vapply(files[keep], function(f) f[["dataFile"]][["id"]], integer(1))
+  return(paste0(
+    "https://",
+    server,
+    "/api/access/datafile/",
+    ids,
+    "?gbrecs=true"
+  ))
 }
 
 read_parquet_sql <- function(urls) {

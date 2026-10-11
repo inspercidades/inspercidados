@@ -9,7 +9,7 @@ test_that("parquet_file_urls() builds access URLs from file ids", {
 
   out <- parquet_file_urls(files, "^itbi[.]", server = "example.org")
 
-  expect_equal(out, "https://example.org/api/access/datafile/102")
+  expect_equal(out, "https://example.org/api/access/datafile/102?gbrecs=true")
 })
 
 test_that("parquet_file_urls() keeps every annual file when year is NULL", {
@@ -24,7 +24,22 @@ test_that("parquet_file_urls() keeps every annual file when year is NULL", {
 
   expect_equal(
     out,
-    paste0("https://example.org/api/access/datafile/", c(101, 102))
+    paste0(
+      "https://example.org/api/access/datafile/",
+      c(101, 102),
+      "?gbrecs=true"
+    )
+  )
+})
+
+test_that("parquet_file_urls() writes large file ids in full", {
+  files <- list(list(label = "itbi.parquet", dataFile = list(id = 100000L)))
+
+  out <- parquet_file_urls(files, "^itbi[.]", server = "example.org")
+
+  expect_equal(
+    out,
+    "https://example.org/api/access/datafile/100000?gbrecs=true"
   )
 })
 
@@ -38,7 +53,7 @@ test_that("parquet_file_urls() filters by year", {
     server = "example.org"
   )
 
-  expect_equal(out, "https://example.org/api/access/datafile/102")
+  expect_equal(out, "https://example.org/api/access/datafile/102?gbrecs=true")
 })
 
 test_that("parquet_file_urls() aborts when no parquet file matches", {
@@ -91,6 +106,9 @@ test_that("query_dataset() validates year before querying", {
 })
 
 test_that("duckdb_connection() loads a cached extension first", {
+  skip_if_not_installed("DBI")
+  skip_if_not_installed("duckdb")
+
   old <- .duckdb_cache$con
   .duckdb_cache$con <- NULL
   withr::defer(.duckdb_cache$con <- old)
@@ -114,6 +132,9 @@ test_that("duckdb_connection() loads a cached extension first", {
 })
 
 test_that("duckdb_connection() closes a failed connection", {
+  skip_if_not_installed("DBI")
+  skip_if_not_installed("duckdb")
+
   old <- .duckdb_cache$con
   .duckdb_cache$con <- NULL
   withr::defer(.duckdb_cache$con <- old)
