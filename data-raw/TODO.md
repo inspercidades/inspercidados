@@ -22,33 +22,14 @@ still missing.
 The pkgdown article `vignettes/articles/mortalidade-sp.Rmd` stays broken until
 this lands.
 
-### Dictionary workbooks (optional)
-
-Five deposits ship `dict_*` files that no resource or documentation pattern
-matches, so users cannot reach them.
-
-- [ ] Decide whether to expose the dictionaries. If yes, add a
-      `documentation_pattern` to each resource in `data-raw/resources.csv`.
-  - [ ] `dict_itbi.*` for `itbi_sp`
-  - [ ] `dict_geoses.*` for `geoses_sp`
-  - [ ] `dict_faixa_azul.*` for `faixa_azul_sp`
-  - [ ] `dict_sinistros.*` for `sinistros_sp`
-  - [ ] `dict_trechos_agregados_sinistros.*` for `sinistros_via_sp`
-
 ## Catalog changes
 
 The Google Sheet drives the registry through `data-raw/build_registry.R`. Make
 the edit in the sheet, then rebuild.
 
-- [ ] Delete the "Gastos com UBS por distrito [2019]" row. The study was
-      discontinued, so it is neither a secure-room nor a pending deposit.
 - [ ] Add a `titulo_dataverse` column for the deposit title. Keep
       `titulo_da_base_de_dados` as the Portal Cidados title, since the two
       serve different readers and should not be forced to match.
-- [ ] Confirm every row sets the access column to either
-      "Disponível para download" or "Sala segura do Insper".
-- [ ] Confirm the secure-room rows (iFood, QuintoAndar, Loft) are marked
-      "Sala segura do Insper". They carry no DOI by design and never will.
 
 ## Repositories to build
 

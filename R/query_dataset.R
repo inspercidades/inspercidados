@@ -24,7 +24,7 @@
 #' @seealso [get_dataset()] to download a dataset into memory.
 #'
 #' @export
-#' @examplesIf live_examples() && requireNamespace("dbplyr", quietly = TRUE) && requireNamespace("duckdb", quietly = TRUE)
+#' @examplesIf live_examples() && rlang::is_installed(c("dbplyr", "duckdb"))
 #' itbi <- query_dataset("itbi_sp")
 #'
 #' # Transactions per year, computed by DuckDB
@@ -42,7 +42,10 @@ query_dataset <- function(dataset, ..., resource = NULL, year = NULL) {
   if (is.null(entry)) {
     cli::cli_abort(c(
       "{.fn query_dataset} requires a registered dataset alias.",
-      "i" = "Run {.run inspercidados::list_datasets()} to see available aliases."
+      "i" = paste0(
+        "Run {.run inspercidados::list_datasets()} ",
+        "to see available aliases."
+      )
     ))
   }
   doi <- resolve_dataset(dataset)

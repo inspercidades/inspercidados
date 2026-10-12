@@ -19,7 +19,7 @@ test_that("active entries carry an Insper DOI and a title", {
   doi <- vapply(active, function(x) x[["doi"]] %||% "", character(1))
   title <- vapply(active, function(x) x[["title"]] %||% "", character(1))
 
-  expect_true(all(grepl("^10\\.60873/", doi)))
+  expect_true(all(grepl("^10\\.(60873|48808)/", doi)))
   expect_true(all(nzchar(title)))
 })
 

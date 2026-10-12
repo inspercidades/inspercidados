@@ -74,7 +74,7 @@ clean_text <- function(x) {
 extract_doi <- function(x) {
   match <- stringr::str_match(
     clean_text(x),
-    "doi:(10[.]60873/[^&#[:space:]]+)"
+    "doi:(10[.](?:60873|48808)/[^&#[:space:]]+)"
   )
   return(match[, 2])
 }
@@ -253,7 +253,7 @@ catalog_validation_issues <- function(catalog) {
     add_issue(
       index,
       "link_da_base_de_dados_data_verse",
-      "links must contain a valid 10.60873 Dataverse DOI"
+      "links must contain a valid Insper Dataverse DOI"
     )
   }
 

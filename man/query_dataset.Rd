@@ -40,7 +40,7 @@ DuckDB loads \code{httpfs} from its shared extension cache or installs it on the
 first call. The cache is stored under \verb{~/.duckdb}.
 }
 \examples{
-\dontshow{if (live_examples() && requireNamespace("dbplyr", quietly = TRUE) && requireNamespace("duckdb", quietly = TRUE)) withAutoprint(\{ # examplesIf}
+\dontshow{if (live_examples() && rlang::is_installed(c("dbplyr", "duckdb"))) withAutoprint(\{ # examplesIf}
 itbi <- query_dataset("itbi_sp")
 
 # Transactions per year, computed by DuckDB

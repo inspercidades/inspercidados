@@ -31,8 +31,7 @@ contains several annual files (e.g. \code{year = 2023}).}
 
 \item{docs}{Logical. If \code{TRUE}, returns a named list with two elements:
 \code{data} (the downloaded tibble/sf object) and \code{docs}. When the dataset
-contains a file whose name starts with \code{"documentacao"} (e.g.
-\code{"documentacao_iptu.xlsx"}), that file is downloaded and returned as a
+has a documentation workbook, that file is downloaded and returned as a
 tibble. Otherwise \code{docs} is a named list of metadata fetched from
 Dataverse (title, description, authors, DOI, URL, year). Default is
 \code{FALSE}.}

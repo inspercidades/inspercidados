@@ -253,23 +253,25 @@ resolve_dataset <- function(x) {
     cli::cli_abort("{.arg dataset} must be a single non-empty string.")
   }
 
-  # Covers https://doi.org/10.60873/..., the Dataverse landing page
-  # (?persistentId=doi:10.60873/...), and a bare doi: prefix.
+  # Covers DOI URLs, Dataverse landing pages, and bare doi: prefixes.
   if (grepl("^https?://", x) || grepl("^doi:", x, ignore.case = TRUE)) {
-    m <- regmatches(x, regexpr("10\\.60873/[A-Za-z0-9._/-]+", x, perl = TRUE))
+    m <- regmatches(
+      x,
+      regexpr("10\\.(?:60873|48808)/[A-Za-z0-9._/-]+", x, perl = TRUE)
+    )
     if (length(m) == 0 || !nzchar(m)) {
       cli::cli_abort(c(
         "Could not extract an Insper Dataverse DOI from {.url {x}}.",
-        "i" = "Expected a DOI under the {.val 10.60873} prefix."
+        "i" = "Expected a {.val 10.60873} or {.val 10.48808} DOI."
       ))
     }
     return(sub("[/&#?]+$", "", m))
   }
   if (grepl("^10\\.", x)) {
-    if (!grepl("^10\\.60873/", x)) {
+    if (!grepl("^10\\.(60873|48808)/", x)) {
       cli::cli_abort(c(
         "{.val {x}} is not an Insper Dataverse DOI.",
-        "i" = "This package only serves DOIs under the {.val 10.60873} prefix."
+        "i" = "Supported prefixes: {.val 10.60873}, {.val 10.48808}."
       ))
     }
     return(x)
@@ -393,9 +395,9 @@ select_dv_file <- function(
   if (
     !is.null(filename) &&
       (!is.character(filename) ||
-        length(filename) != 1 ||
-        is.na(filename) ||
-        !nzchar(filename))
+         length(filename) != 1 ||
+         is.na(filename) ||
+         !nzchar(filename))
   ) {
     cli::cli_abort(
       "{.arg filename} must be a single non-empty string or {.code NULL}."
@@ -404,9 +406,9 @@ select_dv_file <- function(
   if (
     !is.null(file_pattern) &&
       (!is.character(file_pattern) ||
-        length(file_pattern) != 1 ||
-        is.na(file_pattern) ||
-        !nzchar(file_pattern))
+         length(file_pattern) != 1 ||
+         is.na(file_pattern) ||
+         !nzchar(file_pattern))
   ) {
     cli::cli_abort(
       "{.arg file_pattern} must be a single non-empty string or {.code NULL}."

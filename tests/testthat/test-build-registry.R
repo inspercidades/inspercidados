@@ -98,6 +98,17 @@ test_that("DOIs are extracted from persistent identifier links", {
   )
 })
 
+test_that("the catalog accepts the older Insper Alvarás DOI", {
+  catalog <- new_catalog_row()
+  catalog$link_da_base_de_dados_data_verse <- paste0(
+    "https://example.org/?persistentId=",
+    "doi:10.48808/FK2/7A3HSJ"
+  )
+
+  expect_no_error(validate_catalog(catalog))
+  expect_equal(prepare_catalog(catalog)$doi, "10.48808/FK2/7A3HSJ")
+})
+
 test_that("effective extensions look through gzip compression", {
   expect_equal(
     file_ext_each(c("table.csv.gz", "shape.gpkg", "README")),

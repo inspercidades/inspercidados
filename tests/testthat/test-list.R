@@ -3,7 +3,21 @@ test_that("list_datasets() shows only active entries by default", {
 
   expect_s3_class(out, "tbl_df")
   expect_setequal(out$alias, names(active_registry()))
-  expect_true(all(grepl("^10\\.60873/", out$doi)))
+  expect_true(all(grepl("^10\\.(60873|48808)/", out$doi)))
+})
+
+test_that("both Alvarás periods are listed separately", {
+  out <- list_datasets(project = "alvaras")
+
+  expect_setequal(out$alias, c("alvaras_sp", "alvaras_sp_2004_2021"))
+  expect_equal(
+    unname(out$doi[match("alvaras_sp_2004_2021", out$alias)]),
+    "10.48808/FK2/7A3HSJ"
+  )
+  expect_equal(
+    resolve_dataset("alvaras_sp_2004_2021"),
+    "10.48808/FK2/7A3HSJ"
+  )
 })
 
 test_that("list_datasets(include) widens the listing", {

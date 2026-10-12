@@ -4,6 +4,7 @@ test_that("resolve_dataset() maps an alias to its DOI", {
 
 test_that("resolve_dataset() passes a bare Insper DOI through", {
   expect_equal(resolve_dataset("10.60873/FK2/TOXCRF"), "10.60873/FK2/TOXCRF")
+  expect_equal(resolve_dataset("10.48808/FK2/7A3HSJ"), "10.48808/FK2/7A3HSJ")
 })
 
 test_that("resolve_dataset() extracts the DOI from URLs and doi: prefixes", {
@@ -23,6 +24,13 @@ test_that("resolve_dataset() extracts the DOI from URLs and doi: prefixes", {
   for (x in inputs) {
     expect_equal(resolve_dataset(x), "10.60873/FK2/TOXCRF", label = x)
   }
+})
+
+test_that("resolve_dataset() accepts the older Alvarás DOI URL", {
+  expect_equal(
+    resolve_dataset("https://doi.org/10.48808/FK2/7A3HSJ"),
+    "10.48808/FK2/7A3HSJ"
+  )
 })
 
 test_that("resolve_dataset() rejects DOIs outside the Insper prefix", {
