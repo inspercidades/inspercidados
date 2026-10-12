@@ -143,3 +143,16 @@ test_that("cite_dataset() returns BibTeX and RIS", {
   expect_match(ris, "^TY  - DATA")
   expect_match(ris, "ER  -$")
 })
+
+test_that("query_dataset() reads ITBI lazily", {
+  skip_if_no_dataverse()
+  skip_if_not_installed("duckdb", "1.5.5")
+  skip_if_not_installed("dbplyr")
+
+  itbi <- suppressMessages(query_dataset("itbi_sp"))
+  n <- dplyr::collect(dplyr::tally(itbi))[["n"]]
+
+  expect_s3_class(itbi, "tbl_lazy")
+  expect_gt(n, 1e6)
+  expect_true("data_de_transacao" %in% colnames(itbi))
+})
