@@ -37,6 +37,7 @@ install.packages(
 | [`list_datasets()`](https://inspercidades.github.io/inspercidados/reference/list_datasets.md) | List or search available datasets |
 | [`list_resources()`](https://inspercidades.github.io/inspercidados/reference/list_resources.md) | List logical resources within a dataset |
 | [`get_dataset()`](https://inspercidades.github.io/inspercidados/reference/get_dataset.md) | Download a dataset into R |
+| [`query_dataset()`](https://inspercidades.github.io/inspercidados/reference/query_dataset.md) | Query a parquet dataset without loading it into R |
 | [`get_dataverse()`](https://inspercidades.github.io/inspercidados/reference/get_dataverse.md) | Inspect or download any Insper Dataverse deposit |
 | [`cite_dataset()`](https://inspercidades.github.io/inspercidados/reference/cite_dataset.md) | Generate a citation for a dataset |
 | [`open_project()`](https://inspercidades.github.io/inspercidados/reference/open_project.md) | Open the study repository behind a dataset |
@@ -54,20 +55,20 @@ with.
 library(inspercidados)
 
 list_datasets()
-#> # A tibble: 22 × 11
+#> # A tibble: 23 × 11
 #>    alias        title description theme region project access is_spatial formats
 #>    <chr>        <chr> <chr>       <chr> <chr>  <chr>   <chr>  <lgl>      <chr>  
 #>  1 itbi_sp      Impo… "Registros… Habi… São P… itbi    downl… FALSE      csv, p…
 #>  2 iptu_sp      IPTU… "Dados do … Habi… São P… densid… downl… TRUE       geojso…
 #>  3 alvaras_sp   Alva… "Informaçõ… Habi… São P… alvaras downl… TRUE       geojso…
-#>  4 censo_setor… Popu… "Dados pro… Habi… São P… densid… downl… TRUE       geojso…
-#>  5 iptu_vertic… Grad… "Dados dem… Habi… São P… densid… downl… TRUE       geojso…
-#>  6 densidade_i… Dens… "Cruzament… Habi… São P… densid… downl… TRUE       geojso…
-#>  7 geoses_sp    Índi… "Índice so… Mult… São P… geoses  downl… TRUE       geojso…
-#>  8 mortalidade… Indi… "Indicador… Saúde São P… mortal… downl… TRUE       geojso…
-#>  9 ilhas_calor… Medi… "Estatísti… Clim… Rio d… mare    downl… TRUE       geojso…
-#> 10 qualidade_a… Medi… "Estatísti… Clim… Rio d… mare    downl… TRUE       geojso…
-#> # ℹ 12 more rows
+#>  4 alvaras_sp_… Alva… "Agregação… Habi… São P… alvaras downl… TRUE       geojso…
+#>  5 censo_setor… Popu… "Dados pro… Habi… São P… densid… downl… TRUE       geojso…
+#>  6 iptu_vertic… Grad… "Dados dem… Habi… São P… densid… downl… TRUE       geojso…
+#>  7 densidade_i… Dens… "Cruzament… Habi… São P… densid… downl… TRUE       geojso…
+#>  8 geoses_sp    Índi… "Índice so… Mult… São P… geoses  downl… TRUE       geojso…
+#>  9 mortalidade… Indi… "Indicador… Saúde São P… mortal… downl… TRUE       geojso…
+#> 10 ilhas_calor… Medi… "Estatísti… Clim… Rio d… mare    downl… TRUE       geojso…
+#> # ℹ 13 more rows
 #> # ℹ 2 more variables: keywords <chr>, doi <chr>
 ```
 
@@ -93,6 +94,13 @@ list_datasets("Mobilidade")
 #> 12 sinistros_v… Sini… Localizaçã… Mobi… São P… faixa_… downl… TRUE       geojso…
 #> # ℹ 2 more variables: keywords <chr>, doi <chr>
 ```
+
+The Alvarás study has two separate deposits:
+[2004–2021](https://doi.org/10.48808/FK2/7A3HSJ) is
+`alvaras_sp_2004_2021`, and
+[2010–2024](https://doi.org/10.60873/FK2/FPCIDI) is `alvaras_sp`. Both
+are available through
+[`get_dataset()`](https://inspercidades.github.io/inspercidados/reference/get_dataset.md).
 
 ## Download a dataset
 
@@ -127,7 +135,8 @@ list_resources("qualidade_ar_mare")
 #> 2 pontos   Pontos das medições de qualidade do… TRUE       <NA>  geojso… FALSE
 ```
 
-Set `docs = TRUE` to return the data alongside its documentation.
+Set `docs = TRUE` to return the data alongside its documentation. For
+datasets with a dictionary workbook, `docs` contains that workbook.
 
 ``` r
 
@@ -135,6 +144,26 @@ result <- get_dataset("iptu_sp", docs = TRUE)
 result$data
 result$docs
 ```
+
+## Query a large dataset
+
+[`query_dataset()`](https://inspercidades.github.io/inspercidados/reference/query_dataset.md)
+opens a registered parquet resource as a lazy table. Build a query with
+dplyr, then call `collect()` to bring the result into R. This needs the
+optional `duckdb`, `DBI`, `dbplyr`, and `dplyr` packages.
+
+``` r
+
+itbi <- query_dataset("itbi_sp")
+
+itbi |>
+  dplyr::select(data_de_transacao) |>
+  head(5) |>
+  dplyr::collect()
+```
+
+For resources split into annual files, `year` selects one year. With no
+`year`, the query includes all available years.
 
 ## Cite a dataset
 

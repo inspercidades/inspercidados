@@ -2,6 +2,10 @@
 
 ## inspercidados 0.5.0
 
+- Added the 2004–2021 Alvarás deposit as `alvaras_sp_2004_2021`,
+  alongside the existing 2010–2024 `alvaras_sp`.
+- Updated `get_dataset(docs = TRUE)` to return dictionary workbooks for
+  datasets that provide them.
 - Added
   [`query_dataset()`](https://inspercidades.github.io/inspercidados/reference/query_dataset.md),
   which opens a parquet dataset as a lazy DuckDB table that reads from

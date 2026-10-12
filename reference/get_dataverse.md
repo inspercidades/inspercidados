@@ -50,7 +50,7 @@ it finds. Deposits with an unusual file layout may need `filename` or
 `file_pattern` to resolve, and formats the package cannot read will
 raise an error naming the file.
 
-Only DOIs under the `10.60873` prefix are served.
+DOIs under the `10.60873` and `10.48808` prefixes are served.
 
 ## See also
 

@@ -62,7 +62,7 @@ to download a dataset into memory.
 ## Examples
 
 ``` r
-if (FALSE) { # live_examples() && requireNamespace("dbplyr", quietly = TRUE) && requireNamespace("duckdb", quietly = TRUE)
+if (FALSE) { # live_examples() && rlang::is_installed(c("dbplyr", "duckdb"))
 itbi <- query_dataset("itbi_sp")
 
 # Transactions per year, computed by DuckDB

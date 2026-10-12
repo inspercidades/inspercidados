@@ -119,6 +119,10 @@
 <td>Download a dataset into R</td>
 </tr>
 <tr>
+<td><code><a href="reference/query_dataset.html">query_dataset()</a></code></td>
+<td>Query a parquet dataset without loading it into R</td>
+</tr>
+<tr>
 <td><code><a href="reference/get_dataverse.html">get_dataverse()</a></code></td>
 <td>Inspect or download any Insper Dataverse deposit</td>
 </tr>
@@ -141,20 +145,20 @@
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/inspercidades/inspercidados" class="external-link">inspercidados</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="reference/list_datasets.html">list_datasets</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; # A tibble: 22 × 11</span></span>
+<span><span class="co">#&gt; # A tibble: 23 × 11</span></span>
 <span><span class="co">#&gt;    alias        title description theme region project access is_spatial formats</span></span>
 <span><span class="co">#&gt;    &lt;chr&gt;        &lt;chr&gt; &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;   &lt;chr&gt;  &lt;lgl&gt;      &lt;chr&gt;  </span></span>
 <span><span class="co">#&gt;  1 itbi_sp      Impo… "Registros… Habi… São P… itbi    downl… FALSE      csv, p…</span></span>
 <span><span class="co">#&gt;  2 iptu_sp      IPTU… "Dados do … Habi… São P… densid… downl… TRUE       geojso…</span></span>
 <span><span class="co">#&gt;  3 alvaras_sp   Alva… "Informaçõ… Habi… São P… alvaras downl… TRUE       geojso…</span></span>
-<span><span class="co">#&gt;  4 censo_setor… Popu… "Dados pro… Habi… São P… densid… downl… TRUE       geojso…</span></span>
-<span><span class="co">#&gt;  5 iptu_vertic… Grad… "Dados dem… Habi… São P… densid… downl… TRUE       geojso…</span></span>
-<span><span class="co">#&gt;  6 densidade_i… Dens… "Cruzament… Habi… São P… densid… downl… TRUE       geojso…</span></span>
-<span><span class="co">#&gt;  7 geoses_sp    Índi… "Índice so… Mult… São P… geoses  downl… TRUE       geojso…</span></span>
-<span><span class="co">#&gt;  8 mortalidade… Indi… "Indicador… Saúde São P… mortal… downl… TRUE       geojso…</span></span>
-<span><span class="co">#&gt;  9 ilhas_calor… Medi… "Estatísti… Clim… Rio d… mare    downl… TRUE       geojso…</span></span>
-<span><span class="co">#&gt; 10 qualidade_a… Medi… "Estatísti… Clim… Rio d… mare    downl… TRUE       geojso…</span></span>
-<span><span class="co">#&gt; # ℹ 12 more rows</span></span>
+<span><span class="co">#&gt;  4 alvaras_sp_… Alva… "Agregação… Habi… São P… alvaras downl… TRUE       geojso…</span></span>
+<span><span class="co">#&gt;  5 censo_setor… Popu… "Dados pro… Habi… São P… densid… downl… TRUE       geojso…</span></span>
+<span><span class="co">#&gt;  6 iptu_vertic… Grad… "Dados dem… Habi… São P… densid… downl… TRUE       geojso…</span></span>
+<span><span class="co">#&gt;  7 densidade_i… Dens… "Cruzament… Habi… São P… densid… downl… TRUE       geojso…</span></span>
+<span><span class="co">#&gt;  8 geoses_sp    Índi… "Índice so… Mult… São P… geoses  downl… TRUE       geojso…</span></span>
+<span><span class="co">#&gt;  9 mortalidade… Indi… "Indicador… Saúde São P… mortal… downl… TRUE       geojso…</span></span>
+<span><span class="co">#&gt; 10 ilhas_calor… Medi… "Estatísti… Clim… Rio d… mare    downl… TRUE       geojso…</span></span>
+<span><span class="co">#&gt; # ℹ 13 more rows</span></span>
 <span><span class="co">#&gt; # ℹ 2 more variables: keywords &lt;chr&gt;, doi &lt;chr&gt;</span></span></code></pre></div>
 <p>Search by alias, title, description, theme, region, or keywords.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
@@ -175,6 +179,7 @@
 <span><span class="co">#&gt; 11 sinistros_sp Sini… Sinistros … Mobi… São P… faixa_… downl… FALSE      parque…</span></span>
 <span><span class="co">#&gt; 12 sinistros_v… Sini… Localizaçã… Mobi… São P… faixa_… downl… TRUE       geojso…</span></span>
 <span><span class="co">#&gt; # ℹ 2 more variables: keywords &lt;chr&gt;, doi &lt;chr&gt;</span></span></code></pre></div>
+<p>The Alvarás study has two separate deposits: <a href="https://doi.org/10.48808/FK2/7A3HSJ" class="external-link">2004–2021</a> is <code>alvaras_sp_2004_2021</code>, and <a href="https://doi.org/10.60873/FK2/FPCIDI" class="external-link">2010–2024</a> is <code>alvaras_sp</code>. Both are available through <code><a href="reference/get_dataset.html">get_dataset()</a></code>.</p>
 </div>
 <div class="section level2">
 <h2 id="download-a-dataset">Download a dataset<a class="anchor" aria-label="anchor" href="#download-a-dataset"></a>
@@ -201,17 +206,30 @@
 <span><span class="co">#&gt;   &lt;chr&gt;    &lt;chr&gt;                                &lt;lgl&gt;      &lt;chr&gt; &lt;chr&gt;   &lt;lgl&gt;  </span></span>
 <span><span class="co">#&gt; 1 dados    Medições de qualidade do ar          FALSE      &lt;NA&gt;  parque… TRUE   </span></span>
 <span><span class="co">#&gt; 2 pontos   Pontos das medições de qualidade do… TRUE       &lt;NA&gt;  geojso… FALSE</span></span></code></pre></div>
-<p>Set <code>docs = TRUE</code> to return the data alongside its documentation.</p>
+<p>Set <code>docs = TRUE</code> to return the data alongside its documentation. For datasets with a dictionary workbook, <code>docs</code> contains that workbook.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_dataset.html">get_dataset</a></span><span class="op">(</span><span class="st">"iptu_sp"</span>, docs <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">result</span><span class="op">$</span><span class="va">data</span></span>
 <span><span class="va">result</span><span class="op">$</span><span class="va">docs</span></span></code></pre></div>
 </div>
 <div class="section level2">
+<h2 id="query-a-large-dataset">Query a large dataset<a class="anchor" aria-label="anchor" href="#query-a-large-dataset"></a>
+</h2>
+<p><code><a href="reference/query_dataset.html">query_dataset()</a></code> opens a registered parquet resource as a lazy table. Build a query with dplyr, then call <code>collect()</code> to bring the result into R. This needs the optional <code>duckdb</code>, <code>DBI</code>, <code>dbplyr</code>, and <code>dplyr</code> packages.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">itbi</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/query_dataset.html">query_dataset</a></span><span class="op">(</span><span class="st">"itbi_sp"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">itbi</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">data_de_transacao</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/compute.html" class="external-link">collect</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p>For resources split into annual files, <code>year</code> selects one year. With no <code>year</code>, the query includes all available years.</p>
+</div>
+<div class="section level2">
 <h2 id="cite-a-dataset">Cite a dataset<a class="anchor" aria-label="anchor" href="#cite-a-dataset"></a>
 </h2>
 <p><code><a href="reference/cite_dataset.html">cite_dataset()</a></code> fetches metadata from Dataverse and returns a citation in plain text, BibTeX, or RIS.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/cite_dataset.html">cite_dataset</a></span><span class="op">(</span><span class="st">"embarques_mensais"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/cite_dataset.html">cite_dataset</a></span><span class="op">(</span><span class="st">"embarques_mensais"</span>, format <span class="op">=</span> <span class="st">"bibtex"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/cite_dataset.html">cite_dataset</a></span><span class="op">(</span><span class="st">"embarques_mensais"</span>, format <span class="op">=</span> <span class="st">"ris"</span><span class="op">)</span></span></code></pre></div>
@@ -220,7 +238,7 @@
 <h2 id="explore-the-study-behind-a-dataset">Explore the study behind a dataset<a class="anchor" aria-label="anchor" href="#explore-the-study-behind-a-dataset"></a>
 </h2>
 <p>Most datasets come from a research study whose pipeline lives in its own repository. <code><a href="reference/open_project.html">open_project()</a></code> prints the study, lists its datasets, and opens the repository.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/open_project.html">open_project</a></span><span class="op">(</span><span class="st">"faixa_azul"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">

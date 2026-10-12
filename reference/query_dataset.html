@@ -111,7 +111,7 @@ first call. The cache is stored under <code>~/.duckdb</code>.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># live_examples() &amp;&amp; requireNamespace("dbplyr", quietly = TRUE) &amp;&amp; requireNamespace("duckdb", quietly = TRUE)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># live_examples() &amp;&amp; rlang::is_installed(c("dbplyr", "duckdb"))</span></span></span>
 <span class="r-in"><span><span class="va">itbi</span> <span class="op">&lt;-</span> <span class="fu">query_dataset</span><span class="op">(</span><span class="st">"itbi_sp"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Transactions per year, computed by DuckDB</span></span></span>

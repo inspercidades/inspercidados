@@ -50,9 +50,8 @@ get_dataset(
 - docs:
 
   Logical. If `TRUE`, returns a named list with two elements: `data`
-  (the downloaded tibble/sf object) and `docs`. When the dataset
-  contains a file whose name starts with `"documentacao"` (e.g.
-  `"documentacao_iptu.xlsx"`), that file is downloaded and returned as a
+  (the downloaded tibble/sf object) and `docs`. When the dataset has a
+  documentation workbook, that file is downloaded and returned as a
   tibble. Otherwise `docs` is a named list of metadata fetched from
   Dataverse (title, description, authors, DOI, URL, year). Default is
   `FALSE`.
