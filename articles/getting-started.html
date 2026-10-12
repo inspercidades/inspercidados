@@ -165,11 +165,30 @@ arguments narrow the download.</p>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
+<h2 id="query-large-datasets">Query large datasets<a class="anchor" aria-label="anchor" href="#query-large-datasets"></a>
+</h2>
+<p>Some datasets are too large to load comfortably.
+<code><a href="../reference/query_dataset.html">query_dataset()</a></code> opens a parquet dataset as a lazy table:
+DuckDB reads the file directly from Dataverse, and only the columns your
+query uses are downloaded. Build the query with dplyr verbs and call
+<code><a href="https://dplyr.tidyverse.org/reference/compute.html" class="external-link">collect()</a></code> to bring the result into R. It needs the duckdb,
+DBI, and dbplyr packages.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">itbi</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/query_dataset.html">query_dataset</a></span><span class="op">(</span><span class="st">"itbi_sp"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">itbi</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">data_de_transacao</span> <span class="op">&gt;=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2020-01-01"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html" class="external-link">count</a></span><span class="op">(</span><span class="va">bairro</span>, sort <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/compute.html" class="external-link">collect</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
 <h2 id="cite-a-dataset">Cite a dataset<a class="anchor" aria-label="anchor" href="#cite-a-dataset"></a>
 </h2>
 <p><code><a href="../reference/cite_dataset.html">cite_dataset()</a></code> fetches metadata from Dataverse and
 returns a citation in plain text, BibTeX, or RIS.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/cite_dataset.html">cite_dataset</a></span><span class="op">(</span><span class="st">"embarques_mensais"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/cite_dataset.html">cite_dataset</a></span><span class="op">(</span><span class="st">"embarques_mensais"</span>, format <span class="op">=</span> <span class="st">"bibtex"</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -179,7 +198,7 @@ returns a citation in plain text, BibTeX, or RIS.</p>
 <p><code><a href="../reference/open_project.html">open_project()</a></code> prints the study, lists its datasets, and
 opens the repository. Private repositories are flagged before they
 open.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/open_project.html">open_project</a></span><span class="op">(</span><span class="st">"embarques_mensais"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">

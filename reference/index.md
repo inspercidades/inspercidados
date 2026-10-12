@@ -15,6 +15,8 @@
   : Download a dataset from Insper Dataverse
 - [`get_dataverse()`](https://inspercidades.github.io/inspercidados/reference/get_dataverse.md)
   : Download any Insper Dataverse dataset from a DOI or URL
+- [`query_dataset()`](https://inspercidades.github.io/inspercidados/reference/query_dataset.md)
+  : Query a large dataset without downloading it
 
 ## Cite and reproduce
 

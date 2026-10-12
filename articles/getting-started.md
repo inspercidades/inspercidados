@@ -104,6 +104,28 @@ pontos <- get_dataset(
 )
 ```
 
+## Query large datasets
+
+Some datasets are too large to load comfortably.
+[`query_dataset()`](https://inspercidades.github.io/inspercidados/reference/query_dataset.md)
+opens a parquet dataset as a lazy table: DuckDB reads the file directly
+from Dataverse, and only the columns your query uses are downloaded.
+Build the query with dplyr verbs and call
+[`collect()`](https://dplyr.tidyverse.org/reference/compute.html) to
+bring the result into R. It needs the duckdb, DBI, and dbplyr packages.
+
+``` r
+
+library(dplyr)
+
+itbi <- query_dataset("itbi_sp")
+
+itbi |>
+  filter(data_de_transacao >= as.Date("2020-01-01")) |>
+  count(bairro, sort = TRUE) |>
+  collect()
+```
+
 ## Cite a dataset
 
 [`cite_dataset()`](https://inspercidades.github.io/inspercidados/reference/cite_dataset.md)
