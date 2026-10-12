@@ -15,7 +15,7 @@
         "dados": {
           "title": "Transações de ITBI",
           "file_pattern": "^itbi[.]",
-          "documentation_pattern": null,
+          "documentation_pattern": "^dict_itbi[.]xlsx$",
           "formats": ["csv", "parquet", "rds"],
           "is_spatial": false,
           "years": [],
@@ -64,6 +64,31 @@
       "resources": {
         "dados": {
           "title": "Alvarás de construção",
+          "file_pattern": "^alvaras[.]",
+          "documentation_pattern": null,
+          "formats": ["geojson", "gpkg", "parquet"],
+          "is_spatial": true,
+          "years": [],
+          "default": true
+        }
+      },
+      "formats": ["geojson", "gpkg", "parquet"],
+      "is_spatial": true,
+      "status": "active"
+    },
+    "alvaras_sp_2004_2021": {
+      "doi": "10.48808/FK2/7A3HSJ",
+      "title": "Alvarás de licenciamento de novas edificações [2004-2021]",
+      "description": "Agregação por lote/empreendimento dos dados de registros de alvarás de licenciamento gerados pelo Sistema de Administração do Código de Obras e Edificações (SISACOE).",
+      "theme": "Habitação e Mercado Imobiliário",
+      "region": "São Paulo",
+      "keywords": "Residências; Imóveis; Licenciamento; Novas edificações; Incorporação imobiliária",
+      "collection": "Alvarás de licenciamento de novas edificações [2004-2024]",
+      "project": "alvaras",
+      "access": "download",
+      "resources": {
+        "dados": {
+          "title": "Alvarás de construção (2004–2021)",
           "file_pattern": "^alvaras[.]",
           "documentation_pattern": null,
           "formats": ["geojson", "gpkg", "parquet"],
@@ -165,7 +190,7 @@
         "dados": {
           "title": "Índice GeoSES",
           "file_pattern": "^geoses[.]",
-          "documentation_pattern": null,
+          "documentation_pattern": "^dict_geoses[.]xlsx$",
           "formats": ["geojson", "gpkg", "parquet", "tab", "xlsx"],
           "is_spatial": true,
           "years": [],
@@ -508,7 +533,7 @@
         "dados": {
           "title": "Faixa Azul",
           "file_pattern": "^faixa_azul[.]",
-          "documentation_pattern": null,
+          "documentation_pattern": "^dict_faixa_azul[.]xlsx$",
           "formats": ["geojson", "gpkg", "parquet"],
           "is_spatial": true,
           "years": [],
@@ -533,7 +558,7 @@
         "dados": {
           "title": "Sinistros",
           "file_pattern": "^sinistros[.]",
-          "documentation_pattern": null,
+          "documentation_pattern": "^dict_sinistros[.]xlsx$",
           "formats": ["parquet", "tab", "xlsx"],
           "is_spatial": false,
           "years": [],
@@ -558,7 +583,7 @@
         "dados": {
           "title": "Sinistros agregados por trecho",
           "file_pattern": "^trechos_agregados_sinistros[.]",
-          "documentation_pattern": null,
+          "documentation_pattern": "^dict_trechos_agregados_sinistros[.]xlsx$",
           "formats": ["geojson", "gpkg", "parquet", "tab", "xlsx"],
           "is_spatial": true,
           "years": [],
@@ -605,7 +630,7 @@
       "is_spatial": false,
       "status": "unpublished"
     },
-    "_unpublished_22": {
+    "_unpublished_23": {
       "doi": null,
       "title": "Contratos e Anúncios Imobiliários, Loft [2019-2026]",
       "description": "Dados detalhados sobre anúncios e contratos imobiliários, incluindo características dos imóveis e dos condomínios, nas cidades com atuação da Loft.",
@@ -617,7 +642,7 @@
       "is_spatial": false,
       "status": "unpublished"
     },
-    "_unpublished_23": {
+    "_unpublished_24": {
       "doi": null,
       "title": "Contratos e Anúncios Imobiliários, QuintoAndar [2011-2025]",
       "description": "Dados detalhados sobre anúncios e contratos imobiliários, incluindo características dos imóveis e dos condomínios, nas cidades com atuação do QuintoAndar.",

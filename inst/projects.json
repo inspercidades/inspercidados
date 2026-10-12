@@ -17,7 +17,7 @@
       "title": "Alvarás de licenciamento de novas edificações",
       "repo_url": null,
       "visibility": null,
-      "datasets": "alvaras_sp"
+      "datasets": ["alvaras_sp", "alvaras_sp_2004_2021"]
     },
     "geoses": {
       "title": "Índice GeoSES",

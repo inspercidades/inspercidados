@@ -1,11 +1,12 @@
 alias,resource,title,file_pattern,default,documentation_pattern
-itbi_sp,dados,Transações de ITBI,^itbi[.],true
+itbi_sp,dados,Transações de ITBI,^itbi[.],true,^dict_itbi[.]xlsx$
 iptu_sp,dados,IPTU residencial,^iptu_residencial[.],true
 alvaras_sp,dados,Alvarás de construção,^alvaras[.],true
+alvaras_sp_2004_2021,dados,Alvarás de construção (2004–2021),^alvaras[.],true
 censo_setores_sp,dados,Densidade dos setores censitários,^censo_densidade[.],true
 iptu_verticalizacao_sp,dados,Densidade populacional,^densidade_populacional[.],true
 densidade_imoveis_sp,dados,Densidade de imoveis,^iptu_censo[.],true
-geoses_sp,dados,Índice GeoSES,^geoses[.],true
+geoses_sp,dados,Índice GeoSES,^geoses[.],true,^dict_geoses[.]xlsx$
 mortalidade_sp,distritos,Distritos com indicadores de mortalidade,^distritos_sp[.],true
 ilhas_calor_mare,dados,Medições de ilhas de calor,^ilhas_de_calor[.](parquet|tab|xlsx)$,true
 ilhas_calor_mare,pontos,Pontos das medições de ilhas de calor,^ilhas_de_calor_pontos[.],false
@@ -20,6 +21,6 @@ embarques_mensais,dados,Media diaria de embarques,^emb_media[.],true
 embarques_integracao,dados,Embarques por modo,^emb_modo[.],true
 linhas_motiva,dados,Linhas,^dim_line[.],true,^documentacao_linhas[.]
 estacoes_motiva,dados,Estações,^dim_station[.],true,^documentacao_estacaoes[.]
-faixa_azul_sp,dados,Faixa Azul,^faixa_azul[.],true
-sinistros_sp,dados,Sinistros,^sinistros[.],true
-sinistros_via_sp,dados,Sinistros agregados por trecho,^trechos_agregados_sinistros[.],true
+faixa_azul_sp,dados,Faixa Azul,^faixa_azul[.],true,^dict_faixa_azul[.]xlsx$
+sinistros_sp,dados,Sinistros,^sinistros[.],true,^dict_sinistros[.]xlsx$
+sinistros_via_sp,dados,Sinistros agregados por trecho,^trechos_agregados_sinistros[.],true,^dict_trechos_agregados_sinistros[.]xlsx$

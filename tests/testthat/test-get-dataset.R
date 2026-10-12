@@ -46,3 +46,42 @@ test_that("list_resources() requires a registered alias", {
     list_resources("10.60873/FK2/TOXCRF")
   })
 })
+
+test_that("get_dataset() uses a dictionary documentation pattern", {
+  skip_if_not_installed("readxl")
+
+  entry <- list(
+    resources = list(
+      dados = list(
+        default = TRUE,
+        file_pattern = "^dados[.]",
+        formats = "rds",
+        is_spatial = FALSE,
+        documentation_pattern = "^dict_dados[.]"
+      )
+    )
+  )
+  files <- lapply(c("dados.rds", "dict_dados.xlsx"), function(label) {
+    list(label = label)
+  })
+  selected <- NULL
+  local_mocked_bindings(
+    registry_entry = function(...) entry,
+    resolve_dataset = function(...) "10.60873/FK2/TEST",
+    read_dv_file = function(...) data.frame(x = 1),
+    read_binary_dv_file = function(filename, ...) {
+      selected <<- filename
+      return(data.frame(term = "value"))
+    }
+  )
+  local_mocked_bindings(
+    dataset_files = function(...) files,
+    .package = "dataverse"
+  )
+
+  out <- suppressMessages(get_dataset("example", docs = TRUE))
+
+  expect_identical(selected, "dict_dados.xlsx")
+  expect_named(out, c("data", "docs"))
+  expect_equal(out$docs, data.frame(term = "value"))
+})

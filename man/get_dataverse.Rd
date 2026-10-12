@@ -38,7 +38,7 @@ and applies the same format preference to whatever it finds. Deposits with an
 unusual file layout may need \code{filename} or \code{file_pattern} to resolve, and
 formats the package cannot read will raise an error naming the file.
 
-Only DOIs under the \code{10.60873} prefix are served.
+DOIs under the \code{10.60873} and \code{10.48808} prefixes are served.
 }
 \examples{
 \dontshow{if (live_examples()) withAutoprint(\{ # examplesIf}

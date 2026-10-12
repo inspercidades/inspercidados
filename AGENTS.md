@@ -100,7 +100,7 @@ be downloadable.
 **"Arquivado" is internal.** The sheet's access column also accepts
 "Arquivado" for rows kept as a record: an older deposit replaced by a newer one,
 or a withdrawn study. The validator accepts these rows, lets their link point
-outside the `10.60873` prefix, and ignores them when checking for shared DOIs.
+outside the served DOI prefixes, and ignores them when checking for shared DOIs.
 `prepare_catalog()` then drops them, so they never reach the registry. Two
 active rows sharing a DOI abort the build.
 
@@ -157,8 +157,8 @@ Example registry entry (shown unwrapped):
 3. Full URL (`https://doi.org/...`, a Dataverse `?persistentId=doi:...`
    landing page, or a bare `doi:` prefix) -> extract DOI
 
-Only the `10.60873` prefix is served. Other DOIs abort with an explicit
-message rather than being passed through.
+The `10.60873` and `10.48808` prefixes are served. Other DOIs abort with an
+explicit message rather than being passed through.
 
 ## Dataverse Integration
 
@@ -221,7 +221,7 @@ reintroduce a local `replication_scripts/` mirror.
   `data-raw/TODO.md`.
 - **The sheet is the source of truth.** `data-raw/202603_Catalogo_Dados.xlsx`
   is a stale local snapshot. `build_registry.R` reads the live Google Sheet.
-- **The catalog is a subset.** Many deposits under `10.60873` are not curated
+- **The catalog is a subset.** Many Insper Dataverse deposits are not curated
   into the package. Absence from `list_datasets()` is not a bug.
 
 ## get_dataset() Flexible Parameters

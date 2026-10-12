@@ -1,5 +1,7 @@
 # inspercidados 0.5.0
 
+- Added the 2004–2021 Alvarás deposit as `alvaras_sp_2004_2021`, alongside the existing 2010–2024 `alvaras_sp`.
+- Updated `get_dataset(docs = TRUE)` to return dictionary workbooks for datasets that provide them.
 - Added `query_dataset()`, which opens a parquet dataset as a lazy DuckDB table that reads from Dataverse without downloading the whole file.
 - Changed the registry to load from GitHub once per session, so datasets added after a release appear without reinstalling. The package falls back to its shipped copy when GitHub cannot be reached, and `options(inspercidados.registry = "bundled")` forces the shipped copy.
 

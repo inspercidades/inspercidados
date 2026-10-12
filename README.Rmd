@@ -56,6 +56,7 @@ install.packages(
 | `list_datasets()` | List or search available datasets |
 | `list_resources()` | List logical resources within a dataset |
 | `get_dataset()`   | Download a dataset into R |
+| `query_dataset()` | Query a parquet dataset without loading it into R |
 | `get_dataverse()` | Inspect or download any Insper Dataverse deposit |
 | `cite_dataset()`  | Generate a citation for a dataset |
 | `open_project()` | Open the study repository behind a dataset |
@@ -78,6 +79,10 @@ Search by alias, title, description, theme, region, or keywords.
 ```{r search}
 list_datasets("Mobilidade")
 ```
+
+The Alvarás study has two separate deposits: [2004–2021](https://doi.org/10.48808/FK2/7A3HSJ)
+is `alvaras_sp_2004_2021`, and [2010–2024](https://doi.org/10.60873/FK2/FPCIDI)
+is `alvaras_sp`. Both are available through `get_dataset()`.
 
 ## Download a dataset
 
@@ -106,12 +111,31 @@ list_resources("qualidade_ar_mare")
 ```
 
 Set `docs = TRUE` to return the data alongside its documentation.
+For datasets with a dictionary workbook, `docs` contains that workbook.
 
 ```{r docs, eval = FALSE}
 result <- get_dataset("iptu_sp", docs = TRUE)
 result$data
 result$docs
 ```
+
+## Query a large dataset
+
+`query_dataset()` opens a registered parquet resource as a lazy table. Build a
+query with dplyr, then call `collect()` to bring the result into R. This needs
+the optional `duckdb`, `DBI`, `dbplyr`, and `dplyr` packages.
+
+```{r query, eval = FALSE}
+itbi <- query_dataset("itbi_sp")
+
+itbi |>
+  dplyr::select(data_de_transacao) |>
+  head(5) |>
+  dplyr::collect()
+```
+
+For resources split into annual files, `year` selects one year. With no
+`year`, the query includes all available years.
 
 ## Cite a dataset
 
