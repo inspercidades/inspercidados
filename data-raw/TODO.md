@@ -22,6 +22,19 @@ still missing.
 The pkgdown article `vignettes/articles/mortalidade-sp.Rmd` stays broken until
 this lands.
 
+### `alvaras_sp` and `itbi_sp` (coordinate-free versions, new DOIs)
+
+The current deposits (`10.60873/FK2/FPCIDI`, `10.60873/FK2/AOLEOI`) are no
+longer public, so both aliases fail. `data-raw/stage_restricted.R` writes
+coordinate-free copies to `dataverse/sp-alvaras-3/` and `dataverse/sp-itbi-2/`
+on OneDrive. `alvaras_sp_2004_2021` stays as it is.
+
+- [ ] Confirm the columns to drop with the dataset owners (SQL, address, CEP)
+- [ ] Edit both `Metadados` files: the description still says "georreferenciada"
+- [ ] Deposit both folders under new DOIs
+- [ ] In the sheet, mark the old rows "Arquivado" and add rows with the new
+      DOIs under the same aliases, then rebuild the registry
+
 ## Catalog changes
 
 The Google Sheet drives the registry through `data-raw/build_registry.R`. Make
